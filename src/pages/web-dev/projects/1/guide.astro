@@ -58,7 +58,13 @@ import Callout from '../../../../components/Callout.astro';
   </details>
 
   <h3 class="mb-3">Step 3: Open the terminal in VS Code</h3>
-  <p class="text-sm text-text-secondary mb-4">Press <strong>Ctrl+`</strong> (backtick — the key above Tab) to open the built-in terminal. This terminal runs inside VS Code, so you can see files and the terminal at the same time. All commands from now on happen here.</p>
+  <p class="text-sm text-text-secondary mb-2">Press <strong>Ctrl+`</strong> (backtick — the key above Tab) to open the built-in terminal. This terminal runs inside VS Code, so you can see files and the terminal at the same time.</p>
+
+  <p class="text-sm text-text-secondary mb-2"><strong>Important:</strong> Make sure the terminal is in the right folder. Check with:</p>
+  <CodeBlock terminal copy>{`$ pwd`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-2">It should show a path ending in <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/greenscape</code>. If it doesn't — for example, if it shows your home directory — navigate there:</p>
+  <CodeBlock terminal copy>{`$ cd ~/greenscape`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-4">If you opened the <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">greenscape</code> folder with <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">code .</code> in Step 2, the terminal should already be in the right place. All commands from now on happen here.</p>
 
   <details class="mb-6 border border-border rounded-lg overflow-hidden">
     <summary>Can't find the backtick key?</summary>
