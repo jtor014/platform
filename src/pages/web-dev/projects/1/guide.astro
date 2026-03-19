@@ -38,13 +38,17 @@ import Callout from '../../../../components/Callout.astro';
 
   <h2 class="mb-4 mt-10">Setting Up</h2>
 
-  <h3 class="mb-3">Step 1: Create a directory and start Claude</h3>
+  <Callout variant="warning">
+    <p class="text-sm"><strong>GitHub permissions:</strong> Claude Code will need to create repositories, Issues, and PRs on your behalf. The first time it tries, your terminal may prompt you to authorise GitHub access. Follow the prompts — this is normal. If you run into issues, make sure <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">gh auth status</code> shows you're logged in.</p>
+  </Callout>
+
+  <h3 class="mb-3 mt-6">Step 1: Create a directory and start Claude</h3>
   <CodeBlock terminal copy>{`$ mkdir greenscape && cd greenscape
 $ claude`}</CodeBlock>
   <p class="text-sm text-text-secondary mb-6">Claude Code starts. You're now talking to your AI developer.</p>
 
   <h3 class="mb-3">Step 2: Direct Claude to set up the project</h3>
-  <p class="text-text-secondary mb-2">Paste the CLAUDE.md and BACKLOG.md content, then tell Claude:</p>
+  <p class="text-text-secondary mb-2">Paste the CLAUDE.md and BACKLOG.md content, then tell Claude. You can copy both from their pages — use the copy buttons on the <a href="/web-dev/projects/1/claude-md">CLAUDE.md</a> and <a href="/web-dev/projects/1/backlog">Backlog</a> pages.</p>
   <CodeBlock copy>{`I'm starting a new project. Here's the CLAUDE.md for the project:
 
 [Paste the entire contents of CLAUDE.md here]
