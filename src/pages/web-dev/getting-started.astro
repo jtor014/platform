@@ -5,27 +5,170 @@ import Callout from '../../components/Callout.astro';
 import StepList from '../../components/StepList.astro';
 ---
 
-<DocsLayout title="Web dev setup" description="Install Web Development tools: Node.js, Docker, Gemini API key, Netlify.">
-  <h1 class="mb-6">Web Dev Setup</h1>
-  <p class="text-text-secondary mb-8">You've installed the shared tools. Now install what's needed for Web Development.</p>
+<DocsLayout title="Web dev setup" description="How the methodology works and everything you need to install for Web Development.">
+  <h1 class="mb-6">Getting Started with Web Dev</h1>
+  <p class="text-text-secondary mb-8">How the methodology works, then every tool you need — installed and verified.</p>
+
+  <!-- How This Works -->
+  <h2 class="mb-6 mt-12">How this works</h2>
+  <p class="text-text-secondary mb-8">You direct AI to build real software. You'll learn to read, inspect, and challenge the code AI produces, without writing it yourself.</p>
+
+  <h3 class="mb-4">The Roles</h3>
+  <div class="grid gap-4 sm:grid-cols-3 mb-8">
+    <div class="border border-border rounded-lg p-6 text-center">
+      <div class="w-14 h-14 rounded-full bg-primary-bg text-primary font-bold text-2xl flex items-center justify-center mx-auto mb-3">D</div>
+      <h4 class="text-base font-semibold mb-2">You — the Director</h4>
+      <p class="text-sm text-text-secondary">Decide what gets built, review the work, verify it's correct, sign off on every change.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6 text-center">
+      <div class="w-14 h-14 rounded-full bg-primary-bg text-primary font-bold text-2xl flex items-center justify-center mx-auto mb-3">C</div>
+      <h4 class="text-base font-semibold mb-2">Claude Code — AI Developer</h4>
+      <p class="text-sm text-text-secondary">Writes code, creates files, runs tests, opens pull requests. Fast and capable, but makes mistakes.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6 text-center">
+      <div class="w-14 h-14 rounded-full bg-primary-bg text-primary font-bold text-2xl flex items-center justify-center mx-auto mb-3">G</div>
+      <h4 class="text-base font-semibold mb-2">Gemini — AI Reviewer</h4>
+      <p class="text-sm text-text-secondary">Independently reviews every pull request for security issues and best practices.</p>
+    </div>
+  </div>
+
+  <h3 class="mb-4">The Loop</h3>
+  <p class="text-text-secondary mb-4">Every project follows the same cycle:</p>
+  <StepList steps={[
+    { title: "Plan", content: "Give AI a brief and a template. Review the PRD it produces. Catch scope creep and vague requirements." },
+    { title: "Architect", content: "AI produces the technical design: schema, API contracts, ticket backlog. You review for over-engineering." },
+    { title: "Build (ticket by ticket)", content: "Claude creates a branch, implements, commits, opens a PR. Both AIs review. You verify and decide: merge or fix." },
+    { title: "Deploy", content: "Ship to a real URL. Verify it works in production, not just on your laptop." },
+    { title: "Reflect", content: "What went well? What did AI get wrong? What would you do differently? Lessons feed into the next project." },
+  ]} />
+
+  <h3 class="mb-4 mt-8">What you actually do</h3>
+  <div class="space-y-4 mb-8">
+    <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
+      <p class="font-semibold text-sm mb-1">Planning</p>
+      <p class="text-sm text-text-secondary">Catch what AI added that wasn't asked for, what it described vaguely, and what it missed entirely.</p>
+    </div>
+    <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
+      <p class="font-semibold text-sm mb-1">Reviewing</p>
+      <p class="text-sm text-text-secondary">Read both AI reviews. Develop judgment about real issues vs false positives.</p>
+    </div>
+    <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
+      <p class="font-semibold text-sm mb-1">Verifying</p>
+      <p class="text-sm text-text-secondary">Open the product and test it like a real user. Try to break it.</p>
+    </div>
+    <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
+      <p class="font-semibold text-sm mb-1">Communicating</p>
+      <p class="text-sm text-text-secondary">Explain technical decisions clearly. You directed the work — you understand what was built.</p>
+    </div>
+  </div>
+
+  <!-- Setup -->
+  <h2 class="mb-6 mt-16 pt-8 border-t border-border">Setup</h2>
+  <p class="text-text-secondary mb-8">Six tools and two accounts. Install them in order — each one builds on the last.</p>
+
+  <!-- 1. VS Code -->
+  <h3 class="mb-4">1. VS Code</h3>
+  <p class="text-text-secondary mb-4"><strong class="text-text">What it is:</strong> A free code editor. You'll read what Claude creates and verify it.</p>
+
+  <StepList steps={[
+    { title: "Go to code.visualstudio.com" },
+    { title: "Download for your operating system" },
+    { title: "Install it" },
+  ]} />
+
+  <h4 class="mb-2">Verify</h4>
+  <CodeBlock terminal copy>{`$ code --version`}</CodeBlock>
+
+  <details class="mb-8 border border-border rounded-lg overflow-hidden">
+    <summary>Troubleshooting: "command not found: code"</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Open VS Code → Cmd+Shift+P (Mac) or Ctrl+Shift+P (Windows) → "Shell Command" → "Install 'code' command in PATH."</p>
+    </div>
+  </details>
+
+  <!-- 2. Git -->
+  <h3 class="mb-4">2. Git</h3>
+  <p class="text-text-secondary mb-4"><strong class="text-text">What it is:</strong> Version control. Every change is tracked. You can always go back.</p>
+
+  <p class="text-sm text-text-secondary mb-2"><strong>Mac:</strong> Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">git --version</code> — if not installed, macOS will prompt you to install Command Line Tools.</p>
+  <p class="text-sm text-text-secondary mb-2"><strong>Windows:</strong> Download from <a href="https://git-scm.com/download/win">git-scm.com</a>, install with default settings.</p>
+  <p class="text-sm text-text-secondary mb-2"><strong>Linux:</strong></p>
+  <CodeBlock terminal copy>{`$ sudo apt update && sudo apt install git -y`}</CodeBlock>
+
+  <h4 class="mb-2 mt-4">Configure</h4>
+  <CodeBlock terminal copy>{`$ git config --global user.name "Your Name"
+$ git config --global user.email "your.email@example.com"`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-2">Use the same email as your GitHub account.</p>
+
+  <h4 class="mb-2 mt-4">Verify</h4>
+  <CodeBlock terminal copy>{`$ git --version`}</CodeBlock>
+
+  <!-- 3. GitHub -->
+  <h3 class="mb-4 mt-8">3. GitHub Account & CLI</h3>
+  <p class="text-text-secondary mb-4"><strong class="text-text">What it is:</strong> GitHub stores your code online. The CLI lets you create repos and manage PRs from the terminal.</p>
+
+  <p class="text-sm text-text-secondary mb-4">Create a GitHub account at <a href="https://github.com">github.com</a> (free).</p>
+
+  <p class="text-sm text-text-secondary mb-2"><strong>Mac:</strong></p>
+  <CodeBlock terminal copy>{`$ brew install gh`}</CodeBlock>
+  <details class="mb-2 border border-border rounded-lg overflow-hidden">
+    <summary>Don't have Homebrew?</summary>
+    <div class="p-4">
+      <CodeBlock terminal copy>{`$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`}</CodeBlock>
+    </div>
+  </details>
+
+  <p class="text-sm text-text-secondary mb-2 mt-4"><strong>Windows:</strong></p>
+  <CodeBlock terminal copy>{`$ winget install GitHub.cli`}</CodeBlock>
+
+  <p class="text-sm text-text-secondary mb-2"><strong>Linux:</strong></p>
+  <CodeBlock terminal copy>{`$ sudo apt install gh -y`}</CodeBlock>
+
+  <h4 class="mb-2 mt-4">Log in</h4>
+  <CodeBlock terminal copy>{`$ gh auth login`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-2">Choose: GitHub.com → HTTPS → Login with a web browser.</p>
+
+  <h4 class="mb-2 mt-4">Verify</h4>
+  <CodeBlock terminal copy>{`$ gh auth status`}</CodeBlock>
+
+  <details class="mb-8 border border-border rounded-lg overflow-hidden">
+    <summary>Troubleshooting: "gh auth login" hangs</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Try: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">gh auth login --web</code> to force browser-based auth.</p>
+    </div>
+  </details>
+
+  <!-- 4. Claude Code -->
+  <h3 class="mb-4">4. Claude Code</h3>
+  <p class="text-text-secondary mb-4"><strong class="text-text">What it is:</strong> Your AI developer. Writes code, creates files, runs tests, opens pull requests.</p>
+  <p class="text-text-secondary mb-4"><strong class="text-text">You need:</strong> A Claude Pro ($20/month) or Max subscription from <a href="https://claude.ai">claude.ai</a>.</p>
+
+  <CodeBlock terminal copy>{`$ npm install -g @anthropic-ai/claude-code`}</CodeBlock>
+
+  <h4 class="mb-2 mt-4">Verify</h4>
+  <CodeBlock terminal copy>{`$ claude --version`}</CodeBlock>
+
+  <details class="mb-8 border border-border rounded-lg overflow-hidden">
+    <summary>Troubleshooting: permission errors on Mac/Linux</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Run: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">sudo npm install -g @anthropic-ai/claude-code</code></p>
+    </div>
+  </details>
 
   <!-- 5. Node.js -->
-  <h2 class="mb-4 mt-12">5. Node.js</h2>
-  <p class="text-text-secondary mb-4"><strong class="text-text">What it is:</strong> The JavaScript runtime. The project tooling, build system, and web stack all depend on it.</p>
-  <p class="text-text-secondary mb-4"><strong class="text-text">Target version:</strong> Node.js 20 LTS. This is a deliberate choice — it's the current Long Term Support release with the widest compatibility.</p>
+  <h3 class="mb-4">5. Node.js</h3>
+  <p class="text-text-secondary mb-4"><strong class="text-text">What it is:</strong> The JavaScript runtime. The project tooling and web stack depend on it.</p>
+  <p class="text-text-secondary mb-4"><strong class="text-text">Target version:</strong> Node.js 20 LTS.</p>
 
-  <h4 class="mb-2">Install</h4>
   <StepList steps={[
     { title: "Go to nodejs.org" },
-    { title: "Download the LTS version (should show v20.x.x)" },
+    { title: "Download the LTS version (v20.x.x)" },
     { title: "Run the installer" },
   ]} />
 
   <h4 class="mb-2">Verify</h4>
-  <CodeBlock terminal copy>{`$ node --version`}</CodeBlock>
-  <p class="text-sm text-text-secondary mb-2">Should show v20.x.x.</p>
-  <CodeBlock terminal copy>{`$ npm --version`}</CodeBlock>
-  <p class="text-sm text-text-secondary mb-4">Should show a version number. npm is the package manager that comes with Node.</p>
+  <CodeBlock terminal copy>{`$ node --version
+$ npm --version`}</CodeBlock>
 
   <details class="mb-8 border border-border rounded-lg overflow-hidden">
     <summary>Troubleshooting: Node.js version too old</summary>
@@ -35,30 +178,15 @@ import StepList from '../../components/StepList.astro';
   </details>
 
   <!-- 6. Docker -->
-  <h2 class="mb-4 mt-12">6. Docker</h2>
+  <h3 class="mb-4">6. Docker</h3>
   <p class="text-text-secondary mb-4"><strong class="text-text">What it is:</strong> Runs applications in isolated containers. From Project 2 onwards, your database, backend, and frontend all run in Docker.</p>
 
   <Callout variant="info">
     <p class="text-sm">You don't need Docker for Project 1. Install it now so it's ready for Project 2.</p>
   </Callout>
 
-  <h4 class="mb-2 mt-4">Install</h4>
-  <p class="text-sm text-text-secondary mb-2"><strong>Mac:</strong></p>
-  <StepList steps={[
-    { title: "Go to docker.com/products/docker-desktop" },
-    { title: "Download Docker Desktop for Mac" },
-    { title: "Install (drag to Applications)" },
-    { title: "Open Docker Desktop — it runs in the background" },
-  ]} />
-
-  <p class="text-sm text-text-secondary mb-2"><strong>Windows:</strong></p>
-  <StepList steps={[
-    { title: "Go to docker.com/products/docker-desktop" },
-    { title: "Download Docker Desktop for Windows" },
-    { title: "Install and restart your computer if prompted" },
-    { title: "Open Docker Desktop" },
-  ]} />
-
+  <p class="text-sm text-text-secondary mb-2 mt-4"><strong>Mac:</strong> Download Docker Desktop from <a href="https://www.docker.com/products/docker-desktop/">docker.com</a>, install, and open it.</p>
+  <p class="text-sm text-text-secondary mb-2"><strong>Windows:</strong> Download Docker Desktop, install, restart if prompted, and open it.</p>
   <p class="text-sm text-text-secondary mb-2"><strong>Linux:</strong></p>
   <CodeBlock terminal copy>{`$ sudo apt update
 $ sudo apt install docker.io docker-compose-v2 -y
@@ -68,30 +196,23 @@ $ sudo usermod -aG docker $USER`}</CodeBlock>
   <h4 class="mb-2">Verify</h4>
   <CodeBlock terminal copy>{`$ docker --version
 $ docker compose version`}</CodeBlock>
-  <p class="text-sm text-text-secondary mb-2">Both should show version numbers.</p>
 
   <details class="mb-4 border border-border rounded-lg overflow-hidden">
     <summary>Troubleshooting: "docker: command not found"</summary>
     <div class="p-4">
-      <p class="text-sm text-text-secondary">Docker Desktop isn't installed or isn't running. Install it and make sure the Docker Desktop application is open.</p>
-    </div>
-  </details>
-  <details class="mb-4 border border-border rounded-lg overflow-hidden">
-    <summary>Troubleshooting: Docker permission denied on Linux</summary>
-    <div class="p-4">
-      <p class="text-sm text-text-secondary">Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">sudo usermod -aG docker $USER</code> then log out and back in.</p>
+      <p class="text-sm text-text-secondary">Docker Desktop must be running. Look for the whale icon in your system tray.</p>
     </div>
   </details>
   <details class="mb-8 border border-border rounded-lg overflow-hidden">
     <summary>Windows note: WSL 2</summary>
     <div class="p-4">
-      <p class="text-sm text-text-secondary">Docker Desktop for Windows works best with WSL 2 (Windows Subsystem for Linux). The Docker installer will prompt you to enable it. If you're comfortable with Linux, you can run all your development inside WSL Ubuntu — this gives you the same experience as Mac and Linux students.</p>
+      <p class="text-sm text-text-secondary">Docker Desktop works best with WSL 2. The installer will prompt you to enable it.</p>
     </div>
   </details>
 
   <!-- Accounts -->
-  <h2 class="mb-4 mt-12">Accounts you'll need later</h2>
-  <p class="text-text-secondary mb-4">These aren't part of the base toolchain — you'll set them up when the projects need them. Create the accounts now so they're ready.</p>
+  <h3 class="mb-4">Accounts you'll need later</h3>
+  <p class="text-text-secondary mb-4">Create these now so they're ready when the projects need them.</p>
 
   <div class="overflow-x-auto mb-6">
     <table class="w-full text-sm border-collapse">
@@ -99,43 +220,34 @@ $ docker compose version`}</CodeBlock>
         <tr class="bg-bg-muted">
           <th class="text-left px-4 py-3 font-semibold border-b border-border">Account</th>
           <th class="text-left px-4 py-3 font-semibold border-b border-border">Free?</th>
-          <th class="text-left px-4 py-3 font-semibold border-b border-border">When you need it</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">When</th>
         </tr>
       </thead>
       <tbody>
         <tr class="border-b border-border">
           <td class="px-4 py-3">Netlify</td>
-          <td class="px-4 py-3 text-text-secondary">Yes — free tier</td>
-          <td class="px-4 py-3 text-text-secondary">Project 1 (deployment)</td>
+          <td class="px-4 py-3 text-text-secondary">Yes</td>
+          <td class="px-4 py-3 text-text-secondary">Project 1</td>
         </tr>
         <tr class="border-b border-border bg-bg-subtle">
           <td class="px-4 py-3">Gemini API key</td>
-          <td class="px-4 py-3 text-text-secondary">Yes — free tier</td>
-          <td class="px-4 py-3 text-text-secondary">Project 2 (AI code reviewer)</td>
+          <td class="px-4 py-3 text-text-secondary">Yes</td>
+          <td class="px-4 py-3 text-text-secondary">Project 2</td>
         </tr>
       </tbody>
     </table>
   </div>
 
-  <h4 class="mb-2">Netlify account</h4>
-  <StepList steps={[
-    { title: "Go to netlify.com" },
-    { title: "Sign up with your GitHub account" },
-    { title: "You'll connect it to your project repo in Project 1" },
-  ]} />
-
-  <h4 class="mb-2 mt-4">Gemini API key</h4>
-  <StepList steps={[
-    { title: "Go to aistudio.google.com/apikey" },
-    { title: "Sign in with a Google account" },
-    { title: "Click \"Create API Key\"" },
-    { title: "Copy and save the key somewhere safe — you'll add it to GitHub Secrets in Project 2" },
-  ]} />
+  <p class="text-sm text-text-secondary mb-2"><strong>Netlify:</strong> Sign up at <a href="https://netlify.com">netlify.com</a> with your GitHub account.</p>
+  <p class="text-sm text-text-secondary mb-6"><strong>Gemini API key:</strong> Go to <a href="https://aistudio.google.com/apikey">aistudio.google.com/apikey</a>, create a key, save it somewhere safe.</p>
 
   <!-- Verify everything -->
   <h2 class="mb-4 mt-12">Verify everything</h2>
-  <p class="text-text-secondary mb-4">Run these commands. All should succeed:</p>
-  <CodeBlock terminal copy>{`$ node --version
+  <CodeBlock terminal copy>{`$ code --version
+$ git --version
+$ gh auth status
+$ claude --version
+$ node --version
 $ npm --version
 $ docker --version
 $ docker compose version`}</CodeBlock>

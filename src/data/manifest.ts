@@ -17,39 +17,12 @@ export const manifest: PageEntry[] = [
   {
     route: '/',
     title: 'Home',
-    description: 'Build real software. Direct AI to do it.',
+    description: 'Learn to deliver real projects by directing AI.',
     section: 'home',
     navLabel: 'Home',
     order: 0,
     contentFile: 'getting-started/homepage.md',
     layout: 'landing',
-    next: '/getting-started',
-  },
-  {
-    route: '/getting-started',
-    title: 'How this works',
-    description: 'Understand the methodology: roles, the loop, and the six-project progression.',
-    section: 'getting-started',
-    navLabel: 'How this works',
-    navParent: 'Getting Started',
-    order: 1,
-    contentFile: 'getting-started/how-this-works.md',
-    layout: 'docs',
-    prev: '/',
-    next: '/getting-started/setup',
-  },
-  {
-    route: '/getting-started/setup',
-    title: 'Shared setup',
-    description: 'Install VS Code, Git, GitHub CLI, and Claude Code.',
-    section: 'getting-started',
-    navLabel: 'Shared setup',
-    navParent: 'Getting Started',
-    order: 2,
-    contentFile: 'getting-started/shared-setup.md',
-    layout: 'docs',
-    prev: '/getting-started',
-    next: '/web-dev/getting-started',
   },
   {
     route: '/templates',
@@ -76,15 +49,15 @@ export const manifest: PageEntry[] = [
   },
   {
     route: '/web-dev/getting-started',
-    title: 'Web dev setup',
-    description: 'Install Node.js, Docker, Gemini API key, and Netlify for web development.',
+    title: 'Getting started',
+    description: 'How the methodology works and everything you need to install for Web Development.',
     section: 'web-dev',
-    navLabel: 'Web dev setup',
+    navLabel: 'Getting started',
     navParent: 'Web Development',
     order: 11,
     contentFile: 'getting-started/web-dev-setup.md',
     layout: 'docs',
-    prev: '/getting-started/setup',
+    prev: '/web-dev',
     next: '/web-dev/projects/1',
   },
 
@@ -781,17 +754,10 @@ export interface NavItem {
 export function getNavSections(): NavSection[] {
   return [
     {
-      label: 'Getting Started',
-      children: [
-        { label: 'How this works', href: '/getting-started' },
-        { label: 'Shared setup', href: '/getting-started/setup' },
-      ],
-    },
-    {
       label: 'Web Development',
       href: '/web-dev',
       children: [
-        { label: 'Web dev setup', href: '/web-dev/getting-started' },
+        { label: 'Getting started', href: '/web-dev/getting-started' },
         {
           label: 'Projects',
           href: '/web-dev/projects/1',
