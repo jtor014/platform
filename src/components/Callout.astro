@@ -1,0 +1,22 @@
+---
+interface Props {
+  variant?: 'info' | 'warning' | 'client' | 'scope-change';
+  label?: string;
+}
+
+const { variant = 'info', label } = Astro.props;
+
+const styles = {
+  info: 'border-l-primary bg-primary-bg',
+  warning: 'border-l-warning bg-warning-bg',
+  client: 'border-l-warning bg-warning-bg italic',
+  'scope-change': 'border-l-warning bg-warning-bg',
+};
+---
+
+<div class:list={["border-l-4 p-4 rounded-r-lg my-4", styles[variant]]}>
+  {(variant === 'scope-change' || label) && (
+    <p class="font-bold text-sm mb-2">{label || 'Scope Change'}</p>
+  )}
+  <slot />
+</div>
