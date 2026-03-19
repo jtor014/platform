@@ -1,12 +1,16 @@
 ---
 import DocsLayout from '../../../../layouts/DocsLayout.astro';
 import CodeBlock from '../../../../components/CodeBlock.astro';
+import Callout from '../../../../components/Callout.astro';
 import Checklist from '../../../../components/Checklist.astro';
 ---
 
 <DocsLayout title="BACKLOG: GreenScape" description="8 tickets from empty directory to live site.">
   <h1 class="mb-4">Backlog: GreenScape Landscaping</h1>
-  <p class="text-text-secondary mb-4">8 tickets from empty directory to live site. You'll paste this into your project as <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">BACKLOG.md</code>.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>What is a backlog?</strong> The backlog is an ordered list of tickets — small, specific units of work that take the project from empty directory to finished product. Each ticket has acceptance criteria: a checklist of things that must be true when the ticket is done. In later projects, you'll produce the backlog by directing AI to break the architecture into tickets, ordered by dependency (you can't build the services section before the page layout). In this project, the backlog has been written for you. Copy it into your project as <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">BACKLOG.md</code>.</p>
+  </Callout>
 
   <details class="mb-8 border border-border rounded-lg overflow-hidden">
     <summary>Copy full backlog as markdown</summary>

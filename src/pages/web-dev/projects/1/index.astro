@@ -44,32 +44,33 @@ import Checklist from '../../../../components/Checklist.astro';
   <p class="text-text-secondary mb-8">2–4 days. 8 tickets.</p>
 
   <h2 class="mb-4 mt-10">Materials</h2>
-  <p class="text-text-secondary mb-6">Read these in order before starting your first ticket. Here's what each one is and why it matters:</p>
+  <p class="text-text-secondary mb-4">Every project follows the same planning sequence. In this project, all the planning has been done for you — so you can focus on learning the tools and the build loop. In later projects, you'll create each of these yourself by directing AI.</p>
+  <p class="text-text-secondary mb-6">Read these in order before starting your first ticket:</p>
 
   <div class="space-y-4 mb-6">
     <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
       <p class="font-semibold text-sm mb-1"><a href="/web-dev/projects/1/prd">1. Product Requirements Document (PRD)</a></p>
-      <p class="text-sm text-text-secondary">The PRD defines <em>what</em> we're building — features, acceptance criteria, and crucially, what we're <em>not</em> building (anti-scope). In this project, the PRD has been written for you. In later projects, you'll direct AI to generate PRDs from client briefs — turning a vague conversation into a structured specification. For now, read the whole thing. Pay special attention to the anti-scope section.</p>
+      <p class="text-sm text-text-secondary">The PRD defines <em>what</em> we're building. It starts with a client conversation — "I need a website for my landscaping business" — and turns that into structured requirements: features, acceptance criteria, user stories, and crucially, what we're <em>not</em> building (anti-scope). A good PRD is specific enough that someone could verify the finished product against it. In later projects, you'll direct AI to generate PRDs from client briefs — and your job will be catching what AI added that the client didn't ask for.</p>
+    </div>
+    <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
+      <p class="font-semibold text-sm mb-1"><a href="/web-dev/projects/1/design">2. Design specification</a></p>
+      <p class="text-sm text-text-secondary">The design spec defines <em>how the product looks and behaves</em>. In a real project, this might be a Figma file, wireframes, or a full design system — covering user flows, page layouts, responsive behaviour, and visual details like colours, typography, and spacing. For GreenScape, we've provided the design as a written spec with exact values you can verify in browser DevTools. The design spec is what separates "it works" from "it works <em>and</em> it's correct."</p>
     </div>
     <div class="border-l-4 border-l-border bg-bg-subtle p-4 rounded-r-lg">
       <p class="font-semibold text-sm mb-1 text-text-secondary">Architecture <span class="text-text-muted font-normal">(skipped in this project)</span></p>
-      <p class="text-sm text-text-secondary">In later projects, you'll direct AI to create an architecture document from the PRD — database schema, API contracts, component structure, and technology choices. The architecture is how you go from "what to build" to "how to build it." Project 1 is a simple static site, so we skip this step — but from Project 2 onwards, architecture becomes a key part of your planning.</p>
+      <p class="text-sm text-text-secondary">The architecture document defines <em>how to build it</em> technically — database schema, API contracts, component structure, technology choices, and how the pieces fit together. You produce it from the PRD and design spec. Project 1 is a simple static site with no database or API, so we skip this step. From Project 2 onwards, you'll direct AI to generate the architecture, and your job will be catching over-engineering and missing dependencies.</p>
     </div>
     <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
-      <p class="font-semibold text-sm mb-1"><a href="/web-dev/projects/1/backlog">2. Backlog</a></p>
-      <p class="text-sm text-text-secondary">The backlog is the list of tickets — small, ordered units of work with specific acceptance criteria. In later projects, you'll direct AI to break the architecture into tickets. In this project, the backlog has been written for you. Each ticket becomes one cycle of the loop: branch → build → verify → merge.</p>
-    </div>
-    <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
-      <p class="font-semibold text-sm mb-1"><a href="/web-dev/projects/1/design">3. Design specification</a></p>
-      <p class="text-sm text-text-secondary">The design spec defines <em>how it looks</em> — colours, fonts, spacing, layout. This is what you verify AI's output against using browser DevTools. Specific values, not vibes.</p>
+      <p class="font-semibold text-sm mb-1"><a href="/web-dev/projects/1/backlog">3. Backlog</a></p>
+      <p class="text-sm text-text-secondary">The backlog breaks the architecture (or in this case, the PRD) into an ordered list of tickets — small units of work, each with specific acceptance criteria. Tickets are ordered by dependency: you can't build the services section before the page layout exists. In later projects, you'll direct AI to produce the backlog from the architecture document. Each ticket becomes one cycle of the loop: branch → build → verify → merge.</p>
     </div>
     <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
       <p class="font-semibold text-sm mb-1"><a href="/web-dev/projects/1/claude-md">4. CLAUDE.md</a></p>
-      <p class="text-sm text-text-secondary">The project memory file. Claude Code reads this at the start of every session — it contains the tech stack, repo structure, anti-scope rules, and engineering standards. You paste this into your project so Claude stays consistent across sessions. In later projects, you'll direct AI to generate this from templates.</p>
+      <p class="text-sm text-text-secondary">The project memory file. This is the first thing that goes into your repository — before any code. Claude Code reads it at the start of every session, so it contains everything AI needs to stay consistent: tech stack, repo structure, anti-scope rules, engineering standards, and current project state. You derive it from the architecture and PRD. In later projects, you'll generate it from a template. Think of it as the briefing document for your AI developer.</p>
     </div>
     <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
       <p class="font-semibold text-sm mb-1"><a href="/web-dev/projects/1/guide">5. Step-by-step guide</a></p>
-      <p class="text-sm text-text-secondary">Follow this for your first ticket cycle, then work through the remaining tickets independently. It walks you through setting up VS Code, launching Claude, and completing your first full branch → build → verify → merge loop.</p>
+      <p class="text-sm text-text-secondary">The build guide. This walks you through setting up VS Code, launching Claude, and completing your first ticket cycle. Follow it step by step for Ticket 1 and 2, then work through the remaining tickets independently — you'll know the loop by then.</p>
     </div>
   </div>
 </DocsLayout>

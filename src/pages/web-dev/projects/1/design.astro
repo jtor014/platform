@@ -1,10 +1,14 @@
 ---
 import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
 ---
 
-<DocsLayout title="Design specification" description="Colours, typography, spacing, and section layouts for GreenScape.">
+<DocsLayout title="Design specification" description="Design spec for GreenScape: functionality, layouts, colours, typography, spacing.">
   <h1 class="mb-6">Design Specification: GreenScape Landscaping</h1>
-  <p class="text-text-secondary mb-8">This is the design reference for Project 1. Verify Claude's output against these specs using browser DevTools.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>What is a design spec?</strong> The design spec defines how the product <em>looks and behaves</em>. In a professional project, this might be wireframes, a Figma file, or a full design system — covering user flows, page layouts, interactions, and visual details. You can even use AI chatbots to generate quick design mockups (Claude's React artifacts are great for rapid prototyping — try it sometime). For GreenScape, we've provided the design as a written spec with exact values. This is what you verify AI's output against using browser DevTools — specific numbers, not vibes.</p>
+  </Callout>
 
   <h2 class="mb-4 mt-10">Colours</h2>
   <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">

@@ -1,11 +1,15 @@
 ---
 import DocsLayout from '../../../../layouts/DocsLayout.astro';
 import CodeBlock from '../../../../components/CodeBlock.astro';
+import Callout from '../../../../components/Callout.astro';
 ---
 
 <DocsLayout title="CLAUDE.md" description="Project memory file for GreenScape.">
   <h1 class="mb-4">CLAUDE.md</h1>
-  <p class="text-text-secondary mb-6">Copy this entire file into your project root as <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">CLAUDE.md</code>. Claude Code reads it at the start of every session.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>What is CLAUDE.md?</strong> This is the project memory file — the first thing that goes into your repository, before any code. Claude Code reads it at the start of every session, so it's how you keep AI consistent across conversations. It contains the tech stack, repo structure, anti-scope rules, and engineering standards — all derived from the PRD and architecture. Think of it as the briefing document you hand to a new developer on day one. In later projects, you'll generate it from a template. Copy this entire file into your project root.</p>
+  </Callout>
 
   <CodeBlock copy>{`# CLAUDE.md
 
