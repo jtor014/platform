@@ -73,6 +73,19 @@ export const manifest: PageEntry[] = [
     contentFile: 'projects/project-1/landing.md',
     layout: 'docs',
     prev: '/web-dev/getting-started',
+    next: '/web-dev/projects/1/process',
+  },
+  {
+    route: '/web-dev/projects/1/process',
+    title: 'The process',
+    description: 'How every project flows: PRD → Design → Architecture → Backlog → Build → Deploy.',
+    section: 'web-dev',
+    navLabel: 'The process',
+    navParent: 'Project 1',
+    order: 20.5,
+    contentFile: 'projects/project-1/landing.md',
+    layout: 'docs',
+    prev: '/web-dev/projects/1',
     next: '/web-dev/projects/1/prd',
   },
   {
@@ -766,6 +779,7 @@ export function getNavSections(): NavSection[] {
               label: 'Project 1',
               href: '/web-dev/projects/1',
               children: [
+                { label: 'The process', href: '/web-dev/projects/1/process' },
                 { label: 'PRD', href: '/web-dev/projects/1/prd' },
                 { label: 'Design spec', href: '/web-dev/projects/1/design' },
                 { label: 'Backlog', href: '/web-dev/projects/1/backlog' },
