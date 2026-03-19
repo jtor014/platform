@@ -159,6 +159,20 @@ $ make dev`}</CodeBlock>
   <h3 class="mb-3 mt-6">Ticket 8: Deploy</h3>
   <p class="text-sm text-text-secondary mb-4"><strong>Your verification focus:</strong> Open the live URL on your phone. Does everything work? Phone link? Images? Run Lighthouse on the live URL.</p>
 
+  <h2 class="mb-4 mt-12">Hosting & Custom Domains</h2>
+  <p class="text-text-secondary mb-4">Netlify, Vercel, Cloudflare Pages, and GitHub Pages are all <strong class="text-text">static hosting providers</strong>. They serve pre-built files — no server running your code, no database to maintain. That's why they can offer free tiers: serving static files is cheap. For a site like GreenScape, free hosting is the right choice.</p>
+  <p class="text-text-secondary mb-4">The free URL works fine for development and learning. But if you were handing this to Ken as a real client, you'd want a custom domain — <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">greenscapelandscaping.com.au</code> instead of a <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">netlify.app</code> subdomain.</p>
+
+  <h3 class="mb-3 mt-6">Optional: buy a custom domain</h3>
+  <p class="text-text-secondary mb-4">This is entirely optional but worth the experience if you want to see the full delivery flow. A domain costs $1–15/year depending on the extension (.com, .com.au, .dev). You can buy one from:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-4">
+    <li><strong class="text-text">Cloudflare</strong> — sells domains at cost (no markup), also offers free DNS and CDN</li>
+    <li><strong class="text-text">Namecheap</strong> — often has cheap first-year deals</li>
+    <li><strong class="text-text">Google Domains</strong> (now Squarespace) — straightforward</li>
+  </ul>
+  <p class="text-text-secondary mb-4">Once you own a domain, you point it at your hosting provider (Netlify, Cloudflare Pages, etc.) by updating the DNS records. Every provider has a guide for this. The whole process takes about 15 minutes plus up to an hour for DNS to propagate.</p>
+  <p class="text-text-secondary mb-4">Buying a domain for $5, linking it to a site you built, and sending someone the URL — that's a different feeling from <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">something.netlify.app</code>. If you're building a portfolio or want to experience what it's like to deliver a site to a client, it's worth doing once.</p>
+
   <h2 class="mb-4 mt-12">After You Finish</h2>
   <p class="text-text-secondary mb-4">Ask yourself: Did Claude add anything not in the PRD? Did I catch it? What was confusing? What felt natural?</p>
   <p class="text-text-secondary mb-4"><strong>Show someone.</strong> Open the live URL on your phone. Say: "I directed AI to build this."</p>
