@@ -54,21 +54,22 @@ $ mkdir greenscape && cd greenscape`}</CodeBlock>
     <p class="text-sm"><strong>GitHub permissions:</strong> Claude will need to create repositories, Issues, and PRs on your behalf. The first time it tries, your terminal may prompt you to authorise GitHub access — follow the prompts. If you run into issues, check that <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">gh auth status</code> shows you're logged in.</p>
   </Callout>
 
-  <h2 class="mb-3 mt-8">Step 5: Direct Claude to set up the project</h2>
-  <p class="text-text-secondary mb-2">Copy the <a href="/web-dev/projects/1/architecture">CLAUDE.md</a> (from the architecture page) and <a href="/web-dev/projects/1/backlog">Backlog</a> content (use the copy buttons), then paste them into Claude with these instructions:</p>
-  <CodeBlock copy>{`I'm starting a new project. Here's the CLAUDE.md for the project:
+  <h2 class="mb-3 mt-8">Step 5: Give Claude the project files</h2>
+  <p class="text-text-secondary mb-2">Claude needs two things to get started: the CLAUDE.md (project memory) and the BACKLOG.md (tickets). Copy each one using the copy buttons on the <a href="/web-dev/projects/1/architecture">architecture</a> and <a href="/web-dev/projects/1/backlog">backlog</a> pages, and paste them to Claude:</p>
+  <CodeBlock copy>{`Here's the CLAUDE.md for the project:
 
-[Paste the entire contents of CLAUDE.md here]
+[Paste CLAUDE.md here]
 
 And here's the BACKLOG.md:
 
-[Paste the entire contents of BACKLOG.md here]
+[Paste BACKLOG.md here]`}</CodeBlock>
 
-Please start Ticket 1: Project Setup.
+  <h2 class="mb-3 mt-8">Step 6: Start Ticket 1</h2>
+  <p class="text-text-secondary mb-2">Once Claude has the files, just say:</p>
+  <CodeBlock copy>{`Start Ticket 1.`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-4">That's it. Claude reads the CLAUDE.md and BACKLOG.md, sees what Ticket 1 requires, and does it. Watch the sidebar — files will start appearing.</p>
 
-Create a new GitHub repository called "greenscape", initialise it with the CLAUDE.md and BACKLOG.md files, create the GitHub labels (setup, frontend, deploy), create Issues for all tickets in the backlog, and create a Project board with columns: To Do, In Progress, Done.`}</CodeBlock>
-
-  <h2 class="mb-3 mt-8">Step 6: Verify</h2>
+  <h2 class="mb-3 mt-8">Step 7: Verify</h2>
   <p class="text-sm text-text-secondary mb-4">While Claude works, watch the VS Code sidebar — you'll see CLAUDE.md and BACKLOG.md appear. Then check GitHub:</p>
   <StepList steps={[
     { title: "Open GitHub in your browser", content: "Navigate to your new greenscape repository." },

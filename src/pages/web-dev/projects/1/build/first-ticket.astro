@@ -9,12 +9,10 @@ import Callout from '../../../../../components/Callout.astro';
   <p class="text-text-secondary mb-8">Ticket 2 is your first real build cycle. You'll direct Claude to set up the dev environment, verify it works, read the reviews, and merge. This page walks through every step in detail — after this, you'll know the loop.</p>
 
   <h2 class="mb-4">Direct Claude</h2>
-  <p class="text-text-secondary mb-2">Tell Claude what to build:</p>
-  <CodeBlock copy>{`Start Ticket 2: Development Environment.
+  <p class="text-text-secondary mb-2">Tell Claude:</p>
+  <CodeBlock copy>{`Start Ticket 2.`}</CodeBlock>
 
-Create a branch, set up the React + Vite project with Tailwind CSS, create the Makefile, create the content data file, and when done open a PR.`}</CodeBlock>
-
-  <p class="text-text-secondary mt-4 mb-8">Claude will create a branch, install dependencies, set up the project structure, commit everything, push, and open a PR. Watch the VS Code sidebar — you'll see files appearing in real time.</p>
+  <p class="text-text-secondary mt-4 mb-8">That's all you need. Claude reads the backlog, sees what Ticket 2 requires, creates a branch, implements it, commits, pushes, and opens a PR. Watch the VS Code sidebar — files appear in real time.</p>
 
   <h2 class="mb-4">Verify it works</h2>
   <p class="text-text-secondary mb-2">Open a second terminal in VS Code (<strong>Ctrl+Shift+`</strong> or the + icon in the terminal panel) and run:</p>
