@@ -1,0 +1,53 @@
+---
+interface Props {
+  lang?: string;
+  terminal?: boolean;
+  copy?: boolean;
+}
+
+const { lang, terminal = false, copy = false } = Astro.props;
+const id = `code-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+<div class="relative my-4 rounded-lg bg-code-bg overflow-hidden">
+  {lang && !terminal && (
+    <div class="px-4 pt-3 text-xs text-text-muted font-mono">{lang}</div>
+  )}
+  <pre id={id} class="p-4 overflow-x-auto text-sm leading-relaxed font-mono text-code-text"><slot /></pre>
+  {copy && (
+    <button
+      data-copy-target={id}
+      data-terminal={terminal ? 'true' : 'false'}
+      class="copy-btn absolute top-3 right-3 px-2 py-1 rounded text-xs text-text-muted hover:text-code-text bg-sidebar-active-bg/50 hover:bg-sidebar-active-bg transition-colors"
+    >
+      Copy
+    </button>
+  )}
+</div>
+
+{copy && (
+  <script>
+    document.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest('.copy-btn') as HTMLElement;
+      if (!btn) return;
+      const targetId = btn.getAttribute('data-copy-target');
+      const isTerminal = btn.getAttribute('data-terminal') === 'true';
+      const pre = document.getElementById(targetId!);
+      if (!pre) return;
+
+      let text = pre.textContent || '';
+      if (isTerminal) {
+        text = text
+          .split('\n')
+          .map((line) => line.replace(/^\$\s?/, ''))
+          .filter((line) => line.trim())
+          .join('\n');
+      }
+
+      navigator.clipboard.writeText(text.trim()).then(() => {
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+      });
+    });
+  </script>
+)}

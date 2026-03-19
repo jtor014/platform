@@ -1,0 +1,191 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+import Hero from '../components/Hero.astro';
+import Card from '../components/Card.astro';
+import Callout from '../components/Callout.astro';
+import CodeBlock from '../components/CodeBlock.astro';
+import Checklist from '../components/Checklist.astro';
+import StepList from '../components/StepList.astro';
+---
+
+<DocsLayout title="Component Showcase" description="Demonstration of every reusable component.">
+  <h1 class="mb-8">Component Showcase</h1>
+  <p class="text-text-secondary mb-12">Every component in the design system, demonstrated with realistic content. This page will be removed before the final deploy.</p>
+
+  <!-- Hero -->
+  <section class="mb-16">
+    <h2 class="mb-4">Hero</h2>
+    <p class="text-text-secondary mb-4">Used on the landing page only.</p>
+    <div class="border border-border rounded-lg overflow-hidden p-6 bg-bg-subtle">
+      <Hero
+        heading="Build real software. Direct AI to do it."
+        subtitle="Six projects. One AI assistant. You're the director."
+        ctaText="Start here"
+        ctaHref="/getting-started"
+      />
+    </div>
+  </section>
+
+  <!-- Card -->
+  <section class="mb-16">
+    <h2 class="mb-4">Card</h2>
+    <p class="text-text-secondary mb-4">Used for projects, arcs, tickets, and templates.</p>
+    <div class="grid gap-4 sm:grid-cols-2">
+      <Card title="Project 1: The Static Site" subtitle="Deploy a website to a real URL" metadata="Project" href="/web-dev/projects/1" />
+      <Card title="Project 2: The Dynamic App" subtitle="Build an app with CI and code review" metadata="Project" href="/web-dev/projects/2" />
+      <Card title="Arc A: Service Business" subtitle="Bookings, quotes, and subcontractor access">
+        <p class="text-xs text-text-muted mt-2">Card with slot content instead of just subtitle</p>
+      </Card>
+      <Card title="PRD Template" subtitle="Product requirements document template" metadata="Template" />
+    </div>
+  </section>
+
+  <!-- Callout -->
+  <section class="mb-16">
+    <h2 class="mb-4">Callout</h2>
+    <p class="text-text-secondary mb-4">Four variants: info, warning, client, scope-change.</p>
+
+    <Callout variant="info">
+      <p><strong>Info callout.</strong> Used for general information and tips. Blue left border with blue tint background.</p>
+    </Callout>
+
+    <Callout variant="warning">
+      <p><strong>Warning callout.</strong> Used for important notices. Amber left border with warm tint background.</p>
+    </Callout>
+
+    <Callout variant="client">
+      <p>"I need customers to be able to book appointments online. Right now they have to call us and it's a nightmare — we're losing business because people can't reach us during work hours."</p>
+    </Callout>
+
+    <Callout variant="scope-change">
+      <p>The client calls mid-sprint: "Actually, we also need to handle group bookings — a yoga studio wants to book 15 people at once."</p>
+    </Callout>
+  </section>
+
+  <!-- CodeBlock -->
+  <section class="mb-16">
+    <h2 class="mb-4">CodeBlock</h2>
+    <p class="text-text-secondary mb-4">Dark background, monospace font, optional copy button. Terminal variant omits $ on copy.</p>
+
+    <h3 class="mb-3 mt-6">Standard code block</h3>
+    <CodeBlock lang="typescript">
+{`interface PageEntry {
+  route: string;
+  title: string;
+  description: string;
+  layout: 'landing' | 'docs';
+}`}
+    </CodeBlock>
+
+    <h3 class="mb-3 mt-6">Code block with copy button</h3>
+    <CodeBlock lang="yaml" copy>
+{`name: CI
+on:
+  pull_request:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npm run build`}
+    </CodeBlock>
+
+    <h3 class="mb-3 mt-6">Terminal command (copy omits $)</h3>
+    <CodeBlock terminal copy>
+{`$ npm create astro@latest
+$ cd my-project
+$ npm install`}
+    </CodeBlock>
+  </section>
+
+  <!-- Checklist -->
+  <section class="mb-16">
+    <h2 class="mb-4">Checklist</h2>
+    <p class="text-text-secondary mb-4">Visual checkboxes (decorative, not interactive). Used for acceptance criteria.</p>
+
+    <Checklist items={[
+      "make dev starts Astro dev server at localhost:4321",
+      "make build produces static files in dist/",
+      "Tailwind utility classes render correctly",
+      "TypeScript compiles without errors",
+      "All dependency versions pinned exactly in package.json",
+    ]} />
+  </section>
+
+  <!-- StepList -->
+  <section class="mb-16">
+    <h2 class="mb-4">StepList</h2>
+    <p class="text-text-secondary mb-4">Numbered steps with visual connectors. Used for setup guides and walkthroughs.</p>
+
+    <StepList steps={[
+      { title: "Install VS Code", content: "Download from code.visualstudio.com and run the installer." },
+      { title: "Install Git", content: "Run: brew install git (macOS) or download from git-scm.com." },
+      { title: "Verify installation", content: "Run: git --version. Expected output: git version 2.x.x" },
+      { title: "Configure Git", content: "Set your name and email with git config --global." },
+    ]} />
+  </section>
+
+  <!-- Details/Summary -->
+  <section class="mb-16">
+    <h2 class="mb-4">Details / Summary</h2>
+    <p class="text-text-secondary mb-4">Native HTML, styled with CSS. Used for checkpoint answers, directing hints, troubleshooting, and template previews.</p>
+
+    <details class="mb-3 border border-border rounded-lg overflow-hidden">
+      <summary>Check your answer</summary>
+      <div class="p-4">
+        <p>The PRD is missing acceptance criteria for the mobile experience. Without explicit mobile requirements, Claude Code might build a desktop-only interface.</p>
+      </div>
+    </details>
+
+    <details class="mb-3 border border-border rounded-lg overflow-hidden">
+      <summary>Directing hints</summary>
+      <div class="p-4">
+        <p>Ask Claude to create a database migration before implementing the booking endpoint. This prevents the common mistake of building the API before the schema exists.</p>
+      </div>
+    </details>
+
+    <details class="mb-3 border border-border rounded-lg overflow-hidden">
+      <summary>Troubleshooting: Command not found</summary>
+      <div class="p-4">
+        <p>If you see "command not found", your PATH may not include the installation directory. Try restarting your terminal, or run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-sm font-mono">source ~/.zshrc</code>.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- Table -->
+  <section class="mb-16">
+    <h2 class="mb-4">Table</h2>
+    <p class="text-text-secondary mb-4">Styled tables with header, alternating rows, horizontal scroll on mobile.</p>
+
+    <div class="overflow-x-auto my-4">
+      <table class="w-full text-sm border-collapse">
+        <thead>
+          <tr class="bg-bg-muted">
+            <th class="text-left px-4 py-3 font-semibold border-b border-border">Category</th>
+            <th class="text-left px-4 py-3 font-semibold border-b border-border">Status</th>
+            <th class="text-left px-4 py-3 font-semibold border-b border-border">Projects</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-border">
+            <td class="px-4 py-3">Web Development</td>
+            <td class="px-4 py-3"><span class="text-success bg-success-bg px-2.5 py-0.5 rounded-full text-xs font-medium">Available</span></td>
+            <td class="px-4 py-3">6</td>
+          </tr>
+          <tr class="border-b border-border bg-bg-subtle">
+            <td class="px-4 py-3">Data Engineering</td>
+            <td class="px-4 py-3"><span class="text-text-muted bg-bg-muted px-2.5 py-0.5 rounded-full text-xs font-medium">Coming soon</span></td>
+            <td class="px-4 py-3">6</td>
+          </tr>
+          <tr class="border-b border-border">
+            <td class="px-4 py-3">Machine Learning</td>
+            <td class="px-4 py-3"><span class="text-text-muted bg-bg-muted px-2.5 py-0.5 rounded-full text-xs font-medium">Coming soon</span></td>
+            <td class="px-4 py-3">6</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+</DocsLayout>
