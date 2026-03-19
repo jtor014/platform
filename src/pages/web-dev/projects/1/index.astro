@@ -1,0 +1,56 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Card from '../../../../components/Card.astro';
+import Callout from '../../../../components/Callout.astro';
+import Checklist from '../../../../components/Checklist.astro';
+---
+
+<DocsLayout title="Project 1: The static site" description="Direct AI to build a website and deploy it to a real URL.">
+  <h1 class="mb-2">Project 1: The Static Site</h1>
+  <p class="text-xl text-primary font-medium mb-6">"I can direct AI to build a website and deploy it to a real URL."</p>
+
+  <h2 class="mb-4 mt-10">What you'll build</h2>
+  <p class="text-text-secondary mb-4">A professional business website for GreenScape Landscaping — a small landscaping company in Melbourne. Hero section, services grid, testimonials, about section, contact details. Single page, responsive, deployed to a live URL.</p>
+
+  <h2 class="mb-4 mt-10">What's new (the +1)</h2>
+  <p class="text-text-secondary mb-4">Everything. This is your first project. The terminal, VS Code, Git, Claude Code — all new. The product is deliberately simple so all your attention goes to learning the loop.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Why this project is deliberately simple:</strong> GreenScape is a single-page static website. No database, no backend, no user accounts. That's intentional — there's enough to learn just from the tools and the workflow.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">What success looks like</h2>
+  <Checklist items={[
+    "A live URL you can share with anyone",
+    "A site that matches the design specification (check with DevTools, not by eye)",
+    "No features that aren't in the PRD (you caught every scope creep attempt)",
+    "Confidence in the loop: branch → direct → verify → merge",
+  ]} />
+
+  <h2 class="mb-4 mt-10">What you'll learn</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-8">
+    <li>Direct Claude Code through the complete ticket cycle</li>
+    <li>Verify AI output against a design specification using browser DevTools</li>
+    <li>Catch anti-scope violations (AI adding features you didn't ask for)</li>
+    <li>Deploy to a live URL using Netlify and handle deploy failures</li>
+    <li>Read and act on AI code reviews (Claude self-review + Gemini)</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Prerequisites</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-8">
+    <li>Completed <a href="/web-dev/getting-started">Web Dev setup</a> (all tools installed and verified)</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Estimated time</h2>
+  <p class="text-text-secondary mb-8">2–4 days. 8 tickets.</p>
+
+  <h2 class="mb-4 mt-10">Materials</h2>
+  <p class="text-text-secondary mb-4">Read these in order before starting your first ticket:</p>
+  <div class="grid gap-3">
+    <Card title="1. Product Requirements (PRD)" subtitle="What we're building, acceptance criteria, anti-scope" href="/web-dev/projects/1/prd" />
+    <Card title="2. Backlog" subtitle="All 8 tickets with acceptance criteria" href="/web-dev/projects/1/backlog" />
+    <Card title="3. Design specification" subtitle="Colours, typography, spacing, section layouts" href="/web-dev/projects/1/design" />
+    <Card title="4. CLAUDE.md" subtitle="The project memory file you give to Claude Code" href="/web-dev/projects/1/claude-md" />
+    <Card title="5. Step-by-step guide" subtitle="Follow this for your first ticket cycle, then work independently" href="/web-dev/projects/1/guide" />
+  </div>
+</DocsLayout>
