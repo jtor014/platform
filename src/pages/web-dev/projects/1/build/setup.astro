@@ -48,10 +48,15 @@ $ mkdir greenscape && cd greenscape`}</CodeBlock>
   <h2 class="mb-3 mt-8">Step 4: Launch Claude Code</h2>
   <p class="text-sm text-text-secondary mb-2">In the VS Code terminal:</p>
   <CodeBlock terminal copy>{`$ claude`}</CodeBlock>
-  <p class="text-sm text-text-secondary mb-4">Claude Code starts. You're now talking to your AI developer. Watch the sidebar on the left — you'll see files appear as Claude creates them.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>First time launching Claude Code?</strong> The very first time you run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">claude</code>, it will open your browser to authenticate — log in with your Claude account. After that, each time you launch Claude in a new project folder, it will ask you to <strong>trust the folder</strong> and the <strong>authors</strong>. This is a safety feature — Claude Code can read and modify files in the folder, so it wants your explicit permission. Say yes to both. You'll only need to do this once per project.</p>
+  </Callout>
+
+  <p class="text-sm text-text-secondary mt-4 mb-4">Once you're in, you're talking to your AI developer. Watch the sidebar on the left — you'll see files appear as Claude creates them.</p>
 
   <Callout variant="warning">
-    <p class="text-sm"><strong>GitHub permissions:</strong> Claude will need to create repositories, Issues, and PRs on your behalf. The first time it tries, your terminal may prompt you to authorise GitHub access — follow the prompts. If you run into issues, check that <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">gh auth status</code> shows you're logged in.</p>
+    <p class="text-sm"><strong>GitHub permissions:</strong> Claude will also need to create repositories, Issues, and PRs on your behalf. The first time it tries, your terminal may prompt you to authorise GitHub access — follow the prompts. If you run into issues, check that <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">gh auth status</code> shows you're logged in.</p>
   </Callout>
 
   <h2 class="mb-3 mt-8">Step 5: Give Claude the project files</h2>
