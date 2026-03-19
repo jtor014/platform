@@ -1,11 +1,200 @@
 ---
 import LandingLayout from '../layouts/LandingLayout.astro';
+import Hero from '../components/Hero.astro';
+import Card from '../components/Card.astro';
 ---
 
-<LandingLayout title="Home">
-  <div class="py-16">
-    <h1 class="mb-4">The Platform</h1>
-    <p class="text-xl text-text-secondary mb-8">Build real software. Direct AI to do it.</p>
-    <p class="text-text-secondary">This is the landing page layout (max-width 1200px, no sidebar). It will be replaced with the real homepage in Ticket 5.</p>
-  </div>
+<LandingLayout title="Home" description="A free learning platform that teaches AI-directed development. Build real software by directing AI agents.">
+  <Hero
+    heading="Build real software. Direct AI to do it."
+    subtitle="A free learning platform that teaches you to build websites, apps, and APIs by directing AI agents — and to read, inspect, and challenge everything they produce."
+    ctaText="Start here"
+    ctaHref="/getting-started"
+  />
+
+  <!-- What You'll Build -->
+  <section class="pb-16">
+    <h2 class="mb-2">What you'll build</h2>
+    <p class="text-text-secondary mb-8">Real projects. Working products. Deployed to the internet.</p>
+    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <Card title="Project 1: The Static Site" metadata="Foundation">
+        <p class="text-sm text-text-secondary mt-2">A professional business website — live at a real URL.</p>
+      </Card>
+      <Card title="Project 2: The Dynamic App" metadata="Foundation">
+        <p class="text-sm text-text-secondary mt-2">A full-stack app with a database, API, Docker, CI, and dual AI review.</p>
+      </Card>
+      <Card title="Project 3: The Client Brief" metadata="Your arc">
+        <p class="text-sm text-text-secondary mt-2">An interactive app with forms and email — planned by you from a client brief.</p>
+      </Card>
+      <Card title="Project 4: The Integration" metadata="Your arc">
+        <p class="text-sm text-text-secondary mt-2">An app integrated with payment or map services — verified against real API docs.</p>
+      </Card>
+      <Card title="Project 5: The Multi-User System" metadata="Your arc">
+        <p class="text-sm text-text-secondary mt-2">A multi-user system with roles and permissions — tested by trying to break it.</p>
+      </Card>
+      <Card title="Project 6: The Live System" metadata="Capstone">
+        <p class="text-sm text-text-secondary mt-2">A production-grade system with monitoring, backups, and handover documentation.</p>
+      </Card>
+    </div>
+    <p class="text-sm text-text-secondary mt-6">Six projects. Each one builds on the last. By the end, you'll have a portfolio of deployed projects and the delivery skills to contribute to real teams.</p>
+  </section>
+
+  <!-- How It Works -->
+  <section class="pb-16">
+    <h2 class="mb-2">How it works</h2>
+    <p class="text-text-secondary mb-8">You direct. AI builds. You verify.</p>
+    <div class="grid gap-6 sm:grid-cols-5">
+      <div class="text-center">
+        <div class="w-12 h-12 rounded-full bg-primary-bg text-primary font-bold text-lg flex items-center justify-center mx-auto mb-3">1</div>
+        <h3 class="text-base font-semibold mb-1">Plan</h3>
+        <p class="text-sm text-text-secondary">Give AI a brief and a template. Catch scope creep before any code is written.</p>
+      </div>
+      <div class="text-center">
+        <div class="w-12 h-12 rounded-full bg-primary-bg text-primary font-bold text-lg flex items-center justify-center mx-auto mb-3">2</div>
+        <h3 class="text-base font-semibold mb-1">Build</h3>
+        <p class="text-sm text-text-secondary">Direct AI through tickets. Branch, implement, test, review, merge.</p>
+      </div>
+      <div class="text-center">
+        <div class="w-12 h-12 rounded-full bg-primary-bg text-primary font-bold text-lg flex items-center justify-center mx-auto mb-3">3</div>
+        <h3 class="text-base font-semibold mb-1">Verify</h3>
+        <p class="text-sm text-text-secondary">Open the product and test it like a real user. Try to break it.</p>
+      </div>
+      <div class="text-center">
+        <div class="w-12 h-12 rounded-full bg-primary-bg text-primary font-bold text-lg flex items-center justify-center mx-auto mb-3">4</div>
+        <h3 class="text-base font-semibold mb-1">Deploy</h3>
+        <p class="text-sm text-text-secondary">Ship to a real URL. Verify it works in production, not just on your laptop.</p>
+      </div>
+      <div class="text-center">
+        <div class="w-12 h-12 rounded-full bg-primary-bg text-primary font-bold text-lg flex items-center justify-center mx-auto mb-3">5</div>
+        <h3 class="text-base font-semibold mb-1">Reflect</h3>
+        <p class="text-sm text-text-secondary">What went well? What did AI get wrong? What acceptance criteria were missing?</p>
+      </div>
+    </div>
+    <p class="text-sm text-text-secondary mt-6">The loop gets faster each time because you've done it before.</p>
+  </section>
+
+  <!-- Who This Is For -->
+  <section class="pb-16">
+    <h2 class="mb-6">Who this is for</h2>
+    <div class="grid gap-6 sm:grid-cols-3">
+      <div class="border border-border rounded-lg p-6">
+        <h3 class="text-base font-semibold mb-2">University students</h3>
+        <p class="text-sm text-text-secondary">Who need to build technical outputs — apps, dashboards, pipelines — across degrees that aren't computer science.</p>
+      </div>
+      <div class="border border-border rounded-lg p-6">
+        <h3 class="text-base font-semibold mb-2">Self-taught learners</h3>
+        <p class="text-sm text-text-secondary">Who want to build real things but don't know where to start with the tooling, the process, or the deployment.</p>
+      </div>
+      <div class="border border-border rounded-lg p-6">
+        <h3 class="text-base font-semibold mb-2">Career changers</h3>
+        <p class="text-sm text-text-secondary">Who need a portfolio of working, deployed projects and a methodology they can describe in interviews.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- What Makes This Different -->
+  <section class="pb-16">
+    <h2 class="mb-6">What makes this different</h2>
+    <div class="space-y-4">
+      <div class="flex gap-4 items-start">
+        <div class="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+        <p class="text-text-secondary"><strong class="text-text">You direct AI to write the code</strong> — and learn to read, inspect, and challenge it. The skill transfers to any tech stack, any domain, any tool.</p>
+      </div>
+      <div class="flex gap-4 items-start">
+        <div class="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+        <p class="text-text-secondary"><strong class="text-text">Real projects, not exercises.</strong> You deploy to real URLs, integrate real payment systems, and handle real edge cases.</p>
+      </div>
+      <div class="flex gap-4 items-start">
+        <div class="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+        <p class="text-text-secondary"><strong class="text-text">Five business stories.</strong> After the foundation, choose a client arc — each introduces unique directing challenges you won't find in tutorials.</p>
+      </div>
+      <div class="flex gap-4 items-start">
+        <div class="w-2 h-2 rounded-full bg-primary mt-2 flex-shrink-0"></div>
+        <p class="text-text-secondary"><strong class="text-text">Free and open.</strong> No subscription. No paywall.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- What You Need -->
+  <section class="pb-16">
+    <h2 class="mb-6">What you need</h2>
+    <ul class="space-y-3">
+      <li class="flex gap-3 items-start">
+        <span class="text-primary mt-0.5">&#10003;</span>
+        <span class="text-text-secondary">A computer (Mac, Windows, or Linux)</span>
+      </li>
+      <li class="flex gap-3 items-start">
+        <span class="text-primary mt-0.5">&#10003;</span>
+        <span class="text-text-secondary">A Claude Pro or Max subscription (~$20/month — this is how you access Claude Code)</span>
+      </li>
+      <li class="flex gap-3 items-start">
+        <span class="text-primary mt-0.5">&#10003;</span>
+        <span class="text-text-secondary">About 30–60 minutes for initial setup</span>
+      </li>
+      <li class="flex gap-3 items-start">
+        <span class="text-primary mt-0.5">&#10003;</span>
+        <span class="text-text-secondary">No programming experience required</span>
+      </li>
+    </ul>
+  </section>
+
+  <!-- Categories -->
+  <section class="pb-16">
+    <h2 class="mb-6">Categories</h2>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm border-collapse">
+        <thead>
+          <tr class="bg-bg-muted">
+            <th class="text-left px-4 py-3 font-semibold border-b border-border">Category</th>
+            <th class="text-left px-4 py-3 font-semibold border-b border-border">Status</th>
+            <th class="text-left px-4 py-3 font-semibold border-b border-border">Projects</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-border">
+            <td class="px-4 py-3"><a href="/web-dev" class="font-medium">Web Development</a></td>
+            <td class="px-4 py-3"><span class="text-success bg-success-bg px-2.5 py-0.5 rounded-full text-xs font-medium">Available</span></td>
+            <td class="px-4 py-3">6</td>
+          </tr>
+          <tr class="border-b border-border bg-bg-subtle">
+            <td class="px-4 py-3 text-text-secondary">Data Engineering</td>
+            <td class="px-4 py-3"><span class="text-text-muted bg-bg-muted px-2.5 py-0.5 rounded-full text-xs font-medium">Coming soon</span></td>
+            <td class="px-4 py-3 text-text-secondary">6</td>
+          </tr>
+          <tr class="border-b border-border">
+            <td class="px-4 py-3 text-text-secondary">Machine Learning</td>
+            <td class="px-4 py-3"><span class="text-text-muted bg-bg-muted px-2.5 py-0.5 rounded-full text-xs font-medium">Coming soon</span></td>
+            <td class="px-4 py-3 text-text-secondary">6</td>
+          </tr>
+          <tr class="border-b border-border bg-bg-subtle">
+            <td class="px-4 py-3 text-text-secondary">AI Integration</td>
+            <td class="px-4 py-3"><span class="text-text-muted bg-bg-muted px-2.5 py-0.5 rounded-full text-xs font-medium">Coming soon</span></td>
+            <td class="px-4 py-3 text-text-secondary">6</td>
+          </tr>
+          <tr class="border-b border-border">
+            <td class="px-4 py-3 text-text-secondary">Cybersecurity</td>
+            <td class="px-4 py-3"><span class="text-text-muted bg-bg-muted px-2.5 py-0.5 rounded-full text-xs font-medium">Coming soon</span></td>
+            <td class="px-4 py-3 text-text-secondary">6</td>
+          </tr>
+          <tr class="border-b border-border bg-bg-subtle">
+            <td class="px-4 py-3 text-text-secondary">Cloud & DevOps</td>
+            <td class="px-4 py-3"><span class="text-text-muted bg-bg-muted px-2.5 py-0.5 rounded-full text-xs font-medium">Coming soon</span></td>
+            <td class="px-4 py-3 text-text-secondary">6</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="pb-20 text-center">
+    <h2 class="mb-4">Ready to start?</h2>
+    <p class="text-text-secondary mb-6">Read how it works, install the tools, and build your first project.</p>
+    <a
+      href="/getting-started"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-8 rounded-md transition-colors min-h-[44px] text-lg"
+    >
+      Start here
+    </a>
+  </section>
 </LandingLayout>

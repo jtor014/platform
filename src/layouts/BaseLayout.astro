@@ -8,6 +8,8 @@ interface Props {
 
 const { title, description = 'Build real software. Direct AI to do it.' } = Astro.props;
 const pageTitle = title === 'Home' ? 'The Platform' : `${title} | The Platform`;
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site || 'https://theplatform.dev').href;
+const ogImage = new URL('/og-image.svg', Astro.site || 'https://theplatform.dev').href;
 ---
 
 <!doctype html>
@@ -23,6 +25,12 @@ const pageTitle = title === 'Home' ? 'The Platform' : `${title} | The Platform`;
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap"
       rel="stylesheet"
     />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:type" content="website" />
+    <link rel="canonical" href={canonicalUrl} />
     <title>{pageTitle}</title>
   </head>
   <body>
