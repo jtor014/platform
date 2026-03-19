@@ -1,6 +1,11 @@
 ---
+import fs from 'node:fs';
 import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
 import Callout from '../../../../components/Callout.astro';
+
+const designRaw = fs.readFileSync('content/projects/project-1/design-spec-greenscape.md', 'utf-8')
+  .replace(/^---[\s\S]*?---\n/, '');
 ---
 
 <DocsLayout title="Design specification" description="Design spec for GreenScape: functionality, layouts, colours, typography, spacing.">
@@ -9,6 +14,13 @@ import Callout from '../../../../components/Callout.astro';
   <Callout variant="info">
     <p class="text-sm"><strong>What is a design spec?</strong> The design spec defines how the product <em>looks and behaves</em>. In a professional project, this might be wireframes, a Figma file, or a full design system — covering user flows, page layouts, interactions, and visual details. For GreenScape, we've provided the design as a written spec with exact values. This is what you verify AI's output against using browser DevTools — specific numbers, not vibes.</p>
   </Callout>
+
+  <details class="my-6 border border-border rounded-lg overflow-hidden">
+    <summary>Copy full design spec as markdown</summary>
+    <div class="p-4">
+      <CodeBlock copy>{designRaw}</CodeBlock>
+    </div>
+  </details>
 
   <div class="border border-border rounded-lg p-6 my-8 bg-bg-subtle">
     <h3 class="text-base font-semibold mb-3">Try this before you start building</h3>

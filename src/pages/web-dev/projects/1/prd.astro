@@ -1,6 +1,11 @@
 ---
+import fs from 'node:fs';
 import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
 import Callout from '../../../../components/Callout.astro';
+
+const prdRaw = fs.readFileSync('content/projects/project-1/prd-greenscape.md', 'utf-8')
+  .replace(/^---[\s\S]*?---\n/, '');
 ---
 
 <DocsLayout title="PRD: GreenScape" description="Product requirements for the static business website.">
@@ -9,6 +14,13 @@ import Callout from '../../../../components/Callout.astro';
   <Callout variant="info">
     <p class="text-sm"><strong>What is a PRD?</strong> A Product Requirements Document defines <em>what</em> you're building — and just as importantly, what you're <em>not</em>. It turns a client conversation ("I need a website for my business") into structured requirements that AI can implement and you can verify. A good PRD has specific acceptance criteria — not "the site should look good" but "the hero image is under 200KB and loads in under 3 seconds." In later projects, you'll direct AI to generate PRDs from client briefs. This one has been written for you.</p>
   </Callout>
+
+  <details class="my-6 border border-border rounded-lg overflow-hidden">
+    <summary>Copy full PRD as markdown</summary>
+    <div class="p-4">
+      <CodeBlock copy>{prdRaw}</CodeBlock>
+    </div>
+  </details>
 
   <h2 class="mb-4 mt-10">Executive Summary</h2>
   <p class="text-text-secondary mb-4">Build a professional website for GreenScape Landscaping, a small landscaping business in Melbourne. The site showcases services, displays past work, shares client testimonials, and provides contact information. This replaces word-of-mouth as the primary way new customers discover the business.</p>
