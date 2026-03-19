@@ -1,0 +1,324 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import Callout from '../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Architecture: GreenScape" description="Technical architecture for the GreenScape static site: tech stack, components, data flow.">
+  <h1 class="mb-6">Architecture: GreenScape Landscaping</h1>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>What is an architecture document?</strong> The architecture defines <em>how to build it</em> technically. It takes the PRD (what to build) and the design spec (how it looks) and turns them into a technical plan: what technologies to use, how to structure the code, how data flows through the system, and how the pieces connect. In later projects, this will include database schemas, API contracts, and complex component relationships. For GreenScape, the architecture is simple — but the artefact exists. In later projects, you'll direct AI to generate the architecture, and your job will be reviewing it for over-engineering and missing dependencies.</p>
+  </Callout>
+
+  <details class="my-6 border border-border rounded-lg overflow-hidden">
+    <summary>Copy full architecture as markdown</summary>
+    <div class="p-4">
+      <CodeBlock copy>{`# Architecture: GreenScape Landscaping
+
+## Tech Stack
+
+| Technology | Purpose |
+|---|---|
+| React 18 | Component-based UI |
+| Vite | Build tool and dev server |
+| Tailwind CSS 3 | Utility-first styling |
+| Netlify | Static hosting (free tier) |
+| GitHub Actions | CI — lint + build check on PRs |
+| Gemini | Automated PR review via GitHub Actions |
+
+## Why These Choices
+
+**React + Vite** — React is the most widely-used frontend framework. Vite is the modern build tool for React (fast dev server, optimised production builds). This is a static site, so we don't need a backend framework.
+
+**Tailwind CSS** — Utility-first CSS means the design tokens from the spec map directly to class names. No custom CSS files to maintain.
+
+**Netlify** — Free static hosting with git-based deploy. Push to main, site updates in ~60 seconds.
+
+## Component Structure
+
+\`\`\`
+src/
+├── components/
+│   ├── Header.jsx       ← Sticky header + mobile hamburger nav
+│   ├── Hero.jsx         ← Hero section with CTA
+│   ├── Services.jsx     ← 6 service cards in responsive grid
+│   ├── ServiceArea.jsx  ← Suburb list as pills/tags
+│   ├── Testimonials.jsx ← 4 testimonial cards with star ratings
+│   ├── About.jsx        ← Photo placeholder + bio text
+│   ├── Contact.jsx      ← Phone/email links + business hours
+│   └── Footer.jsx       ← Copyright + contact summary
+├── data/
+│   └── content.js       ← ALL text content (single source of truth)
+├── App.jsx              ← Assembles all components in order
+├── index.css            ← Tailwind directives
+└── main.jsx             ← React entry point
+\`\`\`
+
+## Data Flow
+
+This is a static site — there is no backend, no API, no database.
+
+All text content lives in \`src/data/content.js\`. Components import from this file. No text is hardcoded in components. This means:
+- Content can be updated in one place
+- Components are reusable (they render whatever data they receive)
+- It's easy to verify content accuracy (check one file, not seven components)
+
+## Key Decisions
+
+**Single page, not multi-page.** The PRD specifies one page with sections. Navigation scrolls to sections using anchor links. No routing needed.
+
+**No backend.** The PRD anti-scope explicitly excludes databases, APIs, contact forms, and user accounts. This is a static site.
+
+**Content separated from components.** All text in content.js, not scattered across JSX files. Makes content review and updates straightforward.
+
+**Mobile-first responsive.** Tailwind's responsive prefixes (md:, lg:) handle the three breakpoints from the design spec: mobile (<768px), tablet (768-1023px), desktop (≥1024px).
+
+## Build & Deploy
+
+\`\`\`
+make dev       → Vite dev server on localhost:5173
+make build     → Production build to dist/
+make lint      → ESLint + Prettier
+make preview   → Preview production build locally
+\`\`\`
+
+Deploy: Netlify connects to the GitHub repo. Push to main triggers auto-build. Site live in ~60 seconds.
+
+## What This Architecture Doesn't Need
+
+Because the PRD anti-scope is clear, we explicitly don't architect for:
+- No database schema (no data persistence)
+- No API contracts (no backend)
+- No auth flow (no users)
+- No state management (no complex client state)
+- No testing framework (added in Project 2)
+
+In Project 2, every one of these becomes relevant.`}</CodeBlock>
+    </div>
+  </details>
+
+  <h2 class="mb-4 mt-10">Tech Stack</h2>
+  <div class="overflow-x-auto mb-8">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Technology</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-medium">React 18</td>
+          <td class="px-4 py-3 text-text-secondary">Component-based UI</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-medium">Vite</td>
+          <td class="px-4 py-3 text-text-secondary">Build tool and dev server</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-medium">Tailwind CSS 3</td>
+          <td class="px-4 py-3 text-text-secondary">Utility-first styling</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-medium">Netlify</td>
+          <td class="px-4 py-3 text-text-secondary">Static hosting (free tier)</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-medium">GitHub Actions</td>
+          <td class="px-4 py-3 text-text-secondary">CI — lint + build check on PRs</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-medium">Gemini</td>
+          <td class="px-4 py-3 text-text-secondary">Automated PR review</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="mb-4 mt-10">Component Structure</h2>
+  <p class="text-text-secondary mb-4">Eight components, one data file, assembled in App.jsx:</p>
+  <CodeBlock lang="text">{`src/
+├── components/
+│   ├── Header.jsx       ← Sticky header + mobile hamburger nav
+│   ├── Hero.jsx         ← Hero section with CTA
+│   ├── Services.jsx     ← 6 service cards in responsive grid
+│   ├── ServiceArea.jsx  ← Suburb list as pills/tags
+│   ├── Testimonials.jsx ← 4 testimonial cards with star ratings
+│   ├── About.jsx        ← Photo placeholder + bio text
+│   ├── Contact.jsx      ← Phone/email links + business hours
+│   └── Footer.jsx       ← Copyright + contact summary
+├── data/
+│   └── content.js       ← ALL text content (single source of truth)
+├── App.jsx              ← Assembles all components in order
+├── index.css            ← Tailwind directives
+└── main.jsx             ← React entry point`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Data Flow</h2>
+  <p class="text-text-secondary mb-4">This is a static site — no backend, no API, no database. All text content lives in <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">src/data/content.js</code>. Components import from this file. No text is hardcoded in components.</p>
+  <p class="text-text-secondary mb-8">This means content can be updated in one place, components are reusable, and it's easy to verify content accuracy.</p>
+
+  <h2 class="mb-4 mt-10">Key Decisions</h2>
+  <div class="space-y-3 mb-8">
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">→</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Single page, not multi-page.</strong> Navigation scrolls to sections using anchor links. No routing needed.</p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">→</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">No backend.</strong> The PRD anti-scope explicitly excludes databases, APIs, contact forms, and user accounts.</p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">→</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Content separated from components.</strong> All text in content.js. Makes content review straightforward.</p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">→</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Mobile-first responsive.</strong> Three breakpoints from the design spec: mobile, tablet, desktop.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">What This Architecture Doesn't Need</h2>
+  <p class="text-text-secondary mb-4">Because the PRD anti-scope is clear, we explicitly don't architect for:</p>
+  <ul class="list-disc list-inside text-sm text-text-secondary space-y-1 mb-4">
+    <li>No database schema (no data persistence)</li>
+    <li>No API contracts (no backend)</li>
+    <li>No auth flow (no users)</li>
+    <li>No state management (no complex client state)</li>
+    <li>No testing framework (added in Project 2)</li>
+  </ul>
+  <p class="text-sm text-text-secondary mb-8">In Project 2, every one of these becomes relevant.</p>
+
+  <!-- CLAUDE.md -->
+  <h2 class="mb-4 mt-10 pt-8 border-t border-border">CLAUDE.md — The Project Memory File</h2>
+  <p class="text-text-secondary mb-4">The architecture produces one more artefact: CLAUDE.md. This is the briefing document for your AI developer. Claude Code reads it at the start of every session, so it contains everything AI needs to stay consistent — tech stack, repo structure, anti-scope rules, engineering standards, and current project state.</p>
+  <p class="text-text-secondary mb-4">It's derived from the architecture and PRD. Think of it as the architecture distilled into instructions for AI. In later projects, you'll generate it from a template.</p>
+  <p class="text-text-secondary mb-6">Copy this file into your project root as <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">CLAUDE.md</code> — it goes in before any code.</p>
+
+  <CodeBlock copy>{`# CLAUDE.md
+
+## Project Overview
+
+GreenScape Landscaping business website. A static site showcasing services, testimonials, service area, and contact information. No backend, no database, no user accounts.
+
+## Tech Stack
+
+- **Frontend:** React 18 + Vite + Tailwind CSS 3
+- **Containerisation:** None (static site — no Docker needed)
+- **CI/CD:** GitHub Actions (lint + build check)
+- **AI Review:** Gemini (via GitHub Actions workflow)
+- **Deployment:** Netlify (free tier)
+
+## Repository Structure
+
+\`\`\`
+greenscape/
+├── public/
+│   └── images/           # Optimised site images
+├── src/
+│   ├── components/
+│   │   ├── Header.jsx
+│   │   ├── Hero.jsx
+│   │   ├── Services.jsx
+│   │   ├── ServiceArea.jsx
+│   │   ├── Testimonials.jsx
+│   │   ├── About.jsx
+│   │   ├── Contact.jsx
+│   │   └── Footer.jsx
+│   ├── data/
+│   │   └── content.js    # All text content in one place
+│   ├── App.jsx
+│   ├── index.css
+│   └── main.jsx
+├── .github/
+│   └── workflows/
+│       ├── ci.yml
+│       └── gemini-review.yml
+├── package.json
+├── tailwind.config.js
+├── vite.config.js
+├── Makefile
+├── CLAUDE.md
+├── BACKLOG.md
+└── .gitignore
+\`\`\`
+
+## Anti-Scope
+
+Do NOT implement, suggest, or add code for any of the following:
+
+- No booking system or scheduling
+- No contact form that submits data to a server (phone and email links only)
+- No user accounts, login, or admin panel
+- No CMS or content management
+- No blog, news, or articles section
+- No database or backend API
+- No social media feed or embed
+- No newsletter signup
+- No live chat or chatbot
+- No e-commerce, pricing calculator, or payment
+- No image gallery or portfolio page
+- No analytics tracking scripts
+
+If you believe any of these should be added, raise it as a question rather than implementing it.
+
+## Engineering Standards
+
+### Git & Branching
+- Branch naming: \`feat/ticket-number-short-description\`
+- Conventional commits: \`feat:\`, \`fix:\`, \`test:\`, \`docs:\`, \`refactor:\`, \`chore:\`
+- Every PR references its Issue: "Closes #N"
+- No direct pushes to \`main\` — all changes via PR
+
+### Code Quality
+- ESLint + Prettier for linting and formatting
+- Maximum PR size: 300 lines (excluding generated code)
+- All components are functional React components
+- All text content lives in \`src/data/content.js\`, not hardcoded in components
+
+### PR Workflow
+1. Create feature branch from \`main\`
+2. Implement changes
+3. Run \`make lint\` locally
+4. Commit with conventional commit message
+5. Push and open PR with "Closes #N"
+6. Self-review: read the diff against acceptance criteria
+7. Wait for CI and Gemini review
+8. Report to Director: CI status, self-review findings, Gemini findings, recommendation
+
+### Director's Briefing
+After each ticket, provide:
+- What was built and why
+- Key decisions made
+- What to verify (specific things the Director should check in the browser)
+- Any concerns
+
+## Makefile Commands
+
+\`\`\`
+make dev       # Start development server (Vite)
+make build     # Build for production
+make lint      # Run ESLint + Prettier
+make preview   # Preview production build locally
+\`\`\`
+
+## Design Reference
+
+The site design follows the provided design specification. Key design tokens:
+- Primary colour: #2D5016 (forest green)
+- Secondary colour: #8B6914 (warm gold)
+- Background: #FAFAF5 (warm white)
+- Text: #1A1A1A (near black)
+- Heading font: Inter (bold)
+- Body font: Inter (regular)
+- Body size: 16px, line-height 1.6
+- Max content width: 1200px
+- Section padding: 80px vertical, 24px horizontal
+- Card border-radius: 8px
+
+## Current State
+
+- Last completed ticket: None — project starting
+- Known issues: None
+- Technical debt: None`}</CodeBlock>
+</DocsLayout>

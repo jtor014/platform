@@ -1,0 +1,121 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="The process" description="How every project flows: PRD → Design → Architecture → Backlog → Build → Deploy.">
+  <h1 class="mb-6">The Process</h1>
+  <p class="text-text-secondary mb-4">Every project in this course follows the same sequence. The product gets more complex each time, but the process stays the same. Learn it once, use it forever.</p>
+  <p class="text-text-secondary mb-8">In Project 1, most of this has been done for you — so you can focus on learning the tools and the build loop. In later projects, you'll own every step.</p>
+
+  <!-- The sequence -->
+  <div class="space-y-8 mb-12">
+
+    <!-- 1. PRD -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">1</div>
+        <h2 class="text-lg font-semibold">PRD</h2>
+      </div>
+      <p class="text-sm text-text-secondary mb-3">The Product Requirements Document defines <em>what</em> you're building. It starts with a client conversation — "I need a website for my business" — and turns that into structured requirements: features, acceptance criteria, user stories, and crucially, what you're <em>not</em> building (anti-scope).</p>
+      <p class="text-sm text-text-secondary mb-3">A good PRD is specific enough that someone could verify the finished product against it. Not "the site should look good" but "the hero image is under 200KB and loads in under 3 seconds."</p>
+      <p class="text-sm text-text-secondary"><strong>In this project:</strong> the PRD has been written for you. <strong>In later projects:</strong> you'll direct AI to generate PRDs from client briefs — and your job will be catching what AI added that the client didn't ask for.</p>
+      <p class="text-sm mt-3"><a href="/web-dev/projects/1/prd">Read the GreenScape PRD →</a></p>
+    </div>
+
+    <!-- Connector -->
+    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
+
+    <!-- 2. Design -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">2</div>
+        <h2 class="text-lg font-semibold">Design</h2>
+      </div>
+      <p class="text-sm text-text-secondary mb-3">The design defines how the product <em>looks and behaves</em>. In a professional project, this might be wireframes, a Figma file, or a full design system — covering user flows, page layouts, responsive behaviour, interactions, and visual details like colours, typography, and spacing.</p>
+      <p class="text-sm text-text-secondary mb-3">You can use AI to rapidly prototype designs. Paste your PRD into <a href="https://claude.ai">claude.ai</a> and ask for a React artifact mockup — you'll get an interactive preview in seconds. Iterate until it feels right, then lock down the spec with exact values.</p>
+      <p class="text-sm text-text-secondary"><strong>In this project:</strong> the design spec has been written for you with exact values you can verify in DevTools. <strong>In later projects:</strong> you'll create designs yourself using AI prototyping, then write the spec.</p>
+      <p class="text-sm mt-3"><a href="/web-dev/projects/1/design">Read the GreenScape design spec →</a></p>
+    </div>
+
+    <!-- Connector -->
+    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
+
+    <!-- 3. Architecture -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">3</div>
+        <h2 class="text-lg font-semibold">Architecture</h2>
+      </div>
+      <p class="text-sm text-text-secondary mb-3">The architecture document defines <em>how to build it</em> technically — what technologies to use, how to structure the code, how data flows through the system, and how the pieces connect. You produce it from the PRD and design spec.</p>
+      <p class="text-sm text-text-secondary mb-3">For GreenScape, the architecture is simple: React + Vite + Tailwind, eight components, one data file, deploy to Netlify. But even a simple project has architecture decisions — and seeing them written down shows you what to look for. In later projects, this will include database schemas, API contracts, and complex component relationships. You'll direct AI to generate the architecture, and your job will be catching over-engineering and missing dependencies.</p>
+      <p class="text-sm text-text-secondary mb-3">The architecture also produces the <strong>CLAUDE.md</strong> — the project memory file that Claude Code reads at the start of every session. It's the architecture distilled into instructions for AI: tech stack, repo structure, anti-scope rules, engineering standards. It goes into the repo before any code.</p>
+      <p class="text-sm text-text-secondary"><strong>In this project:</strong> the architecture and CLAUDE.md have been written for you. <strong>In later projects:</strong> you'll direct AI to produce both from the PRD and design spec.</p>
+      <p class="text-sm mt-3"><a href="/web-dev/projects/1/architecture">Read the GreenScape architecture + CLAUDE.md →</a></p>
+    </div>
+
+    <!-- Connector -->
+    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
+
+    <!-- 4. Backlog -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">4</div>
+        <h2 class="text-lg font-semibold">Backlog</h2>
+      </div>
+      <p class="text-sm text-text-secondary mb-3">The backlog breaks the architecture into an ordered list of tickets — small units of work, each with specific acceptance criteria. Tickets are ordered by dependency: you can't build the services section before the page layout exists.</p>
+      <p class="text-sm text-text-secondary"><strong>In this project:</strong> the backlog has been written for you. <strong>In later projects:</strong> you'll direct AI to produce it from the architecture document.</p>
+      <p class="text-sm mt-3"><a href="/web-dev/projects/1/backlog">Read the GreenScape backlog →</a></p>
+    </div>
+
+    <!-- Connector -->
+    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
+
+    <!-- 5. Build -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">5</div>
+        <h2 class="text-lg font-semibold">Build</h2>
+      </div>
+      <p class="text-sm text-text-secondary mb-3">This is where you direct AI through the tickets, one at a time. Each ticket follows the same loop:</p>
+      <ol class="text-sm text-text-secondary list-decimal list-inside space-y-1 mb-3">
+        <li>You tell Claude to start the ticket</li>
+        <li>Claude creates a branch, implements, commits, opens a PR</li>
+        <li>Claude and Gemini both review the code</li>
+        <li>You verify against the acceptance criteria — open the product, test it, try to break it</li>
+        <li>You decide: merge it, or direct Claude to fix something</li>
+      </ol>
+      <p class="text-sm text-text-secondary"><strong>This is where you'll spend most of your time.</strong> The step-by-step guide walks you through your first ticket cycle, then you work independently.</p>
+      <p class="text-sm mt-3"><a href="/web-dev/projects/1/guide">Read the step-by-step guide →</a></p>
+    </div>
+
+    <!-- Connector -->
+    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
+
+    <!-- 6. Deploy -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">6</div>
+        <h2 class="text-lg font-semibold">Deploy</h2>
+      </div>
+      <p class="text-sm text-text-secondary mb-3">The final ticket in every project ships the product to a live URL. You verify it works in production — not just on your laptop. Test on a real phone. Check that links work, images load, and performance is acceptable.</p>
+      <p class="text-sm text-text-secondary mb-3"><strong>In this project:</strong> you'll deploy to Netlify (free tier). Push your code, Netlify builds it, and about 60 seconds later you have a live URL like <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">greenscape-landscaping.netlify.app</code>. Free. No server to manage. No monthly fees — exactly what Ken asked for.</p>
+
+      <h3 class="text-base font-semibold mt-4 mb-2">Hosting concepts</h3>
+      <p class="text-sm text-text-secondary mb-3">Netlify, Vercel, Cloudflare Pages, and GitHub Pages are all <strong class="text-text">static hosting providers</strong>. They serve pre-built files — no server running your code, no database to maintain. That's why they can offer free tiers: serving static files is cheap. For a site like GreenScape, free hosting is the right choice.</p>
+      <p class="text-sm text-text-secondary mb-3">The free URL works fine for development and learning. But if you were handing this to Ken as a real client, you'd want a custom domain — <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">greenscapelandscaping.com.au</code> instead of a netlify.app subdomain.</p>
+
+      <h3 class="text-base font-semibold mt-4 mb-2">Optional: buy a custom domain</h3>
+      <p class="text-sm text-text-secondary mb-3">This is entirely optional but worth the experience if you want to see the full delivery flow. A domain costs $1–15/year depending on the extension (.com, .com.au, .dev). You can buy one from:</p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1 mb-3">
+        <li><strong class="text-text">Cloudflare</strong> — sells domains at cost (no markup), also offers free DNS and CDN</li>
+        <li><strong class="text-text">Namecheap</strong> — often has cheap first-year deals</li>
+        <li><strong class="text-text">Google Domains</strong> (now Squarespace) — straightforward</li>
+      </ul>
+      <p class="text-sm text-text-secondary mb-3">Once you own a domain, you point it at your hosting provider (Netlify, Cloudflare Pages, etc.) by updating the DNS records. Every provider has a guide for this. The whole process takes about 15 minutes plus up to an hour for DNS to propagate.</p>
+      <p class="text-sm text-text-secondary">Buying a domain for $5, linking it to a site you built, and sending someone the URL — that's a different feeling from <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">something.netlify.app</code>. If you're building a portfolio or want to experience what it's like to deliver a site to a client, it's worth doing once.</p>
+    </div>
+
+  </div>
+
+  <p class="text-text-secondary">That's the full sequence. Now go read each material in order, starting with the PRD.</p>
+</DocsLayout>

@@ -1,6 +1,5 @@
 ---
 import DocsLayout from '../../../../layouts/DocsLayout.astro';
-import Card from '../../../../components/Card.astro';
 import Callout from '../../../../components/Callout.astro';
 import Checklist from '../../../../components/Checklist.astro';
 ---
@@ -44,13 +43,12 @@ import Checklist from '../../../../components/Checklist.astro';
   <h2 class="mb-4 mt-10">Estimated time</h2>
   <p class="text-text-secondary mb-8">2–4 days. 8 tickets.</p>
 
-  <h2 class="mb-4 mt-10">Materials</h2>
-  <p class="text-text-secondary mb-4">Read these in order before starting your first ticket:</p>
-  <div class="grid gap-3">
-    <Card title="1. Product Requirements (PRD)" subtitle="What we're building, acceptance criteria, anti-scope" href="/web-dev/projects/1/prd" />
-    <Card title="2. Backlog" subtitle="All 8 tickets with acceptance criteria" href="/web-dev/projects/1/backlog" />
-    <Card title="3. Design specification" subtitle="Colours, typography, spacing, section layouts" href="/web-dev/projects/1/design" />
-    <Card title="4. CLAUDE.md" subtitle="The project memory file you give to Claude Code" href="/web-dev/projects/1/claude-md" />
-    <Card title="5. Step-by-step guide" subtitle="Follow this for your first ticket cycle, then work independently" href="/web-dev/projects/1/guide" />
-  </div>
+  <h2 class="mb-4 mt-10">Next step</h2>
+  <p class="text-text-secondary mb-6">Before diving into the materials, understand the process every project follows:</p>
+  <a
+    href="/web-dev/projects/1/process"
+    class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+  >
+    Read: The process →
+  </a>
 </DocsLayout>

@@ -1,10 +1,145 @@
 ---
 import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import Callout from '../../../../components/Callout.astro';
 import Checklist from '../../../../components/Checklist.astro';
 ---
 
 <DocsLayout title="BACKLOG: GreenScape" description="8 tickets from empty directory to live site.">
-  <h1 class="mb-8">Backlog: GreenScape Landscaping</h1>
+  <h1 class="mb-4">Backlog: GreenScape Landscaping</h1>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>What is a backlog?</strong> The backlog is an ordered list of tickets — small, specific units of work that take the project from empty directory to finished product. Each ticket has acceptance criteria: a checklist of things that must be true when the ticket is done. In later projects, you'll produce the backlog by directing AI to break the architecture into tickets, ordered by dependency (you can't build the services section before the page layout). In this project, the backlog has been written for you. Copy it into your project as <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">BACKLOG.md</code>.</p>
+  </Callout>
+
+  <details class="mb-8 border border-border rounded-lg overflow-hidden">
+    <summary>Copy full backlog as markdown</summary>
+    <div class="p-4">
+      <CodeBlock copy>{`# BACKLOG
+
+## Ticket 1: Project Setup
+**Labels:** setup | **Size:** S | **Dependencies:** None
+
+Create the GitHub repository, copy CLAUDE.md and BACKLOG.md into it, set up the initial project structure. Create GitHub labels (setup, frontend, deploy), create Issues for all tickets, and create a GitHub Project board.
+
+**Acceptance Criteria:**
+- [ ] GitHub repository exists with CLAUDE.md and BACKLOG.md committed
+- [ ] GitHub labels created: setup, frontend, deploy
+- [ ] GitHub Issues created for all tickets in this backlog
+- [ ] GitHub Project board created with columns: To Do, In Progress, Done
+- [ ] All Issues added to the Project board in the To Do column
+- [ ] .gitignore includes node_modules, dist, .env
+
+---
+
+## Ticket 2: Development Environment
+**Labels:** setup | **Size:** S | **Dependencies:** Ticket 1
+
+Initialise the React + Vite project with Tailwind CSS. Create the basic file structure from CLAUDE.md. Create the Makefile. Create the content data file with placeholder text.
+
+**Acceptance Criteria:**
+- [ ] make dev starts the Vite development server on localhost:5173
+- [ ] Browser shows "GreenScape Landscaping" as the page title
+- [ ] Tailwind CSS is working (utility class renders correctly)
+- [ ] make lint runs ESLint without errors
+- [ ] src/data/content.js exists with placeholder content for all sections
+- [ ] Repository structure matches CLAUDE.md
+
+---
+
+## Ticket 3: Site Layout & Navigation
+**Labels:** frontend | **Size:** M | **Dependencies:** Ticket 2
+
+Sticky header with logo and navigation links, main content area, footer. Navigation links scroll to sections. Responsive with mobile hamburger menu.
+
+**Acceptance Criteria:**
+- [ ] Header displays business name and navigation links
+- [ ] Clicking a nav link smooth-scrolls to the section
+- [ ] Header remains visible when scrolling (sticky)
+- [ ] Footer displays copyright year and contact info
+- [ ] Mobile: navigation collapses into hamburger menu
+- [ ] Desktop: navigation links displayed horizontally
+- [ ] Colours and fonts match the design tokens in CLAUDE.md
+
+---
+
+## Ticket 4: Hero & Services Section
+**Labels:** frontend | **Size:** M | **Dependencies:** Ticket 3
+
+Hero section with headline, tagline, CTA. Six service cards in a responsive grid. Content from content.js.
+
+**Acceptance Criteria:**
+- [ ] Hero displays business name, tagline, and "Get in Touch" CTA
+- [ ] CTA button scrolls to the Contact section
+- [ ] Hero has background image or colour matching design
+- [ ] 6 service cards with icon placeholder, name, and description
+- [ ] Grid: 1 column mobile, 2 tablet, 3 desktop
+- [ ] All text from content.js, not hardcoded
+- [ ] No horizontal scrolling on any screen size
+
+---
+
+## Ticket 5: Testimonials & About Sections
+**Labels:** frontend | **Size:** M | **Dependencies:** Ticket 4
+
+Four testimonial cards with star ratings. About section with photo placeholder and bio text.
+
+**Acceptance Criteria:**
+- [ ] 4 testimonials with quote, name, suburb, and 5-star visual
+- [ ] Testimonials visually distinct (different background or card style)
+- [ ] About section has photo placeholder and 2-3 paragraphs
+- [ ] About text max ~700px for readability
+- [ ] Star ratings are visual (icons or CSS), not text "5/5"
+
+---
+
+## Ticket 6: Service Area & Contact Sections
+**Labels:** frontend | **Size:** M | **Dependencies:** Ticket 5
+
+Suburb list. Contact with clickable phone and email links. No contact form (anti-scope).
+
+**Acceptance Criteria:**
+- [ ] Service area displays all 10 suburbs from the PRD
+- [ ] Contact shows phone, email, address, business hours
+- [ ] Phone is a tel: link — opens dialer on mobile
+- [ ] Email is a mailto: link — opens email client
+- [ ] Business hours clearly formatted
+- [ ] No contact form exists (anti-scope)
+
+---
+
+## Ticket 7: SEO & Meta Tags
+**Labels:** frontend | **Size:** S | **Dependencies:** Ticket 6
+
+Page title, meta description, Open Graph tags, semantic HTML, heading hierarchy.
+
+**Acceptance Criteria:**
+- [ ] Page title contains "GreenScape Landscaping" and "Melbourne"
+- [ ] Meta description exists (150-160 characters)
+- [ ] Open Graph tags: og:title, og:description, og:image, og:url
+- [ ] Only one h1 element on the page
+- [ ] Heading hierarchy logical: h1 → h2 → h3
+- [ ] Semantic HTML: nav, main, section, footer
+- [ ] All images have alt text
+- [ ] Lighthouse SEO score 90+
+
+---
+
+## Ticket 8: Deploy
+**Labels:** deploy | **Size:** S | **Dependencies:** Ticket 7
+
+Deploy to Netlify free tier. Verify the live site matches the development version.
+
+**Acceptance Criteria:**
+- [ ] Site deployed to a live URL
+- [ ] All sections load correctly on the live site
+- [ ] Images load (not broken)
+- [ ] Phone tel: link works on a real mobile phone
+- [ ] Responsive on the live URL (check on actual phone)
+- [ ] Lighthouse performance score 80+
+- [ ] Lighthouse SEO score 90+`}</CodeBlock>
+    </div>
+  </details>
 
   <!-- Ticket 1 -->
   <div class="border border-border rounded-lg p-6 mb-6">

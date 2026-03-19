@@ -1,10 +1,39 @@
 ---
+import fs from 'node:fs';
 import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import Callout from '../../../../components/Callout.astro';
+
+const designRaw = fs.readFileSync('content/projects/project-1/design-spec-greenscape.md', 'utf-8')
+  .replace(/^---[\s\S]*?---\n/, '');
 ---
 
-<DocsLayout title="Design specification" description="Colours, typography, spacing, and section layouts for GreenScape.">
+<DocsLayout title="Design specification" description="Design spec for GreenScape: functionality, layouts, colours, typography, spacing.">
   <h1 class="mb-6">Design Specification: GreenScape Landscaping</h1>
-  <p class="text-text-secondary mb-8">This is the design reference for Project 1. Verify Claude's output against these specs using browser DevTools.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>What is a design spec?</strong> The design spec defines how the product <em>looks and behaves</em>. In a professional project, this might be wireframes, a Figma file, or a full design system — covering user flows, page layouts, interactions, and visual details. For GreenScape, we've provided the design as a written spec with exact values. This is what you verify AI's output against using browser DevTools — specific numbers, not vibes.</p>
+  </Callout>
+
+  <details class="my-6 border border-border rounded-lg overflow-hidden">
+    <summary>Copy full design spec as markdown</summary>
+    <div class="p-4">
+      <CodeBlock copy>{designRaw}</CodeBlock>
+    </div>
+  </details>
+
+  <div class="border border-border rounded-lg p-6 my-8 bg-bg-subtle">
+    <h3 class="text-base font-semibold mb-3">Try this before you start building</h3>
+    <p class="text-sm text-text-secondary mb-3">Open <a href="https://claude.ai">claude.ai</a> in your browser (not Claude Code — the chat interface). Paste the PRD and this design spec, then ask:</p>
+    <p class="text-sm font-medium mb-3">"Mock up the GreenScape homepage as a React artifact based on this PRD and design spec."</p>
+    <p class="text-sm text-text-secondary mb-3">Claude will generate a live, interactive preview right in the chat. You can see the layout, the colours, the sections — a working mockup in seconds. Try iterating:</p>
+    <ul class="text-sm text-text-secondary space-y-1 list-disc list-inside mb-3">
+      <li>"Make the hero taller and use a gradient instead of a solid colour"</li>
+      <li>"Change the services grid to 2 columns instead of 3"</li>
+      <li>"Add more whitespace between sections"</li>
+    </ul>
+    <p class="text-sm text-text-secondary">This is how designers use AI — rapid iteration on visual ideas before committing to code. The mockup isn't the final product (Claude Code will build that), but it gives you a feel for what the finished site should look like. In later projects, you'll use this technique to develop design specs yourself before handing them to Claude Code.</p>
+  </div>
 
   <h2 class="mb-4 mt-10">Colours</h2>
   <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">

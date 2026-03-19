@@ -1,16 +1,42 @@
 ---
+import fs from 'node:fs';
 import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
 import Callout from '../../../../components/Callout.astro';
+
+const prdRaw = fs.readFileSync('content/projects/project-1/prd-greenscape.md', 'utf-8')
+  .replace(/^---[\s\S]*?---\n/, '');
 ---
 
 <DocsLayout title="PRD: GreenScape" description="Product requirements for the static business website.">
   <h1 class="mb-6">PRD: GreenScape Landscaping — Business Website</h1>
 
+  <Callout variant="info">
+    <p class="text-sm"><strong>What is a PRD?</strong> A Product Requirements Document defines <em>what</em> you're building — and just as importantly, what you're <em>not</em>. It turns a client conversation ("I need a website for my business") into structured requirements that AI can implement and you can verify. A good PRD has specific acceptance criteria — not "the site should look good" but "the hero image is under 200KB and loads in under 3 seconds." In later projects, you'll direct AI to generate PRDs from client briefs. This one has been written for you.</p>
+  </Callout>
+
+  <details class="my-6 border border-border rounded-lg overflow-hidden">
+    <summary>Copy full PRD as markdown</summary>
+    <div class="p-4">
+      <CodeBlock copy>{prdRaw}</CodeBlock>
+    </div>
+  </details>
+
+  <h2 class="mb-4 mt-10">The Client</h2>
+  <p class="text-text-secondary mb-4">Your agency has been approached by <strong class="text-text">Ken</strong>, the owner of GreenScape Landscaping — a small landscaping business in Melbourne's inner north. Ken's been running the business for 12 years, does good work, and gets plenty of referrals. But he has no online presence. When someone searches for landscapers in the area, GreenScape doesn't appear. He's losing jobs to competitors who have websites.</p>
+  <p class="text-text-secondary mb-4">You meet Ken at a coffee shop. He pulls out his phone to show you a competitor's site and says:</p>
+
+  <Callout variant="client">
+    <p>"I need something like this. Nothing fancy — just something professional that shows what we do, what people say about us, and how to get in touch. I don't want to have to update it or manage anything. Set it and forget it. If something breaks, I'll call you. Budget is minimal — I'm not paying monthly fees for hosting."</p>
+  </Callout>
+
+  <p class="text-text-secondary mb-8">Back at the office, you turn Ken's conversation into this PRD. In later projects, you'll direct AI to do this step — but the judgment is the same: what did the client actually ask for, what did they imply, and what should you explicitly <em>not</em> build?</p>
+
   <h2 class="mb-4 mt-10">Executive Summary</h2>
-  <p class="text-text-secondary mb-4">Build a professional website for GreenScape Landscaping, a small landscaping business in Melbourne. The site showcases services, displays past work, shares client testimonials, and provides contact information. This replaces word-of-mouth as the primary way new customers discover the business.</p>
+  <p class="text-text-secondary mb-4">Build a professional website for GreenScape Landscaping. The site showcases services, shares client testimonials, shows the service area, and provides contact information. This replaces word-of-mouth as the primary way new customers discover the business.</p>
 
   <h2 class="mb-4 mt-10">Problem Statement</h2>
-  <p class="text-text-secondary mb-8">The owner currently gets all work through word-of-mouth referrals. There's no online presence — no way for potential customers to see the quality of work, understand what services are available, or confirm the business is legitimate.</p>
+  <p class="text-text-secondary mb-8">Ken gets all work through referrals. There's no online presence — no way for potential customers to see the quality of work, understand what services are available, or confirm the business is legitimate. When someone searches for landscapers in the area, GreenScape doesn't appear.</p>
 
   <h2 class="mb-4 mt-10">Target Users</h2>
   <div class="overflow-x-auto mb-8">
@@ -106,5 +132,13 @@ import Callout from '../../../../components/Callout.astro';
   </ul>
 
   <h2 class="mb-4 mt-10">Technical Constraints</h2>
-  <p class="text-text-secondary mb-2">React + Vite + Tailwind CSS. Static site on Netlify free tier. Must work in Chrome, Firefox, Safari, Edge. Accessible (headings, alt text, contrast).</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-2">
+    <li>Static site — no backend, no database, no server-side processing</li>
+    <li>No ongoing costs — free hosting tier (client won't pay monthly fees)</li>
+    <li>No maintenance required — set and forget, no CMS, no content updates workflow</li>
+    <li>No support contract — if it breaks, the client calls</li>
+    <li>Must work in Chrome, Firefox, Safari, and Edge (latest 2 versions)</li>
+    <li>Accessible — proper heading hierarchy, alt text on images, sufficient colour contrast</li>
+    <li>Deployed to a live, publicly accessible URL</li>
+  </ul>
 </DocsLayout>
