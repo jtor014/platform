@@ -1,0 +1,171 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Checklist from '../../../../components/Checklist.astro';
+---
+
+<DocsLayout title="BACKLOG: GreenScape" description="8 tickets from empty directory to live site.">
+  <h1 class="mb-8">Backlog: GreenScape Landscaping</h1>
+
+  <!-- Ticket 1 -->
+  <div class="border border-border rounded-lg p-6 mb-6">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">setup</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">Size: S</span>
+    </div>
+    <h2 class="text-lg font-semibold mb-2">Ticket 1: Project Setup</h2>
+    <p class="text-sm text-text-secondary mb-4">Create the GitHub repository, copy CLAUDE.md and BACKLOG.md, set up labels, Issues, and Project board.</p>
+    <h4 class="text-sm font-semibold mb-2">Acceptance Criteria</h4>
+    <Checklist items={[
+      "GitHub repository exists with CLAUDE.md and BACKLOG.md committed",
+      "GitHub labels created: setup, frontend, deploy",
+      "GitHub Issues created for all tickets in this backlog",
+      "GitHub Project board created with columns: To Do, In Progress, Done",
+      "All Issues added to the Project board in the To Do column",
+      ".gitignore includes node_modules, dist, .env",
+    ]} />
+  </div>
+
+  <!-- Ticket 2 -->
+  <div class="border border-border rounded-lg p-6 mb-6">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">setup</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">Size: S</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-bg text-primary">Deps: T1</span>
+    </div>
+    <h2 class="text-lg font-semibold mb-2">Ticket 2: Development Environment</h2>
+    <p class="text-sm text-text-secondary mb-4">Initialise React + Vite with Tailwind CSS. Create Makefile and content data file.</p>
+    <h4 class="text-sm font-semibold mb-2">Acceptance Criteria</h4>
+    <Checklist items={[
+      "make dev starts the Vite development server on localhost:5173",
+      "Browser shows 'GreenScape Landscaping' as the page title",
+      "Tailwind CSS is working (utility class renders correctly)",
+      "make lint runs ESLint without errors",
+      "src/data/content.js exists with placeholder content for all sections",
+      "Repository structure matches CLAUDE.md",
+    ]} />
+  </div>
+
+  <!-- Ticket 3 -->
+  <div class="border border-border rounded-lg p-6 mb-6">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">frontend</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">Size: M</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-bg text-primary">Deps: T2</span>
+    </div>
+    <h2 class="text-lg font-semibold mb-2">Ticket 3: Site Layout & Navigation</h2>
+    <p class="text-sm text-text-secondary mb-4">Sticky header, navigation, footer. Responsive with mobile hamburger menu.</p>
+    <h4 class="text-sm font-semibold mb-2">Acceptance Criteria</h4>
+    <Checklist items={[
+      "Header displays business name and navigation links",
+      "Clicking a nav link smooth-scrolls to the section",
+      "Header remains visible when scrolling (sticky)",
+      "Footer displays copyright year and contact info",
+      "Mobile: navigation collapses into hamburger menu",
+      "Desktop: navigation links displayed horizontally",
+      "Colours and fonts match the design tokens in CLAUDE.md",
+    ]} />
+  </div>
+
+  <!-- Ticket 4 -->
+  <div class="border border-border rounded-lg p-6 mb-6">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">frontend</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">Size: M</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-bg text-primary">Deps: T3</span>
+    </div>
+    <h2 class="text-lg font-semibold mb-2">Ticket 4: Hero & Services Section</h2>
+    <p class="text-sm text-text-secondary mb-4">Hero with headline, tagline, CTA. Six service cards in responsive grid.</p>
+    <h4 class="text-sm font-semibold mb-2">Acceptance Criteria</h4>
+    <Checklist items={[
+      "Hero displays business name, tagline, and 'Get in Touch' CTA",
+      "CTA button scrolls to the Contact section",
+      "Hero has background image or colour matching design",
+      "6 service cards with icon placeholder, name, and description",
+      "Grid: 1 column mobile, 2 tablet, 3 desktop",
+      "All text from content.js, not hardcoded",
+      "No horizontal scrolling on any screen size",
+    ]} />
+  </div>
+
+  <!-- Ticket 5 -->
+  <div class="border border-border rounded-lg p-6 mb-6">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">frontend</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">Size: M</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-bg text-primary">Deps: T4</span>
+    </div>
+    <h2 class="text-lg font-semibold mb-2">Ticket 5: Testimonials & About Sections</h2>
+    <p class="text-sm text-text-secondary mb-4">4 testimonial cards with star ratings. About section with photo placeholder and bio.</p>
+    <h4 class="text-sm font-semibold mb-2">Acceptance Criteria</h4>
+    <Checklist items={[
+      "4 testimonials with quote text, name, suburb, and 5-star visual",
+      "Testimonials visually distinct (different background or card style)",
+      "About section has photo placeholder and 2–3 paragraphs",
+      "About text max ~700px for readability",
+      "Star ratings are visual (icons or CSS), not text '5/5'",
+    ]} />
+  </div>
+
+  <!-- Ticket 6 -->
+  <div class="border border-border rounded-lg p-6 mb-6">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">frontend</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">Size: M</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-bg text-primary">Deps: T5</span>
+    </div>
+    <h2 class="text-lg font-semibold mb-2">Ticket 6: Service Area & Contact Sections</h2>
+    <p class="text-sm text-text-secondary mb-4">Suburb list. Contact with clickable phone and email links. No contact form.</p>
+    <h4 class="text-sm font-semibold mb-2">Acceptance Criteria</h4>
+    <Checklist items={[
+      "Service area displays all 10 suburbs from the PRD",
+      "Contact shows phone, email, address, business hours",
+      "Phone is a tel: link — opens dialer on mobile",
+      "Email is a mailto: link — opens email client",
+      "Business hours clearly formatted",
+      "No contact form exists (anti-scope)",
+    ]} />
+  </div>
+
+  <!-- Ticket 7 -->
+  <div class="border border-border rounded-lg p-6 mb-6">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">frontend</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">Size: S</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-bg text-primary">Deps: T6</span>
+    </div>
+    <h2 class="text-lg font-semibold mb-2">Ticket 7: SEO & Meta Tags</h2>
+    <p class="text-sm text-text-secondary mb-4">Page title, meta description, Open Graph tags, semantic HTML, heading hierarchy.</p>
+    <h4 class="text-sm font-semibold mb-2">Acceptance Criteria</h4>
+    <Checklist items={[
+      "Page title contains 'GreenScape Landscaping' and 'Melbourne'",
+      "Meta description exists (150–160 characters)",
+      "Open Graph tags: og:title, og:description, og:image, og:url",
+      "Only one <h1> element on the page",
+      "Heading hierarchy logical: h1 → h2 → h3",
+      "Semantic HTML: nav, main, section, footer",
+      "All images have alt text",
+      "Lighthouse SEO score 90+",
+    ]} />
+  </div>
+
+  <!-- Ticket 8 -->
+  <div class="border border-border rounded-lg p-6 mb-6">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">deploy</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">Size: S</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-bg text-primary">Deps: T7</span>
+    </div>
+    <h2 class="text-lg font-semibold mb-2">Ticket 8: Deploy</h2>
+    <p class="text-sm text-text-secondary mb-4">Deploy to Netlify free tier. Verify live site matches dev.</p>
+    <h4 class="text-sm font-semibold mb-2">Acceptance Criteria</h4>
+    <Checklist items={[
+      "Site deployed to a live URL",
+      "All sections load correctly on the live site",
+      "Images load (not broken)",
+      "Phone tel: link works on a real mobile phone",
+      "Responsive on the live URL (check on actual phone)",
+      "Lighthouse performance score 80+",
+      "Lighthouse SEO score 90+",
+    ]} />
+  </div>
+</DocsLayout>

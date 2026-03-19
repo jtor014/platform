@@ -1,0 +1,110 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+---
+
+<DocsLayout title="PRD: GreenScape" description="Product requirements for the static business website.">
+  <h1 class="mb-6">PRD: GreenScape Landscaping — Business Website</h1>
+
+  <h2 class="mb-4 mt-10">Executive Summary</h2>
+  <p class="text-text-secondary mb-4">Build a professional website for GreenScape Landscaping, a small landscaping business in Melbourne. The site showcases services, displays past work, shares client testimonials, and provides contact information. This replaces word-of-mouth as the primary way new customers discover the business.</p>
+
+  <h2 class="mb-4 mt-10">Problem Statement</h2>
+  <p class="text-text-secondary mb-8">The owner currently gets all work through word-of-mouth referrals. There's no online presence — no way for potential customers to see the quality of work, understand what services are available, or confirm the business is legitimate.</p>
+
+  <h2 class="mb-4 mt-10">Target Users</h2>
+  <div class="overflow-x-auto mb-8">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">User</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Who They Are</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">What They Need</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Access</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-medium">Potential customer</td>
+          <td class="px-4 py-3 text-text-secondary">Homeowner searching for a landscaper. May be on phone</td>
+          <td class="px-4 py-3 text-text-secondary">See services, view work, read testimonials, make contact</td>
+          <td class="px-4 py-3 text-text-secondary">Mobile and desktop</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-medium">Business owner</td>
+          <td class="px-4 py-3 text-text-secondary">The client. Uses the site to direct customers to</td>
+          <td class="px-4 py-3 text-text-secondary">A professional presence that represents the business</td>
+          <td class="px-4 py-3 text-text-secondary">Views on phone to show clients</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="mb-4 mt-10">Scope — What We're Building</h2>
+
+  <h3 class="mb-3 mt-6">1. Homepage</h3>
+  <p class="text-text-secondary mb-2">Hero section with business name, tagline, and a professional landscape photo. Brief introduction. Links to all other sections.</p>
+  <p class="text-sm text-text-muted mb-4"><strong>Acceptance criteria:</strong> Page loads in under 3 seconds on mobile. Hero image optimised (under 200KB). All navigation links work.</p>
+
+  <h3 class="mb-3 mt-6">2. Services Section</h3>
+  <p class="text-text-secondary mb-2">6 service cards: Garden Design, Lawn Care & Mowing, Landscaping & Paving, Hedge Trimming, Garden Clean-ups, Irrigation Systems.</p>
+  <p class="text-sm text-text-muted mb-4"><strong>Acceptance criteria:</strong> All 6 services displayed with name, description, and visual. Readable on mobile (single column) and desktop (2–3 column grid).</p>
+
+  <h3 class="mb-3 mt-6">3. Service Area</h3>
+  <p class="text-text-secondary mb-2">Suburbs served: Northcote, Fitzroy, Collingwood, Carlton, Brunswick, Thornbury, Preston, Fairfield, Alphington, Ivanhoe.</p>
+  <p class="text-sm text-text-muted mb-4"><strong>Acceptance criteria:</strong> All suburbs listed. Readable without zooming on mobile.</p>
+
+  <h3 class="mb-3 mt-6">4. Testimonials</h3>
+  <p class="text-text-secondary mb-2">4 client testimonials with quote, name, suburb, and 5-star rating.</p>
+  <p class="text-sm text-text-muted mb-4"><strong>Acceptance criteria:</strong> All 4 displayed. Visually distinct. Proper quotation marks.</p>
+
+  <h3 class="mb-3 mt-6">5. About Section</h3>
+  <p class="text-text-secondary mb-2">Photo placeholder. 2–3 paragraphs about the owner.</p>
+  <p class="text-sm text-text-muted mb-4"><strong>Acceptance criteria:</strong> Photo area + text. Readable line length on desktop.</p>
+
+  <h3 class="mb-3 mt-6">6. Contact Section</h3>
+  <p class="text-text-secondary mb-2">Phone (<code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">tel:</code> link), email (<code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">mailto:</code> link), address, business hours.</p>
+  <p class="text-sm text-text-muted mb-4"><strong>Acceptance criteria:</strong> Phone opens dialer on mobile. Email opens client. Info matches the brief.</p>
+
+  <h3 class="mb-3 mt-6">7. SEO & Meta</h3>
+  <p class="text-text-secondary mb-2">Page title with "Landscaping" and "Melbourne". Meta description. Open Graph tags. Semantic HTML. Single H1.</p>
+  <p class="text-sm text-text-muted mb-4"><strong>Acceptance criteria:</strong> Lighthouse SEO score above 90.</p>
+
+  <h2 class="mb-4 mt-10">Anti-Scope</h2>
+  <Callout variant="warning">
+    <ul class="text-sm space-y-1">
+      <li><strong>No booking system</strong> — customers call or email</li>
+      <li><strong>No contact form</strong> — phone and email links only</li>
+      <li><strong>No user accounts or login</strong></li>
+      <li><strong>No blog or news</strong></li>
+      <li><strong>No database or backend</strong></li>
+      <li><strong>No social media feed</strong></li>
+      <li><strong>No newsletter signup</strong></li>
+      <li><strong>No live chat or chatbot</strong></li>
+      <li><strong>No e-commerce or payment</strong></li>
+      <li><strong>No image gallery or portfolio page</strong></li>
+    </ul>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">User Stories</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-8">
+    <li>As a potential customer, I want to see what services are available so I can check if the business does what I need</li>
+    <li>As a potential customer, I want to read testimonials so I can trust the business before calling</li>
+    <li>As a potential customer, I want to tap the phone number on my mobile so I can call without retyping</li>
+    <li>As a potential customer, I want to see the service area so I know if they work in my suburb</li>
+    <li>As the business owner, I want a professional-looking site so I can send the URL to potential clients</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Success Metrics</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-8">
+    <li>Page loads in under 3 seconds on 4G mobile</li>
+    <li>Lighthouse performance score above 80</li>
+    <li>Lighthouse SEO score above 90</li>
+    <li>All content present and accurate</li>
+    <li>Responsive — usable on phone, tablet, and desktop</li>
+    <li>Deployed to a live URL</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Technical Constraints</h2>
+  <p class="text-text-secondary mb-2">React + Vite + Tailwind CSS. Static site on Netlify free tier. Must work in Chrome, Firefox, Safari, Edge. Accessible (headings, alt text, contrast).</p>
+</DocsLayout>

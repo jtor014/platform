@@ -1,0 +1,127 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import StepList from '../../../../components/StepList.astro';
+import Callout from '../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Step-by-step guide" description="Your first project walkthrough, ticket by ticket.">
+  <h1 class="mb-6">Project 1: Step-by-Step Guide</h1>
+  <p class="text-text-secondary mb-8">This guide walks you through your first project. By the end, you'll have a live website at a real URL that you directed AI to build.</p>
+
+  <h2 class="mb-4 mt-10">Before You Start</h2>
+  <p class="text-text-secondary mb-4">Complete the <a href="/web-dev/getting-started">Web Dev setup</a> first. You need all tools installed and verified.</p>
+  <p class="text-text-secondary mb-8">Read the <a href="/web-dev/projects/1/prd">PRD</a>, <a href="/web-dev/projects/1/backlog">Backlog</a>, <a href="/web-dev/projects/1/design">Design spec</a>, and <a href="/web-dev/projects/1/claude-md">CLAUDE.md</a> before starting.</p>
+
+  <h2 class="mb-4 mt-10">Setting Up</h2>
+
+  <h3 class="mb-3">Step 1: Create a directory and start Claude</h3>
+  <CodeBlock terminal copy>{`$ mkdir greenscape && cd greenscape
+$ claude`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-6">Claude Code starts. You're now talking to your AI developer.</p>
+
+  <h3 class="mb-3">Step 2: Direct Claude to set up the project</h3>
+  <p class="text-text-secondary mb-2">Paste the CLAUDE.md and BACKLOG.md content, then tell Claude:</p>
+  <CodeBlock copy>{`I'm starting a new project. Here's the CLAUDE.md for the project:
+
+[Paste the entire contents of CLAUDE.md here]
+
+And here's the BACKLOG.md:
+
+[Paste the entire contents of BACKLOG.md here]
+
+Please start Ticket 1: Project Setup.
+
+Create a new GitHub repository called "greenscape", initialise it with the CLAUDE.md and BACKLOG.md files, create the GitHub labels (setup, frontend, deploy), create Issues for all tickets in the backlog, and create a Project board with columns: To Do, In Progress, Done.`}</CodeBlock>
+
+  <h3 class="mb-3 mt-6">Step 3: Verify</h3>
+  <StepList steps={[
+    { title: "Open GitHub in your browser", content: "Navigate to your new repository." },
+    { title: "Check the Issues tab", content: "You should see 8 Issues (one per ticket)." },
+    { title: "Check the Projects tab", content: "You should see a board with all Issues in 'To Do'." },
+    { title: "Open VS Code", content: "Open the greenscape folder. You should see CLAUDE.md and BACKLOG.md." },
+  ]} />
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Ticket 1 complete.</strong> You directed Claude to set up project infrastructure and verified the result. The skill here was communication: clear instructions and verification against specific expectations.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-12">Your First Full Ticket Cycle (Ticket 2)</h2>
+  <p class="text-text-secondary mb-6">Now the real loop: branch → direct Claude → PR → review → merge.</p>
+
+  <h3 class="mb-3">Step 1: Tell Claude to start the ticket</h3>
+  <CodeBlock copy>{`Start Ticket 2: Development Environment.
+
+Create a branch, set up the React + Vite project with Tailwind CSS, create the Makefile, create the content data file, and when done open a PR.`}</CodeBlock>
+
+  <h3 class="mb-3 mt-6">Step 2: Verify it works</h3>
+  <p class="text-sm text-text-secondary mb-2">In a new terminal tab:</p>
+  <CodeBlock terminal copy>{`$ cd greenscape
+$ make dev`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-4">Open <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">localhost:5173</code>. Check each acceptance criterion from the backlog.</p>
+
+  <h3 class="mb-3 mt-6">Step 3: Read the reviews and merge</h3>
+  <p class="text-text-secondary mb-2">Read Claude's self-review and the Gemini review on the PR. If everything passes:</p>
+  <CodeBlock copy>{`Everything looks good. Merge it.`}</CodeBlock>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>That's one complete ticket cycle.</strong> You'll repeat this for every ticket: direct → verify → review → merge.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-12">Continuing Through the Tickets</h2>
+
+  <h3 class="mb-3 mt-6">Ticket 3: Site Layout & Navigation</h3>
+  <p class="text-sm text-text-secondary mb-4"><strong>Your verification focus:</strong> Does the header look right? Use DevTools (F12) to check fonts and colours. On mobile (DevTools → toggle device toolbar), does the nav become a hamburger?</p>
+
+  <h3 class="mb-3 mt-6">Ticket 4: Hero & Services</h3>
+  <p class="text-sm text-text-secondary mb-4"><strong>Your verification focus:</strong> Count the service cards — exactly 6? Check the responsive grid: 1 → 2 → 3 columns as the viewport widens.</p>
+
+  <h3 class="mb-3 mt-6">Ticket 5: Testimonials & About</h3>
+  <p class="text-sm text-text-secondary mb-4"><strong>Your verification focus:</strong> Exactly 4 testimonials? Quotes in quotation marks? Star ratings are visual, not text? About text not too wide on desktop?</p>
+
+  <h3 class="mb-3 mt-6">Ticket 6: Service Area & Contact</h3>
+  <p class="text-sm text-text-secondary mb-4"><strong>Your verification focus:</strong> All 10 suburbs? <strong>Critical anti-scope check:</strong> did Claude add a contact form? The PRD says no forms — only phone and email links. Test the phone link on your phone.</p>
+
+  <h3 class="mb-3 mt-6">Ticket 7: SEO & Meta Tags</h3>
+  <p class="text-sm text-text-secondary mb-4"><strong>Your verification focus:</strong> Right-click → View Page Source. Search for <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">&lt;meta name="description"</code> and <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">og:title</code>. Run Lighthouse (DevTools → Lighthouse tab) — SEO score 90+?</p>
+
+  <h3 class="mb-3 mt-6">Ticket 8: Deploy</h3>
+  <p class="text-sm text-text-secondary mb-4"><strong>Your verification focus:</strong> Open the live URL on your phone. Does everything work? Phone link? Images? Run Lighthouse on the live URL.</p>
+
+  <h2 class="mb-4 mt-12">After You Finish</h2>
+  <p class="text-text-secondary mb-4">Ask yourself: Did Claude add anything not in the PRD? Did I catch it? What was confusing? What felt natural?</p>
+  <p class="text-text-secondary mb-4"><strong>Show someone.</strong> Open the live URL on your phone. Say: "I directed AI to build this."</p>
+
+  <h2 class="mb-4 mt-10">Common Issues</h2>
+
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>"make dev doesn't work"</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Is Node.js installed? Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">node --version</code>. Are dependencies installed? Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">npm install</code>. Are you in the right directory? Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">pwd</code>.</p>
+    </div>
+  </details>
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>"Claude can't create the GitHub repo"</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">gh auth status</code>. If not logged in, run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">gh auth login</code>.</p>
+    </div>
+  </details>
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>"The site looks different from the design"</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">That's normal — it's your job to catch the differences. Use DevTools to compare specific values (font size, colours, spacing). Direct Claude to fix: "The heading is 18px but should be 24px per the design."</p>
+    </div>
+  </details>
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>"Claude added something not in the PRD"</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">This is expected and educational. AI does this constantly. Direct Claude: "The PRD anti-scope says no [feature]. Remove it." This is the most important skill you're learning.</p>
+    </div>
+  </details>
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>"The deploy failed"</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Read the error message. Copy it. Paste to Claude: "The deploy failed with this error: [paste]. Fix it." You don't fix it — you communicate the error and direct the fix.</p>
+    </div>
+  </details>
+</DocsLayout>
