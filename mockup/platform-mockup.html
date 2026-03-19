@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Platform Mockup</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+--sidebar:#151B28;--sidebar-text:#8B95A5;--sidebar-hover:#1C2333;--sidebar-active:#232B3E;--sidebar-active-text:#F1F5F9;
+--bg:#FFFFFF;--bg-subtle:#F7F8FA;--bg-muted:#EEF0F4;
+--text:#111827;--text-sec:#4B5563;--text-muted:#9CA3AF;
+--primary:#3B5BDB;--primary-dark:#2B4AC7;--primary-bg:#EDF2FF;--primary-text:#2B4AC7;
+--border:#E5E7EB;--border-strong:#D1D5DB;
+--success:#059669;--success-bg:#ECFDF5;
+--warning:#D97706;--warning-bg:#FFFBEB;
+--error:#DC2626;--error-bg:#FEF2F2;
+--code-bg:#1A1F2E;--code-text:#D4D9E5;
+--radius:10px;--radius-lg:14px;
+--font:'DM Sans',system-ui,sans-serif;--mono:'JetBrains Mono',monospace;
+}
+html{font-size:15px}
+body{font-family:var(--font);color:var(--text);background:var(--bg);line-height:1.65;-webkit-font-smoothing:antialiased}
+
+/* Layout */
+.app{display:flex;height:100vh;overflow:hidden}
+.sidebar{width:260px;background:var(--sidebar);color:var(--sidebar-text);display:flex;flex-direction:column;flex-shrink:0;overflow-y:auto;font-size:13px;transition:transform 0.3s ease}
+.sidebar::-webkit-scrollbar{width:4px}
+.sidebar::-webkit-scrollbar-thumb{background:#2A3244;border-radius:2px}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.topbar{display:none;height:52px;background:var(--bg);border-bottom:1px solid var(--border);padding:0 20px;align-items:center;gap:12px}
+.hamburger{width:36px;height:36px;display:flex;align-items:center;justify-content:center;border:none;background:none;cursor:pointer;border-radius:8px}
+.hamburger:hover{background:var(--bg-muted)}
+.hamburger svg{width:20px;height:20px;stroke:var(--text);stroke-width:2;fill:none}
+.scroll-area{flex:1;overflow-y:auto;scroll-behavior:smooth}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:90}
+
+/* Sidebar */
+.logo{padding:20px 20px 24px;display:flex;align-items:center;gap:10px}
+.logo-mark{width:28px;height:28px;background:var(--primary);border-radius:7px;display:flex;align-items:center;justify-content:center}
+.logo-mark svg{width:14px;height:14px;fill:#FFF}
+.logo-text{font-size:15px;font-weight:600;color:#F1F5F9;letter-spacing:-0.02em}
+.nav-group{margin-bottom:4px}
+.nav-label{padding:8px 20px 6px;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:#4A5568;margin-top:12px}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 20px 7px 24px;color:var(--sidebar-text);text-decoration:none;cursor:pointer;transition:all 0.15s;border-left:2px solid transparent;font-size:13px}
+.nav-item:hover{background:var(--sidebar-hover);color:#C8CED8}
+.nav-item.active{background:var(--sidebar-active);color:var(--sidebar-active-text);border-left-color:var(--primary);font-weight:500}
+.nav-item .icon{width:16px;height:16px;opacity:0.5;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px}
+.nav-sub .nav-item{padding-left:44px;font-size:12.5px}
+.nav-divider{height:1px;background:#232B3E;margin:12px 20px}
+
+/* Breadcrumb */
+.breadcrumb{padding:14px 40px;font-size:12.5px;color:var(--text-muted);border-bottom:1px solid var(--border)}
+.breadcrumb a{color:var(--text-sec);text-decoration:none;transition:color 0.15s}
+.breadcrumb a:hover{color:var(--primary)}
+.breadcrumb span{margin:0 6px;color:var(--border-strong)}
+
+/* Pages */
+.page{display:none;padding:40px;max-width:780px;margin:0 auto}
+.page.active{display:block}
+.page-wide{max-width:1000px}
+
+/* Hero */
+.hero{text-align:center;padding:60px 0 40px}
+.hero-badge{display:inline-block;padding:6px 14px;background:var(--primary-bg);color:var(--primary-text);font-size:12px;font-weight:600;border-radius:20px;margin-bottom:20px;letter-spacing:0.02em}
+.hero h1{font-size:2.6rem;font-weight:700;line-height:1.15;letter-spacing:-0.03em;margin-bottom:14px}
+.hero h1 em{font-style:normal;color:var(--primary)}
+.hero p{font-size:1.1rem;color:var(--text-sec);max-width:520px;margin:0 auto 28px;line-height:1.6}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;background:var(--primary);color:#FFF;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;transition:all 0.2s;font-family:var(--font)}
+.btn:hover{background:var(--primary-dark);transform:translateY(-1px);box-shadow:0 4px 12px rgba(59,91,219,0.3)}
+.btn-ghost{background:transparent;color:var(--text);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--bg-subtle);border-color:var(--border-strong);box-shadow:none;transform:none}
+.btn svg{width:16px;height:16px;fill:currentColor}
+
+/* Section */
+h2.section-heading{font-size:1.25rem;font-weight:600;margin:40px 0 16px;letter-spacing:-0.02em}
+h2.section-heading:first-child{margin-top:0}
+.section-desc{color:var(--text-sec);margin-bottom:20px;font-size:0.95rem}
+h3.sub-heading{font-size:1.05rem;font-weight:600;margin:24px 0 8px}
+
+/* Cards */
+.card-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:20px 0}
+.card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;transition:all 0.2s;position:relative;overflow:hidden}
+.card:hover{border-color:var(--border-strong);box-shadow:0 2px 12px rgba(0,0,0,0.04)}
+.card-accent{border-top:3px solid var(--primary)}
+.card-num{font-size:11px;font-weight:600;color:var(--primary);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px}
+.card h3{font-size:0.95rem;font-weight:600;margin-bottom:4px;letter-spacing:-0.01em}
+.card p{font-size:0.85rem;color:var(--text-sec);line-height:1.55}
+
+/* Role cards */
+.role-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:20px 0}
+.role-card{padding:20px;border-radius:var(--radius-lg);border:1px solid var(--border)}
+.role-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:12px;font-size:16px}
+.role-card h3{font-size:0.9rem;font-weight:600;margin-bottom:4px}
+.role-card p{font-size:0.82rem;color:var(--text-sec);line-height:1.5}
+
+/* Steps */
+.steps{margin:20px 0}
+.step{display:flex;gap:16px;padding:12px 0;position:relative}
+.step:not(:last-child)::after{content:'';position:absolute;left:15px;top:44px;bottom:0;width:1.5px;background:var(--border)}
+.step-num{width:32px;height:32px;background:var(--primary-bg);color:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;position:relative;z-index:1}
+.step-body h4{font-size:0.95rem;font-weight:600;margin-bottom:2px}
+.step-body p{font-size:0.85rem;color:var(--text-sec);line-height:1.55}
+
+/* Materials */
+.mat-list{display:flex;flex-direction:column;gap:6px;margin:16px 0}
+.mat-link{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:0.88rem;font-weight:500;color:var(--text);text-decoration:none;cursor:pointer;transition:all 0.15s}
+.mat-link:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-bg)}
+.mat-link .mi{width:20px;height:20px;border-radius:5px;background:var(--bg-muted);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+
+/* Categories */
+.cat-row{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);font-size:0.9rem}
+.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;letter-spacing:0.02em}
+.badge-ok{background:var(--success-bg);color:var(--success)}
+.badge-soon{background:var(--bg-muted);color:var(--text-muted)}
+
+/* Callout */
+.callout{padding:14px 18px;border-left:3px solid;border-radius:0 var(--radius) var(--radius) 0;margin:16px 0;font-size:0.88rem;line-height:1.6}
+.callout-info{border-color:var(--primary);background:var(--primary-bg);color:var(--primary-text)}
+.callout-warn{border-color:var(--warning);background:var(--warning-bg);color:#92400E}
+.callout-client{border-color:var(--warning);background:var(--warning-bg);color:#78350F;font-style:italic}
+
+/* Code */
+.code{background:var(--code-bg);color:var(--code-text);padding:14px 18px;border-radius:var(--radius);font-family:var(--mono);font-size:13px;margin:12px 0;overflow-x:auto;line-height:1.7;position:relative}
+.code .p{color:#5A647A}
+.copy{position:absolute;top:10px;right:10px;background:#2A3244;color:#8B95A5;border:none;padding:4px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:var(--font);font-weight:500;transition:all 0.15s}
+.copy:hover{color:#F1F5F9;background:#354057}
+
+/* Toggle */
+.toggle{margin:8px 0}
+.toggle-btn{display:flex;align-items:center;gap:8px;padding:10px 14px;cursor:pointer;font-size:0.88rem;font-weight:600;color:var(--primary);background:var(--primary-bg);border:none;width:100%;text-align:left;border-radius:var(--radius);font-family:var(--font);transition:background 0.15s}
+.toggle-btn:hover{background:#DCE5FF}
+.toggle-btn .chevron{transition:transform 0.2s;font-size:10px}
+.toggle-btn.open .chevron{transform:rotate(90deg)}
+.toggle-body{display:none;padding:12px 14px;font-size:0.85rem;color:var(--text-sec);line-height:1.65;background:var(--bg-subtle);border-radius:0 0 var(--radius) var(--radius)}
+.toggle-body.show{display:block}
+
+/* Template card */
+.tpl-card{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--bg-subtle);border:1px solid var(--border);border-radius:var(--radius);margin:8px 0;transition:border-color 0.15s}
+.tpl-card:hover{border-color:var(--border-strong)}
+.tpl-card h4{font-size:0.9rem;font-weight:600;margin-bottom:2px}
+.tpl-card p{font-size:0.82rem;color:var(--text-sec)}
+.tpl-copy{padding:7px 16px;background:var(--bg);border:1px solid var(--border);border-radius:8px;font-size:12px;cursor:pointer;font-weight:600;color:var(--text-sec);font-family:var(--font);transition:all 0.15s}
+.tpl-copy:hover{border-color:var(--primary);color:var(--primary)}
+
+/* Exercise */
+.exercise{background:var(--bg-subtle);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin:14px 0}
+.exercise h4{font-size:0.95rem;font-weight:600;margin-bottom:8px}
+.exercise p{font-size:0.88rem;line-height:1.6;margin-bottom:8px}
+
+/* Checklist */
+.check{display:flex;align-items:flex-start;gap:10px;padding:5px 0;font-size:0.88rem}
+.check::before{content:'';display:block;width:18px;height:18px;border:2px solid var(--border-strong);border-radius:4px;flex-shrink:0;margin-top:1px}
+
+/* Page nav */
+.page-nav{display:flex;justify-content:space-between;margin-top:40px;padding-top:20px;border-top:1px solid var(--border);font-size:0.88rem}
+.page-nav a{color:var(--primary);text-decoration:none;font-weight:600;transition:opacity 0.15s}
+.page-nav a:hover{opacity:0.8}
+
+/* Progress */
+.progress-bar{display:flex;gap:4px;margin:16px 0}
+.progress-bar .dot{flex:1;height:5px;border-radius:3px;background:var(--bg-muted)}
+.progress-bar .dot.done{background:var(--success)}
+.progress-bar .dot.current{background:var(--primary)}
+
+/* Pause point */
+.pause{margin:24px 0;padding:18px;background:var(--bg-muted);border-radius:var(--radius-lg);text-align:center;font-size:0.88rem;color:var(--text-sec)}
+.pause strong{color:var(--text)}
+
+/* Arc cards */
+.arc-card{padding:20px;border:1px solid var(--border);border-radius:var(--radius-lg);margin:10px 0;border-left:4px solid;transition:all 0.15s;cursor:pointer}
+.arc-card:hover{box-shadow:0 2px 12px rgba(0,0,0,0.05)}
+.arc-card h3{font-size:0.95rem;font-weight:600;margin-bottom:4px}
+.arc-card p{font-size:0.85rem;color:var(--text-sec);line-height:1.55;margin-bottom:4px}
+.arc-card .meta{font-size:0.78rem;color:var(--text-muted)}
+
+/* Bridge flow */
+.bridge-flow{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:24px 0}
+.bridge-step{text-align:center;padding:24px 16px;border-radius:var(--radius-lg);border:1px solid var(--border)}
+.bridge-step .num{width:36px;height:36px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#FFF}
+.bridge-step h3{font-size:0.9rem;font-weight:600;margin-bottom:4px}
+.bridge-step p{font-size:0.82rem;color:var(--text-sec)}
+
+/* Meta line */
+.meta-line{display:flex;flex-wrap:wrap;gap:16px;margin:12px 0;font-size:0.82rem;color:var(--text-muted)}
+
+/* Subtitle */
+.subtitle{font-size:1.05rem;color:var(--text-sec);margin-bottom:24px;line-height:1.55}
+
+/* Page title */
+.page h1{font-size:1.7rem;font-weight:700;letter-spacing:-0.03em;margin-bottom:6px}
+
+/* Footer */
+.footer{padding:20px 40px;border-top:1px solid var(--border);font-size:12px;color:var(--text-muted);text-align:center;margin-top:40px}
+
+/* Responsive */
+@media(max-width:768px){
+  .sidebar{position:fixed;left:0;top:0;bottom:0;z-index:100;transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .topbar{display:flex}
+  .card-grid{grid-template-columns:1fr}
+  .role-grid{grid-template-columns:1fr}
+  .bridge-flow{grid-template-columns:1fr}
+  .page{padding:24px 20px}
+  .hero h1{font-size:1.8rem}
+  .breadcrumb{padding:12px 20px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="sidebar" id="sidebar">
+  <div class="logo">
+    <div class="logo-mark"><svg viewBox="0 0 24 24"><polygon points="12,2 22,22 2,22"/></svg></div>
+    <span class="logo-text">The platform</span>
+  </div>
+  <div class="nav-group">
+    <a class="nav-item active" data-page="home" onclick="go('home')"><span class="icon">⌂</span> Home</a>
+  </div>
+  <div class="nav-group">
+    <div class="nav-label">Getting started</div>
+    <a class="nav-item" data-page="how" onclick="go('how')"><span class="icon">◎</span> How this works</a>
+    <a class="nav-item" data-page="setup" onclick="go('setup')"><span class="icon">⚙</span> Shared setup</a>
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-group">
+    <div class="nav-label">Web development</div>
+    <a class="nav-item" data-page="webdev" onclick="go('webdev')"><span class="icon">◈</span> Overview</a>
+    <a class="nav-item" data-page="wdsetup" onclick="go('wdsetup')"><span class="icon">⚙</span> Web dev setup</a>
+    <div class="nav-sub">
+      <a class="nav-item" data-page="p1" onclick="go('p1')"><span class="icon">1</span> The static site</a>
+      <div class="nav-sub" style="margin-left:12px">
+        <a class="nav-item" data-page="p1prd" onclick="go('p1prd')" style="padding-left:52px;font-size:12px">PRD</a>
+        <a class="nav-item" data-page="p1backlog" onclick="go('p1backlog')" style="padding-left:52px;font-size:12px">BACKLOG</a>
+        <a class="nav-item" data-page="p1guide" onclick="go('p1guide')" style="padding-left:52px;font-size:12px">Guide</a>
+      </div>
+      <a class="nav-item" data-page="p2" onclick="go('p2')"><span class="icon">2</span> The dynamic app</a>
+      <a class="nav-item" data-page="bridge" onclick="go('bridge')"><span class="icon">↗</span> Bridge</a>
+      <a class="nav-item" data-page="arcs" onclick="go('arcs')"><span class="icon">◇</span> Choose your arc</a>
+      <a class="nav-item"><span class="icon">3</span> The interactive app</a>
+      <a class="nav-item"><span class="icon">4</span> The integrated app</a>
+      <a class="nav-item"><span class="icon">5</span> The multi-user app</a>
+      <a class="nav-item" data-page="p6" onclick="go('p6')"><span class="icon">6</span> The live system</a>
+    </div>
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-group">
+    <div class="nav-label">Resources</div>
+    <a class="nav-item" data-page="templates" onclick="go('templates')"><span class="icon">☐</span> Templates</a>
+    <a class="nav-item" data-page="cp" onclick="go('cp')"><span class="icon">✓</span> Checkpoints</a>
+  </div>
+</nav>
+
+<div class="overlay" id="overlay" onclick="closeMobile()"></div>
+
+<div class="main">
+  <div class="topbar" id="topbar">
+    <button class="hamburger" onclick="openMobile()"><svg viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <span style="font-weight:600;font-size:14px">The platform</span>
+  </div>
+
+  <div class="scroll-area" id="scrollArea">
+
+  <!-- HOME -->
+  <div class="page page-wide active" id="pg-home">
+    <div class="hero">
+      <div class="hero-badge">Free &amp; open learning platform</div>
+      <h1>Build real software.<br>Direct <em>AI</em> to do it.</h1>
+      <p>Learn to build websites, apps, and APIs by directing AI agents — without writing a single line of code.</p>
+      <a class="btn" onclick="go('how')">Start here <svg viewBox="0 0 16 16"><path d="M6 3l5 5-5 5" stroke="currentColor" fill="none" stroke-width="2" stroke-linecap="round"/></svg></a>
+      <span style="display:inline-block;width:12px"></span>
+      <a class="btn btn-ghost" onclick="go('webdev')">Browse web dev</a>
+    </div>
+
+    <h2 class="section-heading">What you'll build</h2>
+    <p class="section-desc">Six projects. Each repeats the same loop with one new capability.</p>
+    <div class="card-grid">
+      <div class="card card-accent"><div class="card-num">Project 1</div><h3>The static site</h3><p>"I can direct AI to build a website and deploy it to a real URL"</p></div>
+      <div class="card card-accent"><div class="card-num">Project 2</div><h3>The dynamic app</h3><p>"I can build an app with a database, API, Docker, and automated testing"</p></div>
+      <div class="card card-accent"><div class="card-num">Project 3</div><h3>The interactive app</h3><p>"I can build something people USE — and I planned it myself"</p></div>
+      <div class="card card-accent"><div class="card-num">Project 4</div><h3>The integrated app</h3><p>"I can integrate external services and catch when AI hallucinates the API"</p></div>
+      <div class="card card-accent"><div class="card-num">Project 5</div><h3>The multi-user app</h3><p>"I can build a system where different users see different things"</p></div>
+      <div class="card card-accent"><div class="card-num">Project 6</div><h3>The live system</h3><p>"I can keep a real system alive and hand it to someone else to run"</p></div>
+    </div>
+
+    <h2 class="section-heading">How it works</h2>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><h4>Plan</h4><p>Guide AI through structured templates. Review the output. Catch scope creep and vague requirements.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><h4>Build</h4><p>Direct AI through tickets, one at a time. Branch, implement, test, dual review, merge.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><h4>Verify</h4><p>Open the product and test it like a real user. Try to break it. Check every detail.</p></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><h4>Deploy &amp; reflect</h4><p>Ship to a real URL. Verify in production. Run a retro. Improve for next time.</p></div></div>
+    </div>
+
+    <h2 class="section-heading">Categories</h2>
+    <div>
+      <div class="cat-row"><span>Web development</span><span class="badge badge-ok">Available</span></div>
+      <div class="cat-row"><span>Data engineering &amp; analytics</span><span class="badge badge-soon">Coming soon</span></div>
+      <div class="cat-row"><span>Machine learning</span><span class="badge badge-soon">Coming soon</span></div>
+      <div class="cat-row"><span>AI integration</span><span class="badge badge-soon">Coming soon</span></div>
+      <div class="cat-row"><span>Cybersecurity</span><span class="badge badge-soon">Coming soon</span></div>
+      <div class="cat-row"><span>Cloud &amp; DevOps</span><span class="badge badge-soon">Coming soon</span></div>
+    </div>
+    <div class="footer">Free and open. Built with the AI-First Development Framework.</div>
+  </div>
+
+  <!-- HOW THIS WORKS -->
+  <div class="page" id="pg-how">
+    <div class="breadcrumb"><a onclick="go('home')">Home</a><span>›</span>Getting started<span>›</span>How this works</div>
+    <h1>How this works</h1>
+    <p class="subtitle">You direct. AI builds. You verify. Nothing ships without your approval.</p>
+
+    <h2 class="section-heading">The roles</h2>
+    <div class="role-grid">
+      <div class="role-card"><div class="role-icon" style="background:var(--primary-bg);color:var(--primary)">👤</div><h3>You — the Director</h3><p>Decide what gets built. Review the work. Verify it's correct. Sign off on every merge.</p></div>
+      <div class="role-card"><div class="role-icon" style="background:#F3E8FF;color:#7C3AED">⚡</div><h3>Claude Code</h3><p>AI developer. Writes code, creates files, opens PRs. Fast and capable, but makes mistakes.</p></div>
+      <div class="role-card"><div class="role-icon" style="background:var(--success-bg);color:var(--success)">🔍</div><h3>Gemini reviewer</h3><p>Independently reviews every PR. Catches what Claude missed: security issues, edge cases.</p></div>
+    </div>
+
+    <h2 class="section-heading">The loop</h2>
+    <p class="section-desc">Every project follows the same cycle. You'll do this dozens of times until it's muscle memory.</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><h4>Plan with AI</h4><p>Give AI a client brief and a template. It produces a PRD. You review: scope creep? Vague criteria? Approve or direct changes.</p></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><h4>Build ticket by ticket</h4><p>You say "Start Ticket N." Claude branches, implements, tests, opens a PR. Two AI reviews run automatically.</p></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><h4>Verify by using it</h4><p>Open the product. Test like a real user. Try to break it. Check the design. Check the data.</p></div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><h4>Deploy and reflect</h4><p>Ship to a real URL. Verify in production. Run a retro. Lessons feed into the next project.</p></div></div>
+    </div>
+
+    <div class="page-nav"><span></span><a onclick="go('setup')">Next: Shared setup →</a></div>
+  </div>
+
+  <!-- SHARED SETUP -->
+  <div class="page" id="pg-setup">
+    <div class="breadcrumb"><a onclick="go('home')">Home</a><span>›</span>Getting started<span>›</span>Shared setup</div>
+    <h1>Shared setup</h1>
+    <p class="subtitle">Tools every category needs. Install once, use everywhere.</p>
+    <div class="callout callout-info">This page covers only the shared tools. Category-specific tools (Node.js, Docker, etc.) are installed in the Web Dev setup.</div>
+
+    <h2 class="section-heading">1. VS Code</h2>
+    <p>Your code editor. You won't write code — you'll read what Claude creates and verify it.</p>
+    <div class="code"><span class="p">$ </span>code --version<button class="copy" onclick="doCopy(this)">Copy</button></div>
+
+    <h2 class="section-heading">2. Git</h2>
+    <p>Version control. Every change tracked. Nothing is ever lost.</p>
+    <div class="code"><span class="p">$ </span>git --version<button class="copy" onclick="doCopy(this)">Copy</button></div>
+
+    <h2 class="section-heading">3. GitHub CLI</h2>
+    <p>Talks to GitHub from your terminal — creates repos, PRs, and boards.</p>
+    <div class="code"><span class="p">$ </span>gh auth login<button class="copy" onclick="doCopy(this)">Copy</button></div>
+
+    <h2 class="section-heading">4. Claude Code</h2>
+    <p>Your AI developer. You direct it, it writes the code.</p>
+    <div class="code"><span class="p">$ </span>npm install -g @anthropic-ai/claude-code<button class="copy" onclick="doCopy(this)">Copy</button></div>
+
+    <h3 class="sub-heading">Troubleshooting</h3>
+    <div class="toggle">
+      <button class="toggle-btn" onclick="toggleEl(this)"><span class="chevron">▸</span> "command not found: code"</button>
+      <div class="toggle-body">Open VS Code → Cmd+Shift+P → type "Shell Command" → click "Install 'code' command in PATH."</div>
+    </div>
+    <div class="toggle">
+      <button class="toggle-btn" onclick="toggleEl(this)"><span class="chevron">▸</span> npm permission errors on Mac/Linux</button>
+      <div class="toggle-body">Run with sudo: <code>sudo npm install -g @anthropic-ai/claude-code</code></div>
+    </div>
+
+    <div class="page-nav"><a onclick="go('how')">← How this works</a><a onclick="go('wdsetup')">Next: Web dev setup →</a></div>
+  </div>
+
+  <!-- WEB DEV SETUP -->
+  <div class="page" id="pg-wdsetup">
+    <div class="breadcrumb"><a onclick="go('home')">Home</a><span>›</span><a onclick="go('webdev')">Web dev</a><span>›</span>Getting started</div>
+    <h1>Web dev setup</h1>
+    <p class="subtitle">You've installed the shared tools. Now install what's needed for Web Development.</p>
+
+    <h2 class="section-heading">5. Node.js</h2>
+    <p>Runs JavaScript. React (the frontend framework) needs it.</p>
+    <div class="code"><span class="p">$ </span>node --version<button class="copy" onclick="doCopy(this)">Copy</button></div>
+
+    <h2 class="section-heading">6. Docker</h2>
+    <p>Runs databases and servers in containers. Needed from Project 2 onwards.</p>
+    <div class="code"><span class="p">$ </span>docker --version<br><span class="p">$ </span>docker compose version<button class="copy" onclick="doCopy(this)">Copy</button></div>
+
+    <h3 class="sub-heading">Accounts you'll need</h3>
+    <div class="cat-row"><span>Gemini API key (free)</span><span class="badge badge-ok" style="background:var(--primary-bg);color:var(--primary)">Project 2</span></div>
+    <div class="cat-row"><span>Netlify account (free)</span><span class="badge badge-ok" style="background:var(--primary-bg);color:var(--primary)">Project 1</span></div>
+
+    <div class="page-nav"><a onclick="go('setup')">← Shared setup</a><a onclick="go('p1')">Next: Project 1 →</a></div>
+  </div>
+
+  <!-- WEB DEV OVERVIEW -->
+  <div class="page" id="pg-webdev">
+    <div class="breadcrumb"><a onclick="go('home')">Home</a><span>›</span>Web development</div>
+    <h1>Web development</h1>
+    <p class="subtitle">Build full-stack web applications, APIs, and deployed systems.</p>
+    <p>Six projects. Each repeats the same loop with one new capability. By the end, you can walk into a junior web dev role and contribute from day one.</p>
+
+    <div class="progress-bar"><div class="dot done"></div><div class="dot done"></div><div class="dot current"></div><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    <p style="font-size:0.8rem;color:var(--text-muted);text-align:center;margin-bottom:28px">Example: Projects 1-2 complete · Project 3 in progress</p>
+
+    <h2 class="section-heading">The projects</h2>
+    <div class="mat-list">
+      <a class="mat-link" onclick="go('p1')"><span class="mi">1</span> The static site — deploy a website to a real URL</a>
+      <a class="mat-link" onclick="go('p2')"><span class="mi">2</span> The dynamic app — database, API, Docker, CI</a>
+      <a class="mat-link" onclick="go('bridge')"><span class="mi">↗</span> Bridge — prepare to plan, choose your arc</a>
+      <a class="mat-link"><span class="mi">3</span> The interactive app — forms, validation, your PRD</a>
+      <a class="mat-link"><span class="mi">4</span> The integrated app — payments, maps, external APIs</a>
+      <a class="mat-link"><span class="mi">5</span> The multi-user app — auth, roles, permissions</a>
+      <a class="mat-link" onclick="go('p6')"><span class="mi">6</span> The live system — monitoring, backups, handover</a>
+    </div>
+  </div>
+
+  <!-- PROJECT 1 -->
+  <div class="page" id="pg-p1">
+    <div class="breadcrumb"><a onclick="go('home')">Home</a><span>›</span><a onclick="go('webdev')">Web dev</a><span>›</span>Projects<span>›</span>Project 1</div>
+    <h1>Project 1: The static site</h1>
+    <p class="subtitle">"I can direct AI to build a website and deploy it to a real URL."</p>
+    <p>Your first project. Everything is new: the terminal, VS Code, Git, Claude Code. The product is simple — a static business website — so all your attention goes to learning the loop.</p>
+    <div class="meta-line"><span>⏱ A few days</span><span>·</span><span>5-7 tickets</span><span>·</span><span>No prerequisites</span></div>
+
+    <h2 class="section-heading">Materials</h2>
+    <div class="mat-list">
+      <a class="mat-link" onclick="go('p1prd')"><span class="mi">📋</span> Product requirements (PRD)</a>
+      <a class="mat-link" onclick="go('p1backlog')"><span class="mi">📝</span> BACKLOG.md — all tickets</a>
+      <a class="mat-link" onclick="go('p1guide')"><span class="mi">📖</span> Step-by-step guide</a>
+      <a class="mat-link"><span class="mi">🎨</span> Design specification</a>
+      <a class="mat-link"><span class="mi">🤖</span> CLAUDE.md — project memory</a>
+    </div>
+
+    <h2 class="section-heading">What you'll learn</h2>
+    <div class="check">Direct Claude Code through the complete ticket cycle</div>
+    <div class="check">Verify AI output against a design spec using DevTools</div>
+    <div class="check">Catch anti-scope violations</div>
+    <div class="check">Deploy to a live URL and handle deploy failures</div>
+    <div class="check">Read and act on AI code reviews</div>
+
+    <div class="page-nav"><a onclick="go('wdsetup')">← Web dev setup</a><a onclick="go('cp')">Next: Checkpoint →</a></div>
+  </div>
+
+  <!-- PROJECT 2 -->
+  <div class="page" id="pg-p2">
+    <div class="breadcrumb"><a onclick="go('home')">Home</a><span>›</span><a onclick="go('webdev')">Web dev</a><span>›</span>Projects<span>›</span>Project 2</div>
+    <h1>Project 2: The dynamic app</h1>
+    <p class="subtitle">"I can build an app with a database, API, Docker, and automated testing."</p>
+    <p>Same loop, but now with a full technical stack. Docker runs containers. A database persists data. CI tests every PR. Gemini reviews every PR.</p>
+    <div class="meta-line"><span>⏱ ~1 week</span><span>·</span><span>8-11 tickets</span><span>·</span><span>Requires Project 1</span></div>
+
+    <h3 class="sub-heading">Phase A — "The stack appears"</h3>
+    <p>Docker, containers, the API, the database, the Makefile. You type <code style="font-family:var(--mono);font-size:13px;background:var(--bg-muted);padding:2px 8px;border-radius:4px">make up</code> and an entire dev environment appears.</p>
+
+    <h3 class="sub-heading">Phase B — "The system proves itself"</h3>
+    <p>Tests, CI, Gemini review, the background worker, the full frontend-to-database flow, deployment.</p>
+
+    <div class="pause">⏸ <strong>Pause point</strong> — the stack is running. Take a breath. Phase B brings it to life.</div>
+
+    <h2 class="section-heading">Materials</h2>
+    <div class="mat-list">
+      <a class="mat-link"><span class="mi">📋</span> Product requirements (PRD)</a>
+      <a class="mat-link"><span class="mi">📝</span> BACKLOG.md — Phase A &amp; B</a>
+      <a class="mat-link"><span class="mi">📖</span> Step-by-step guide</a>
+      <a class="mat-link"><span class="mi">🤖</span> CLAUDE.md — project memory</a>
+      <a class="mat-link"><span class="mi">⚙</span> CI setup guide</a>
+      <a class="mat-link"><span class="mi">🔍</span> Gemini reviewer guide</a>
+    </div>
+
+    <div class="page-nav"><a onclick="go('p1')">← Project 1</a><a onclick="go('bridge')">Next: Bridge →</a></div>
+  </div>
+
+  <!-- BRIDGE -->
+  <div class="page" id="pg-bridge">
+    <div class="breadcrumb"><a onclick="go('home')">Home</a><span>›</span><a onclick="go('webdev')">Web dev</a><span>›</span>Bridge</div>
+    <h1>Bridge to Project 3</h1>
+    <p class="subtitle">You've followed instructions. Now you learn to plan.</p>
+
+    <div class="bridge-flow">
+      <div class="bridge-step"><div class="num" style="background:var(--primary)">1</div><h3>Annotate</h3><p>Re-read both PRDs. Note what each section does and why.</p></div>
+      <div class="bridge-step"><div class="num" style="background:var(--warning)">2</div><h3>Repair</h3><p>Fix a flawed AI-generated PRD. Find all 6 problems.</p></div>
+      <div class="bridge-step"><div class="num" style="background:var(--success)">3</div><h3>Generate</h3><p>Create your own PRD from a client brief.</p></div>
+    </div>
+
+    <h2 class="section-heading">Choose your arc</h2>
+    <p class="section-desc">Each arc follows a realistic client with growing needs. Pick the one that interests you most.</p>
+    <div class="mat-list">
+      <a class="mat-link" onclick="go('arcs')" style="border-left:4px solid var(--primary)"><span class="mi" style="background:var(--primary-bg);color:var(--primary)">A</span> Service business — simplest domain, pure Framework focus</a>
+      <a class="mat-link" style="border-left:4px solid var(--success)"><span class="mi" style="background:var(--success-bg);color:var(--success)">B</span> Online store — payments, financial accuracy</a>
+      <a class="mat-link" style="border-left:4px solid #7C3AED"><span class="mi" style="background:#F3E8FF;color:#7C3AED">C</span> Content platform — anti-scope, non-technical users</a>
+      <a class="mat-link" style="border-left:4px solid var(--warning)"><span class="mi" style="background:var(--warning-bg);color:var(--warning)">D</span> Event platform — dates, times, physical environments</a>
+      <a class="mat-link" style="border-left:4px solid #DC2626"><span class="mi" style="background:var(--error-bg);color:var(--error)">E</span> Community directory — search, adversarial trust</a>
+    </div>
+  </div>
+
+  <!-- ARC CHOOSER -->
+  <div class="page" id="pg-arcs">
+    <div class="breadcrumb"><a onclick="go('home')">Home</a><span>›</span><a onclick="go('webdev')">Web dev</a><span>›</span><a onclick="go('bridge')">Bridge</a><span>›</span>Choose your arc</div>
+    <h1>Choose your arc</h1>
+    <p class="subtitle">Each arc follows a realistic client whose needs grow. Different arcs, different directing challenges.</p>
+
+    <div class="arc-card" style="border-left-color:var(--primary);cursor:pointer" onclick="go('arca3')"><h3>Arc A: The service business</h3><p>A landscaping company growing from solo to team. Bookings → quotes → contractor portals.</p><div class="meta">Best for: simplest domain, focus on Framework skills · 4-6 weeks · <span style="color:var(--primary);font-weight:600">View Project 3 →</span></div></div>
+    <div class="arc-card" style="border-left-color:var(--success)"><h3>Arc B: The online store</h3><p>A candle business going from Instagram to real e-commerce. Cart → Stripe → inventory → analytics.</p><div class="meta">Best for: payments, financial accuracy, API verification · 4-6 weeks</div></div>
+    <div class="arc-card" style="border-left-color:#7C3AED"><h3>Arc C: The content platform</h3><p>A community association publishing articles. CMS → newsletter → comments + moderation.</p><div class="meta">Best for: anti-scope discipline, non-technical users · 4-6 weeks</div></div>
+    <div class="arc-card" style="border-left-color:var(--warning)"><h3>Arc D: The event platform</h3><p>A workshop organiser. Registration → ticketing → offline check-in.</p><div class="meta">Best for: date/time precision, offline-first design · 4-6 weeks</div></div>
+    <div class="arc-card" style="border-left-color:#DC2626"><h3>Arc E: The community directory</h3><p>A local business directory. Search → self-service listings → reviews + reputation.</p><div class="meta">Best for: search specification, adversarial trust · 4-6 weeks</div></div>
+
+    <div class="callout callout-info">Still not sure? Start with Arc A. It has the simplest domain so you can focus purely on the Framework.</div>
+  </div>
+
+  <!-- TEMPLATES -->
+  <div class="page" id="pg-templates">
+    <div class="breadcrumb"><a onclick="go('home')">Home</a><span>›</span>Templates</div>
+    <h1>Templates</h1>
+    <p class="subtitle">Copy and paste into AI to guide planning, building, and operating.</p>
+
+    <h2 class="section-heading">Planning</h2>
+    <div class="tpl-card"><div><h4>PRD template</h4><p>Turn a client brief into structured requirements</p></div><button class="tpl-copy" onclick="doCopy(this)">Copy</button></div>
+    <div class="tpl-card"><div><h4>Architecture template</h4><p>Turn a PRD into schema, API contracts, and tickets</p></div><button class="tpl-copy" onclick="doCopy(this)">Copy</button></div>
+    <div class="tpl-card"><div><h4>Design template</h4><p>Design system and wireframes from the PRD</p></div><button class="tpl-copy" onclick="doCopy(this)">Copy</button></div>
+    <div class="tpl-card"><div><h4>Ticket backlog template</h4><p>Structured tickets with acceptance criteria</p></div><button class="tpl-copy" onclick="doCopy(this)">Copy</button></div>
+
+    <h2 class="section-heading">Build</h2>
+    <div class="tpl-card"><div><h4>CLAUDE.md template</h4><p>Project memory file that keeps AI consistent</p></div><button class="tpl-copy" onclick="doCopy(this)">Copy</button></div>
+    <div class="tpl-card"><div><h4>Component spec template</h4><p>UI component states, props, and variants</p></div><button class="tpl-copy" onclick="doCopy(this)">Copy</button></div>
+
+    <h2 class="section-heading">Operational</h2>
+    <div class="tpl-card"><div><h4>Sprint retro template</h4><p>Structured reflection after each sprint</p></div><button class="tpl-copy" onclick="doCopy(this)">Copy</button></div>
+    <div class="tpl-card"><div><h4>Risk assessment template</h4><p>Failure modes, likelihood, impact, mitigation</p></div><button class="tpl-copy" onclick="doCopy(this)">Copy</button></div>
+    <div class="tpl-card"><div><h4>Runbook template</h4><p>Step-by-step incident response procedures</p></div><button class="tpl-copy" onclick="doCopy(this)">Copy</button></div>
+    <div class="tpl-card"><div><h4>Handover template</h4><p>Complete system docs for another director</p></div><button class="tpl-copy" onclick="doCopy(this)">Copy</button></div>
+  </div>
+
+  <!-- CHECKPOINT -->
+  <div class="page" id="pg-cp">
+    <div class="breadcrumb"><a onclick="go('home')">Home</a><span>›</span><a onclick="go('webdev')">Web dev</a><span>›</span>Checkpoints<span>›</span>After project 1</div>
+    <h1>Checkpoint: After project 1</h1>
+    <p class="subtitle">Can you spot problems, not just follow instructions?</p>
+
+    <div class="exercise">
+      <h4>Exercise 1: Anti-scope detection</h4>
+      <p>Three PRD excerpts below. The client said: "I need a website that shows my services, some photos, and how to contact me."</p>
+      <p><strong>Excerpt A:</strong> Homepage, services list, photo gallery, contact section with phone and email.</p>
+      <p><strong>Excerpt B:</strong> Homepage, services, portfolio, contact form with database, newsletter signup, blog, analytics, live chat widget.</p>
+      <p><strong>Excerpt C:</strong> Single-page site with services, work photos, about section, contact details, SEO meta tags.</p>
+      <div class="toggle">
+        <button class="toggle-btn" onclick="toggleEl(this)"><span class="chevron">▸</span> Check your answer</button>
+        <div class="toggle-body"><strong>Excerpt B</strong> has five features the client never asked for: database contact form, newsletter, blog, analytics, live chat. This is exactly what AI does — assumes a business site needs all of these.</div>
+      </div>
+    </div>
+
+    <div class="exercise">
+      <h4>Exercise 2: Design verification</h4>
+      <p>The spec says: card border-radius 8px, padding 24px, heading font-size 20px. The implementation shows: border-radius 12px, padding 16px, font-size 18px.</p>
+      <p>How many discrepancies? What specifically is wrong?</p>
+      <div class="toggle">
+        <button class="toggle-btn" onclick="toggleEl(this)"><span class="chevron">▸</span> Check your answer</button>
+        <div class="toggle-body"><strong>Three discrepancies:</strong> border-radius (12 vs 8), padding (16 vs 24), font-size (18 vs 20). "It looks roughly right" isn't good enough. You check specific values.</div>
+      </div>
+    </div>
+
+    <div class="exercise">
+      <h4>Exercise 3: Review reading</h4>
+      <p>Gemini flags: "The email address is in plain HTML, exposing it to harvesting bots. Consider using JavaScript obfuscation or a contact form."</p>
+      <p>Is this a real issue? What do you do?</p>
+      <div class="toggle">
+        <button class="toggle-btn" onclick="toggleEl(this)"><span class="chevron">▸</span> Check your answer</button>
+        <div class="toggle-body"><strong>The concern is valid but the fix is wrong.</strong> A contact form was explicitly anti-scoped. JavaScript obfuscation adds complexity for a minor risk. Acknowledge in the retro as a known tradeoff, don't implement a fix.</div>
+      </div>
+    </div>
+
+    <div class="page-nav"><a onclick="go('p1')">← Project 1</a><a onclick="go('p2')">Next: Project 2 →</a></div>
+  </div>
+
+  <!-- PROJECT 6 -->
+  <div class="page" id="pg-p6">
+    <div class="breadcrumb"><a onclick="go('home')">Home</a><span>›</span><a onclick="go('webdev')">Web dev</a><span>›</span>Projects<span>›</span>Project 6</div>
+    <h1>Project 6: The live system</h1>
+    <p class="subtitle">"I can keep a real system alive, recover it when it breaks, and hand it to someone else to run."</p>
+
+    <div class="callout callout-warn">
+      <strong>The concrete thrills:</strong><br><br>
+      Stop the server. Watch the monitoring alert fire on your phone within 2 minutes.<br>
+      <em>"I would have known before any user did."</em><br><br>
+      Delete the database. Restore from backup. All data intact.<br>
+      <em>"I just recovered from a disaster."</em><br><br>
+      Give the handover doc to a classmate. They can explain the system.<br>
+      <em>"I built something that outlasts me."</em>
+    </div>
+
+    <h2 class="section-heading">What you'll build</h2>
+    <div class="check">Monitoring and alerting — know before your users do</div>
+    <div class="check">Automated backups with tested restores</div>
+    <div class="check">Security hardening and dependency scanning</div>
+    <div class="check">Data protection audit and privacy notice</div>
+    <div class="check">Risk assessment with plain-English client summary</div>
+    <div class="check">Runbooks for common incidents</div>
+    <div class="check">Handover documentation that stands alone</div>
+
+    <h2 class="section-heading">Arc-specific concerns</h2>
+    <div class="toggle"><button class="toggle-btn" onclick="toggleEl(this)"><span class="chevron">▸</span> Arc A: Service business</button><div class="toggle-body">Contractor data in privacy audit. Job data backup verification — restored jobs have correct status history.</div></div>
+    <div class="toggle"><button class="toggle-btn" onclick="toggleEl(this)"><span class="chevron">▸</span> Arc B: Online store</button><div class="toggle-body">Payment monitoring — alerts if webhook processing fails. Financial reconciliation runbook. PCI compliance documentation.</div></div>
+    <div class="toggle"><button class="toggle-btn" onclick="toggleEl(this)"><span class="chevron">▸</span> Arc C: Content platform</button><div class="toggle-body">Content moderation monitoring. Newsletter deliverability monitoring. Subscriber data in privacy audit.</div></div>
+    <div class="toggle"><button class="toggle-btn" onclick="toggleEl(this)"><span class="chevron">▸</span> Arc D: Event platform</button><div class="toggle-body">Event-day reliability. Pre-event checklist. Timezone monitoring for daylight savings transitions.</div></div>
+    <div class="toggle"><button class="toggle-btn" onclick="toggleEl(this)"><span class="chevron">▸</span> Arc E: Community directory</button><div class="toggle-body">Review integrity monitoring. Search performance monitoring. Image storage monitoring.</div></div>
+  </div>
+
+  <!-- PROJECT 1 PRD -->
+  <div class="page" id="pg-p1prd">
+    <div class="breadcrumb"><a onclick="go('home')">Home</a><span>›</span><a onclick="go('webdev')">Web dev</a><span>›</span><a onclick="go('p1')">Project 1</a><span>›</span>PRD</div>
+    <h1>PRD: GreenScape Landscaping</h1>
+    <p class="subtitle">Product requirements for the static business website.</p>
+
+    <h2 class="section-heading">1. Executive summary</h2>
+    <p>Build a professional static website for GreenScape Landscaping — a small landscaping business in Melbourne. The site showcases services, displays past work, and provides contact information. Single page, responsive, deployed to a live URL.</p>
+
+    <h2 class="section-heading">2. Problem statement</h2>
+    <p>The client has no online presence. Potential customers searching for landscapers in their area can't find GreenScape. The client is losing business to competitors who have websites.</p>
+
+    <h2 class="section-heading">3. Scope — what we're building</h2>
+
+    <h3 class="sub-heading">Hero section</h3>
+    <p>Full-width hero with business name, tagline ("Transform your outdoor space"), and a call-to-action button linking to the contact section.</p>
+    <p style="font-size:0.85rem;color:var(--text-sec)"><strong>Acceptance criteria:</strong></p>
+    <div class="check">Hero is the first thing visible without scrolling on desktop (1440px) and mobile (375px)</div>
+    <div class="check">CTA button scrolls smoothly to the contact section</div>
+    <div class="check">Business name renders in the correct font (Playfair Display) at ≥48px desktop / ≥32px mobile</div>
+
+    <h3 class="sub-heading">Services section</h3>
+    <p>Six service cards displaying: Garden Design, Lawn Care, Paving & Paths, Retaining Walls, Irrigation, Tree Services. Each card has an icon, title, and 2-sentence description.</p>
+    <div class="check">6 cards displayed in 3-column grid on desktop, 1-column on mobile</div>
+    <div class="check">Each card matches the design spec: #FFFFFF background, 1px #E5E5DC border, 8px border-radius</div>
+
+    <h2 class="section-heading">4. Anti-scope</h2>
+    <div class="callout callout-warn" style="font-style:normal">
+      <strong>Do NOT build any of the following:</strong><br><br>
+      No contact form (phone and email links only) · No database · No blog · No CMS or admin panel · No user accounts · No analytics · No newsletter signup · No live chat · No e-commerce or payment · No booking system · No multi-page navigation (single page only)
+    </div>
+
+    <h2 class="section-heading">5. Success metrics</h2>
+    <div class="check">Lighthouse performance score above 90</div>
+    <div class="check">All sections match the design spec (verified with DevTools)</div>
+    <div class="check">Live at a public URL with SSL</div>
+    <div class="check">Loads in under 2 seconds on 4G</div>
+
+    <div class="page-nav"><a onclick="go('p1')">← Project 1</a><a onclick="go('p1backlog')">Next: BACKLOG →</a></div>
+  </div>
+
+  <!-- PROJECT 1 BACKLOG -->
+  <div class="page" id="pg-p1backlog">
+    <div class="breadcrumb"><a onclick="go('home')">Home</a><span>›</span><a onclick="go('webdev')">Web dev</a><span>›</span><a onclick="go('p1')">Project 1</a><span>›</span>BACKLOG</div>
+    <h1>BACKLOG: GreenScape Landscaping</h1>
+    <p class="subtitle">8 tickets from empty directory to live site.</p>
+
+    <div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin:20px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h3 style="font-size:0.95rem;margin:0">Ticket 1: Project setup</h3>
+        <div style="display:flex;gap:6px">
+          <span class="badge" style="background:var(--primary-bg);color:var(--primary-text)">setup</span>
+          <span class="badge" style="background:var(--bg-muted);color:var(--text-sec)">S</span>
+        </div>
+      </div>
+      <p style="font-size:0.85rem;color:var(--text-sec);margin-bottom:10px">Create the GitHub repository. Initialise React + Vite + Tailwind. Create Makefile, CLAUDE.md, and .gitignore.</p>
+      <div class="check">make dev starts the dev server at localhost:5173</div>
+      <div class="check">Tailwind utility classes render correctly</div>
+      <div class="check">Repository pushed to GitHub</div>
+    </div>
+
+    <div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin:20px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h3 style="font-size:0.95rem;margin:0">Ticket 2: Dev environment &amp; CI</h3>
+        <div style="display:flex;gap:6px">
+          <span class="badge" style="background:var(--primary-bg);color:var(--primary-text)">setup</span>
+          <span class="badge" style="background:var(--bg-muted);color:var(--text-sec)">S</span>
+        </div>
+      </div>
+      <p style="font-size:0.85rem;color:var(--text-sec);margin-bottom:10px">GitHub Actions CI: lint + build on PRs. Branch protection.</p>
+      <div class="check">Opening a PR triggers CI</div>
+      <div class="check">Build failure blocks merge</div>
+    </div>
+
+    <div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin:20px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h3 style="font-size:0.95rem;margin:0">Ticket 3: Layout, navigation &amp; hero</h3>
+        <div style="display:flex;gap:6px">
+          <span class="badge" style="background:#F3E8FF;color:#7C3AED">frontend</span>
+          <span class="badge" style="background:var(--bg-muted);color:var(--text-sec)">M</span>
+        </div>
+      </div>
+      <p style="font-size:0.85rem;color:var(--text-sec);margin-bottom:10px">Page shell, sticky nav, hero section with CTA.</p>
+      <div class="check">Nav sticks to top on scroll</div>
+      <div class="check">Hero fills viewport on load, CTA scrolls to contact section</div>
+      <div class="check">Business name: Playfair Display ≥48px desktop / ≥32px mobile</div>
+      <div class="check">Background: #2D5016 with white text</div>
+    </div>
+
+    <div style="background:var(--bg-subtle);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;margin:20px 0">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <h3 style="font-size:0.95rem;margin:0">Ticket 4: Services section</h3>
+        <div style="display:flex;gap:6px">
+          <span class="badge" style="background:#F3E8FF;color:#7C3AED">frontend</span>
+          <span class="badge" style="background:var(--bg-muted);color:var(--text-sec)">M</span>
+        </div>
+      </div>
+      <p style="font-size:0.85rem;color:var(--text-sec);margin-bottom:10px">Six service cards in a responsive grid.</p>
+      <div class="check">3-column grid on desktop, 1-column on mobile</div>
+      <div class="check">Cards: #FFFFFF bg, 1px #E5E5DC border, 8px radius, 24px padding</div>
+      <div class="check">Heading 20px, body 16px</div>
+    </div>
+
+    <p style="font-size:0.85rem;color:var(--text-muted);margin:16px 0;text-align:center">+ Tickets 5-8: Testimonials, About, Contact/SEO, Deploy</p>
+
+    <div class="page-nav"><a onclick="go('p1prd')">← PRD</a><a onclick="go('p1guide')">Next: Guide →</a></div>
+  </div>
+
+  <!-- PROJECT 1 GUIDE -->
+  <div class="page" id="pg-p1guide">
+    <div class="breadcrumb"><a onclick="go('home')">Home</a><span>›</span><a onclick="go('webdev')">Web dev</a><span>›</span><a onclick="go('p1')">Project 1</a><span>›</span>Guide</div>
+    <h1>Step-by-step guide</h1>
+    <p class="subtitle">Your first project. Follow this guide ticket by ticket.</p>
+
+    <h2 class="section-heading">Before you start</h2>
+    <p>Make sure you've completed the <a onclick="go('setup')" style="color:var(--primary);cursor:pointer;text-decoration:underline">Shared setup</a> and <a onclick="go('wdsetup')" style="color:var(--primary);cursor:pointer;text-decoration:underline">Web Dev setup</a>. You need: VS Code, Git, GitHub CLI, Claude Code, Node.js, and a Netlify account.</p>
+
+    <h2 class="section-heading">Starting your first ticket</h2>
+
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><h4>Create the project</h4><p>Open your terminal and create the project directory:</p>
+        <div class="code"><span class="p">$ </span>mkdir greenscape && cd greenscape<br><span class="p">$ </span>git init<br><span class="p">$ </span>gh repo create greenscape --public --source=. --remote=origin<br><span class="p">$ </span>code .<button class="copy" onclick="doCopy(this)">Copy</button></div>
+      </div></div>
+
+      <div class="step"><div class="step-num">2</div><div class="step-body"><h4>Start Claude Code</h4><p>In the VS Code integrated terminal:</p>
+        <div class="code"><span class="p">$ </span>claude<button class="copy" onclick="doCopy(this)">Copy</button></div>
+        <p>Claude Code starts. You're now directing.</p>
+      </div></div>
+
+      <div class="step"><div class="step-num">3</div><div class="step-body"><h4>Create CLAUDE.md</h4><p>Tell Claude:</p>
+        <div class="callout callout-info">"Create a file called CLAUDE.md with exactly the following content. Then commit it to main."</div>
+        <p>Paste the full CLAUDE.md from the <a onclick="go('p1')" style="color:var(--primary);cursor:pointer;text-decoration:underline">CLAUDE.md page</a>.</p>
+      </div></div>
+
+      <div class="step"><div class="step-num">4</div><div class="step-body"><h4>Say "Start Ticket 1"</h4><p>Claude creates a feature branch, initialises the project, sets up the Makefile, and opens a PR.</p>
+        <div class="callout callout-info">"Start Ticket 1."</div>
+      </div></div>
+    </div>
+
+    <h2 class="section-heading">What to verify after Ticket 1</h2>
+    <p>After Claude reports back with CI status and review, verify yourself:</p>
+    <div class="check">Open localhost:5173 — do you see the placeholder page?</div>
+    <div class="check">Open VS Code — do you see the file tree on the left?</div>
+    <div class="check">Run <code style="font-family:var(--mono);font-size:13px;background:var(--bg-muted);padding:2px 6px;border-radius:4px">make dev</code> — does the server start?</div>
+    <p>If everything checks out, tell Claude: <strong>"Merge it."</strong></p>
+
+    <h2 class="section-heading">The loop from here</h2>
+    <p>Every subsequent ticket follows the same pattern:</p>
+    <div class="steps">
+      <div class="step"><div class="step-num">→</div><div class="step-body"><h4>You say "Start Ticket N"</h4><p>Claude branches, implements, tests, opens a PR, self-reviews, waits for Gemini.</p></div></div>
+      <div class="step"><div class="step-num">→</div><div class="step-body"><h4>Claude reports back</h4><p>CI status, self-review, Gemini review, PR size, recommendation.</p></div></div>
+      <div class="step"><div class="step-num">→</div><div class="step-body"><h4>You verify</h4><p>Open the browser. Check against the design spec. Use DevTools. Try to break it.</p></div></div>
+      <div class="step"><div class="step-num">→</div><div class="step-body"><h4>You decide</h4><p>"Merge it" or "Fix those."</p></div></div>
+    </div>
+
+    <div class="callout callout-warn" style="font-style:normal"><strong>Common issue — Ticket 3:</strong> Claude may use different colours than the design spec. Open DevTools (F12), inspect the hero section, and check the actual hex values against the spec. If they don't match, tell Claude: "The hero background is [wrong colour]. It should be #2D5016. Fix it."</div>
+
+    <div class="page-nav"><a onclick="go('p1backlog')">← BACKLOG</a><a onclick="go('cp')">Next: Checkpoint →</a></div>
+  </div>
+
+  <!-- ARC A PROJECT 3 BRIEF -->
+  <div class="page" id="pg-arca3">
+    <div class="breadcrumb"><a onclick="go('home')">Home</a><span>›</span><a onclick="go('webdev')">Web dev</a><span>›</span><a onclick="go('arcs')">Arcs</a><span>›</span>Arc A<span>›</span>Project 3</div>
+    <h1>Arc A, Project 3: Customers want to book online</h1>
+    <p class="subtitle">Your client's first real request. You plan this one.</p>
+
+    <h2 class="section-heading">The client brief</h2>
+    <div class="callout callout-client">
+      "Business is picking up. I'm missing calls because I'm on job sites all day. Customers have told me they'd book online if they could. I want people to be able to pick a date and time for a consultation, and I want to see all my upcoming bookings in one place so I can plan my week. Nothing too complicated — just a simple booking system."
+    </div>
+
+    <h2 class="section-heading">Your task</h2>
+    <p>Use the <a onclick="go('templates')" style="color:var(--primary);cursor:pointer;text-decoration:underline">PRD template</a> to generate a PRD from this brief. Review the AI output critically. Direct Claude Code to build it ticket by ticket.</p>
+
+    <div class="toggle">
+      <button class="toggle-btn" onclick="toggleEl(this)"><span class="chevron">▸</span> Directing hints (try without these first)</button>
+      <div class="toggle-body">
+        <p>Watch for AI adding user accounts, payment, recurring bookings — the client said "simple."</p>
+        <p>Your anti-scope should be specific and comprehensive.</p>
+        <p>Acceptance criteria must be testable by using the product — not by reading the code.</p>
+      </div>
+    </div>
+
+    <h2 class="section-heading" style="margin-top:32px">Scope change</h2>
+    <div style="background:var(--warning-bg);border:1px solid #F59E0B;border-radius:var(--radius-lg);padding:18px;margin:12px 0">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-weight:600;font-size:0.9rem;color:#92400E">⚡ Scope change — introduce after core tickets are in progress</div>
+      <p style="font-size:0.88rem;color:#78350F;font-style:italic;margin:0">The client calls: "Oh, I also want customers to get an email confirmation when they book. And can we add a way for me to block off days when I'm not available?"</p>
+    </div>
+    <div class="toggle">
+      <button class="toggle-btn" onclick="toggleEl(this)"><span class="chevron">▸</span> How to handle this</button>
+      <div class="toggle-body">
+        <p>1. Recognise this is new scope — not in the original PRD</p>
+        <p>2. Create new tickets on the board</p>
+        <p>3. Update the PRD scope section</p>
+        <p>4. Schedule the new tickets after the core build</p>
+        <p>5. Update CLAUDE.md</p>
+      </div>
+    </div>
+
+    <div class="page-nav"><a onclick="go('arcs')">← Choose your arc</a><span></span></div>
+  </div>
+
+  </div>
+
+<script>
+function go(page){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+  var el=document.getElementById('pg-'+page);
+  if(el){el.classList.add('active');document.getElementById('scrollArea').scrollTop=0}
+  document.querySelectorAll('.nav-item').forEach(function(l){l.classList.remove('active')});
+  var link=document.querySelector('[data-page="'+page+'"]');
+  if(link)link.classList.add('active');
+  closeMobile();
+}
+function toggleEl(btn){
+  btn.classList.toggle('open');
+  var body=btn.nextElementSibling;
+  body.classList.toggle('show');
+}
+function doCopy(btn){
+  var old=btn.textContent;
+  btn.textContent='Copied!';
+  btn.style.color='var(--success)';
+  setTimeout(function(){btn.textContent=old;btn.style.color=''},2000);
+}
+function openMobile(){
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('overlay').style.display='block';
+}
+function closeMobile(){
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').style.display='none';
+}
+</script>
+</body>
+</html>
