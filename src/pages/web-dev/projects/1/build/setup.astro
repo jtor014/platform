@@ -1,0 +1,112 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+import StepList from '../../../../../components/StepList.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Setup" description="Open VS Code, launch Claude, create the project repo.">
+  <h1 class="mb-6">Setup</h1>
+  <p class="text-text-secondary mb-8">Create the project folder, open VS Code, launch Claude, and set up the repo. About 10 minutes.</p>
+
+  <h2 class="mb-3">Step 1: Create your project folder</h2>
+  <p class="text-sm text-text-secondary mb-2">Open any terminal and create the folder:</p>
+  <CodeBlock terminal copy>{`$ mkdir greenscape && cd greenscape`}</CodeBlock>
+
+  <h2 class="mb-3 mt-8">Step 2: Open VS Code</h2>
+  <p class="text-sm text-text-secondary mb-2">Open the folder in VS Code — this is where you'll do all your work:</p>
+  <CodeBlock terminal copy>{`$ code .`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-4">VS Code opens with the <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">greenscape</code> folder in the sidebar. You'll see files appear here in real time as Claude creates them.</p>
+
+  <details class="mb-6 border border-border rounded-lg overflow-hidden">
+    <summary>New to VS Code?</summary>
+    <div class="p-4 space-y-2">
+      <p class="text-sm text-text-secondary"><strong>Sidebar (left):</strong> Shows your project files. Click any file to view it.</p>
+      <p class="text-sm text-text-secondary"><strong>Editor (centre):</strong> Where file contents appear. You won't edit files directly — Claude does that — but you'll read them here.</p>
+      <p class="text-sm text-text-secondary"><strong>Terminal (bottom):</strong> This is where you'll run Claude. Open it with <strong>Ctrl+`</strong> (backtick) or <strong>View → Terminal</strong> from the menu.</p>
+      <p class="text-sm text-text-secondary">See the <a href="https://code.visualstudio.com/docs/getstarted/userinterface">VS Code interface guide</a> for a visual overview.</p>
+    </div>
+  </details>
+
+  <h2 class="mb-3 mt-8">Step 3: Open the terminal in VS Code</h2>
+  <p class="text-sm text-text-secondary mb-2">Press <strong>Ctrl+`</strong> (backtick — the key above Tab) to open the built-in terminal. This terminal runs inside VS Code, so you can see files and the terminal at the same time.</p>
+
+  <p class="text-sm text-text-secondary mb-2"><strong>Important:</strong> Make sure the terminal is in the right folder. Check with:</p>
+  <CodeBlock terminal copy>{`$ pwd`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-2">It should show a path ending in <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/greenscape</code>. If it doesn't:</p>
+  <CodeBlock terminal copy>{`$ cd ~/greenscape`}</CodeBlock>
+
+  <details class="mb-6 mt-4 border border-border rounded-lg overflow-hidden">
+    <summary>Can't find the backtick key?</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Use the menu instead: <strong>View → Terminal</strong>. Or press <strong>Cmd+Shift+P</strong> (Mac) / <strong>Ctrl+Shift+P</strong> (Windows/Linux), type "terminal", and select "Toggle Terminal".</p>
+    </div>
+  </details>
+
+  <h2 class="mb-3 mt-8">Step 4: Launch Claude Code</h2>
+  <p class="text-sm text-text-secondary mb-2">In the VS Code terminal:</p>
+  <CodeBlock terminal copy>{`$ claude`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-4">Claude Code starts. You're now talking to your AI developer. Watch the sidebar on the left — you'll see files appear as Claude creates them.</p>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>GitHub permissions:</strong> Claude will need to create repositories, Issues, and PRs on your behalf. The first time it tries, your terminal may prompt you to authorise GitHub access — follow the prompts. If you run into issues, check that <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">gh auth status</code> shows you're logged in.</p>
+  </Callout>
+
+  <h2 class="mb-3 mt-8">Step 5: Direct Claude to set up the project</h2>
+  <p class="text-text-secondary mb-2">Copy the <a href="/web-dev/projects/1/architecture">CLAUDE.md</a> (from the architecture page) and <a href="/web-dev/projects/1/backlog">Backlog</a> content (use the copy buttons), then paste them into Claude with these instructions:</p>
+  <CodeBlock copy>{`I'm starting a new project. Here's the CLAUDE.md for the project:
+
+[Paste the entire contents of CLAUDE.md here]
+
+And here's the BACKLOG.md:
+
+[Paste the entire contents of BACKLOG.md here]
+
+Please start Ticket 1: Project Setup.
+
+Create a new GitHub repository called "greenscape", initialise it with the CLAUDE.md and BACKLOG.md files, create the GitHub labels (setup, frontend, deploy), create Issues for all tickets in the backlog, and create a Project board with columns: To Do, In Progress, Done.`}</CodeBlock>
+
+  <h2 class="mb-3 mt-8">Step 6: Verify</h2>
+  <p class="text-sm text-text-secondary mb-4">While Claude works, watch the VS Code sidebar — you'll see CLAUDE.md and BACKLOG.md appear. Then check GitHub:</p>
+  <StepList steps={[
+    { title: "Open GitHub in your browser", content: "Navigate to your new greenscape repository." },
+    { title: "Check the Issues tab", content: "You should see 8 Issues (one per ticket)." },
+    { title: "Check the Projects tab", content: "You should see a board with all Issues in 'To Do'." },
+  ]} />
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Ticket 1 complete.</strong> You directed Claude to set up project infrastructure and verified the result. The skill here was communication: clear instructions and verification against specific expectations.</p>
+  </Callout>
+
+  <!-- VS Code Tips -->
+  <h2 class="mb-4 mt-12">VS Code tips</h2>
+  <p class="text-text-secondary mb-4">You'll be spending a lot of time in VS Code. A few things that help:</p>
+
+  <div class="space-y-3 mb-6">
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">1</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Ctrl+` (backtick)</strong> — toggle the terminal open and closed. You'll use this constantly.</p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">2</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Cmd+P (Mac) / Ctrl+P (Windows)</strong> — quick open. Type a filename to jump to it instantly.</p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">3</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Cmd+Shift+P / Ctrl+Shift+P</strong> — command palette. Search for any VS Code action.</p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">4</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Split the view</strong> — drag a file tab to the right side of the editor to see two files at once. Useful for comparing Claude's output to the design spec.</p>
+    </div>
+  </div>
+
+  <details class="mb-8 border border-border rounded-lg overflow-hidden">
+    <summary>Ask Claude to set up useful extensions</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary mb-2">After Ticket 1, you can ask Claude:</p>
+      <CodeBlock copy>{`What VS Code extensions would be useful for this project? Install the ones that help with React, Tailwind CSS, and ESLint.`}</CodeBlock>
+      <p class="text-sm text-text-secondary mt-2">Claude will suggest and install extensions like Tailwind CSS IntelliSense, ESLint, and Prettier. These give you autocomplete and error highlighting — helpful for reading Claude's code.</p>
+    </div>
+  </details>
+</DocsLayout>

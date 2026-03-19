@@ -1,0 +1,132 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Your first ticket" description="Deep dive on the full ticket cycle: direct, verify, review, merge.">
+  <h1 class="mb-6">Your First Ticket</h1>
+  <p class="text-text-secondary mb-8">Ticket 2 is your first real build cycle. You'll direct Claude to set up the dev environment, verify it works, read the reviews, and merge. This page walks through every step in detail — after this, you'll know the loop.</p>
+
+  <h2 class="mb-4">Direct Claude</h2>
+  <p class="text-text-secondary mb-2">Tell Claude what to build:</p>
+  <CodeBlock copy>{`Start Ticket 2: Development Environment.
+
+Create a branch, set up the React + Vite project with Tailwind CSS, create the Makefile, create the content data file, and when done open a PR.`}</CodeBlock>
+
+  <p class="text-text-secondary mt-4 mb-8">Claude will create a branch, install dependencies, set up the project structure, commit everything, push, and open a PR. Watch the VS Code sidebar — you'll see files appearing in real time.</p>
+
+  <h2 class="mb-4">Verify it works</h2>
+  <p class="text-text-secondary mb-2">Open a second terminal in VS Code (<strong>Ctrl+Shift+`</strong> or the + icon in the terminal panel) and run:</p>
+  <CodeBlock terminal copy>{`$ cd greenscape
+$ make dev`}</CodeBlock>
+  <p class="text-text-secondary mb-4">Open <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">localhost:5173</code> in your browser.</p>
+
+  <p class="text-text-secondary mb-2">Now check each acceptance criterion from the backlog. This is the core skill — don't just glance at the page and say "looks fine." Check <em>specific things</em>:</p>
+
+  <div class="overflow-x-auto mb-8">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Criterion</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">How to check</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">make dev starts the server</td>
+          <td class="px-4 py-3 text-text-secondary">Did the terminal show a localhost URL? Can you open it?</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Page title is "GreenScape Landscaping"</td>
+          <td class="px-4 py-3 text-text-secondary">Check the browser tab — does it say the right thing?</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Tailwind CSS is working</td>
+          <td class="px-4 py-3 text-text-secondary">Right-click → Inspect any styled element. Are Tailwind classes being applied?</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">make lint runs without errors</td>
+          <td class="px-4 py-3 text-text-secondary">Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">make lint</code> in the terminal. Any errors?</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">content.js exists with placeholder content</td>
+          <td class="px-4 py-3 text-text-secondary">Open <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">src/data/content.js</code> in VS Code. Is there content for all sections?</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="mb-4">Read the Director's Briefing</h2>
+  <p class="text-text-secondary mb-4">After completing a ticket, Claude provides a Director's Briefing — a summary of what was built, why, and what you should verify. Read it carefully. It might look something like:</p>
+
+  <div class="border border-border rounded-lg p-5 bg-bg-subtle mb-6">
+    <p class="text-sm font-semibold mb-3">Example Director's Briefing</p>
+    <p class="text-sm text-text-secondary mb-2"><strong>What was built:</strong> React + Vite project with Tailwind CSS. Created Makefile with dev, build, lint, and preview commands. Added content.js with placeholder text for all 7 sections.</p>
+    <p class="text-sm text-text-secondary mb-2"><strong>Key decisions:</strong> Used Vite's React template as the base. Configured Tailwind with the design tokens from CLAUDE.md. Structured content.js as an object with one key per section.</p>
+    <p class="text-sm text-text-secondary mb-2"><strong>What to verify:</strong></p>
+    <ul class="text-sm text-text-secondary list-disc list-inside space-y-1 mb-2">
+      <li>Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">make dev</code> and check localhost:5173 loads</li>
+      <li>Check that the page title says "GreenScape Landscaping"</li>
+      <li>Open DevTools and verify a Tailwind class is applied to an element</li>
+    </ul>
+    <p class="text-sm text-text-secondary"><strong>Concerns:</strong> None — straightforward setup ticket.</p>
+  </div>
+
+  <p class="text-text-secondary mb-4">The Director's Briefing is Claude being transparent about what it did. Your job is to <em>verify</em> those claims, not just trust them. Claude says Tailwind is working? Open DevTools and check. Claude says content.js has all sections? Open the file and count.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>This is the skill.</strong> AI will always say "everything works." Your value as a Director is checking whether that's actually true. Sometimes it is. Sometimes it isn't. The habit of verifying is what makes you reliable.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Read the reviews</h2>
+  <p class="text-text-secondary mb-4">Open the PR on GitHub. You'll see two reviews:</p>
+
+  <div class="space-y-4 mb-6">
+    <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
+      <p class="font-semibold text-sm mb-1">Claude's self-review</p>
+      <p class="text-sm text-text-secondary">Claude compares its own work against the acceptance criteria and reports what passes and what might be an issue. Read this first — it gives you a checklist to verify against.</p>
+    </div>
+    <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
+      <p class="font-semibold text-sm mb-1">Gemini's independent review</p>
+      <p class="text-sm text-text-secondary">Gemini reviews the code for security issues, best practices, and potential bugs. It hasn't seen the code before — it's a fresh pair of eyes. Sometimes it finds real issues. Sometimes it flags things that don't matter for this project. You develop judgment about which is which.</p>
+    </div>
+  </div>
+
+  <p class="text-text-secondary mb-4">If you don't understand something in a review, ask Claude:</p>
+  <CodeBlock copy>{`Gemini said [paste the comment]. What does that mean? Should I be concerned?`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Merge or fix</h2>
+  <p class="text-text-secondary mb-4">If everything passes your verification and the reviews look clean:</p>
+  <CodeBlock copy>{`Everything looks good. Merge it.`}</CodeBlock>
+
+  <p class="text-text-secondary mb-4">If something is wrong — a criterion fails, or a review flagged a real issue:</p>
+  <CodeBlock copy>{`The page title says "Vite App" instead of "GreenScape Landscaping". Fix that before we merge.`}</CodeBlock>
+
+  <p class="text-text-secondary mb-4">Be specific. Don't say "it doesn't work" — say exactly what's wrong and what it should be instead. This is the same skill you'd use managing any developer, human or AI.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>That's one complete ticket cycle.</strong> Direct → verify → review → merge (or fix). Every ticket from now on follows this same loop. It gets faster each time because you've done it before.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Common issues on your first ticket</h2>
+
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>"make dev doesn't work"</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Is Node.js installed? Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">node --version</code>. Are dependencies installed? Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">npm install</code>. Are you in the right directory? Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">pwd</code>.</p>
+    </div>
+  </details>
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>"Claude can't create the GitHub repo"</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">gh auth status</code>. If not logged in, run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">gh auth login</code>.</p>
+    </div>
+  </details>
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>"Claude added something not in the PRD"</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">This is expected and educational. AI does this constantly. Direct Claude: "The PRD anti-scope says no [feature]. Remove it." This is the most important skill you're learning.</p>
+    </div>
+  </details>
+</DocsLayout>
