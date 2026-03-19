@@ -48,8 +48,9 @@ import DocsLayout from '../../../../layouts/DocsLayout.astro';
       </div>
       <p class="text-sm text-text-secondary mb-3">The architecture document defines <em>how to build it</em> technically — what technologies to use, how to structure the code, how data flows through the system, and how the pieces connect. You produce it from the PRD and design spec.</p>
       <p class="text-sm text-text-secondary mb-3">For GreenScape, the architecture is simple: React + Vite + Tailwind, eight components, one data file, deploy to Netlify. But even a simple project has architecture decisions — and seeing them written down shows you what to look for. In later projects, this will include database schemas, API contracts, and complex component relationships. You'll direct AI to generate the architecture, and your job will be catching over-engineering and missing dependencies.</p>
-      <p class="text-sm text-text-secondary"><strong>In this project:</strong> the architecture has been written for you. <strong>In later projects:</strong> you'll direct AI to produce it from the PRD and design spec.</p>
-      <p class="text-sm mt-3"><a href="/web-dev/projects/1/architecture">Read the GreenScape architecture →</a></p>
+      <p class="text-sm text-text-secondary mb-3">The architecture also produces the <strong>CLAUDE.md</strong> — the project memory file that Claude Code reads at the start of every session. It's the architecture distilled into instructions for AI: tech stack, repo structure, anti-scope rules, engineering standards. It goes into the repo before any code.</p>
+      <p class="text-sm text-text-secondary"><strong>In this project:</strong> the architecture and CLAUDE.md have been written for you. <strong>In later projects:</strong> you'll direct AI to produce both from the PRD and design spec.</p>
+      <p class="text-sm mt-3"><a href="/web-dev/projects/1/architecture">Read the GreenScape architecture + CLAUDE.md →</a></p>
     </div>
 
     <!-- Connector -->
@@ -61,10 +62,9 @@ import DocsLayout from '../../../../layouts/DocsLayout.astro';
         <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">4</div>
         <h2 class="text-lg font-semibold">Backlog</h2>
       </div>
-      <p class="text-sm text-text-secondary mb-3">The backlog breaks the architecture (or in this case, the PRD) into an ordered list of tickets — small units of work, each with specific acceptance criteria. Tickets are ordered by dependency: you can't build the services section before the page layout exists.</p>
-      <p class="text-sm text-text-secondary mb-3">The CLAUDE.md file is also created at this stage. It's the project memory file — the briefing document for your AI developer. It contains the tech stack, repo structure, anti-scope rules, and engineering standards, all derived from the PRD and architecture. Claude Code reads it at the start of every session.</p>
-      <p class="text-sm text-text-secondary"><strong>In this project:</strong> the backlog and CLAUDE.md have been written for you. <strong>In later projects:</strong> you'll direct AI to produce both from the architecture document.</p>
-      <p class="text-sm mt-3"><a href="/web-dev/projects/1/backlog">Read the GreenScape backlog →</a> · <a href="/web-dev/projects/1/claude-md">Read the CLAUDE.md →</a></p>
+      <p class="text-sm text-text-secondary mb-3">The backlog breaks the architecture into an ordered list of tickets — small units of work, each with specific acceptance criteria. Tickets are ordered by dependency: you can't build the services section before the page layout exists.</p>
+      <p class="text-sm text-text-secondary"><strong>In this project:</strong> the backlog has been written for you. <strong>In later projects:</strong> you'll direct AI to produce it from the architecture document.</p>
+      <p class="text-sm mt-3"><a href="/web-dev/projects/1/backlog">Read the GreenScape backlog →</a></p>
     </div>
 
     <!-- Connector -->
