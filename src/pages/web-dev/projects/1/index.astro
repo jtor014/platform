@@ -1,6 +1,5 @@
 ---
 import DocsLayout from '../../../../layouts/DocsLayout.astro';
-import Card from '../../../../components/Card.astro';
 import Callout from '../../../../components/Callout.astro';
 import Checklist from '../../../../components/Checklist.astro';
 ---
@@ -45,12 +44,32 @@ import Checklist from '../../../../components/Checklist.astro';
   <p class="text-text-secondary mb-8">2–4 days. 8 tickets.</p>
 
   <h2 class="mb-4 mt-10">Materials</h2>
-  <p class="text-text-secondary mb-4">Read these in order before starting your first ticket:</p>
-  <div class="grid gap-3">
-    <Card title="1. Product Requirements (PRD)" subtitle="What we're building, acceptance criteria, anti-scope" href="/web-dev/projects/1/prd" />
-    <Card title="2. Backlog" subtitle="All 8 tickets with acceptance criteria" href="/web-dev/projects/1/backlog" />
-    <Card title="3. Design specification" subtitle="Colours, typography, spacing, section layouts" href="/web-dev/projects/1/design" />
-    <Card title="4. CLAUDE.md" subtitle="The project memory file you give to Claude Code" href="/web-dev/projects/1/claude-md" />
-    <Card title="5. Step-by-step guide" subtitle="Follow this for your first ticket cycle, then work independently" href="/web-dev/projects/1/guide" />
+  <p class="text-text-secondary mb-6">Read these in order before starting your first ticket. Here's what each one is and why it matters:</p>
+
+  <div class="space-y-4 mb-6">
+    <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
+      <p class="font-semibold text-sm mb-1"><a href="/web-dev/projects/1/prd">1. Product Requirements Document (PRD)</a></p>
+      <p class="text-sm text-text-secondary">The PRD defines <em>what</em> we're building — features, acceptance criteria, and crucially, what we're <em>not</em> building (anti-scope). In this project, the PRD has been written for you. In later projects, you'll direct AI to generate PRDs from client briefs — turning a vague conversation into a structured specification. For now, read the whole thing. Pay special attention to the anti-scope section.</p>
+    </div>
+    <div class="border-l-4 border-l-border bg-bg-subtle p-4 rounded-r-lg">
+      <p class="font-semibold text-sm mb-1 text-text-secondary">Architecture <span class="text-text-muted font-normal">(skipped in this project)</span></p>
+      <p class="text-sm text-text-secondary">In later projects, you'll direct AI to create an architecture document from the PRD — database schema, API contracts, component structure, and technology choices. The architecture is how you go from "what to build" to "how to build it." Project 1 is a simple static site, so we skip this step — but from Project 2 onwards, architecture becomes a key part of your planning.</p>
+    </div>
+    <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
+      <p class="font-semibold text-sm mb-1"><a href="/web-dev/projects/1/backlog">2. Backlog</a></p>
+      <p class="text-sm text-text-secondary">The backlog is the list of tickets — small, ordered units of work with specific acceptance criteria. In later projects, you'll direct AI to break the architecture into tickets. In this project, the backlog has been written for you. Each ticket becomes one cycle of the loop: branch → build → verify → merge.</p>
+    </div>
+    <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
+      <p class="font-semibold text-sm mb-1"><a href="/web-dev/projects/1/design">3. Design specification</a></p>
+      <p class="text-sm text-text-secondary">The design spec defines <em>how it looks</em> — colours, fonts, spacing, layout. This is what you verify AI's output against using browser DevTools. Specific values, not vibes.</p>
+    </div>
+    <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
+      <p class="font-semibold text-sm mb-1"><a href="/web-dev/projects/1/claude-md">4. CLAUDE.md</a></p>
+      <p class="text-sm text-text-secondary">The project memory file. Claude Code reads this at the start of every session — it contains the tech stack, repo structure, anti-scope rules, and engineering standards. You paste this into your project so Claude stays consistent across sessions. In later projects, you'll direct AI to generate this from templates.</p>
+    </div>
+    <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
+      <p class="font-semibold text-sm mb-1"><a href="/web-dev/projects/1/guide">5. Step-by-step guide</a></p>
+      <p class="text-sm text-text-secondary">Follow this for your first ticket cycle, then work through the remaining tickets independently. It walks you through setting up VS Code, launching Claude, and completing your first full branch → build → verify → merge loop.</p>
+    </div>
   </div>
 </DocsLayout>
