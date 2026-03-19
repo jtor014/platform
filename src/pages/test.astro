@@ -1,0 +1,78 @@
+---
+import DocsLayout from '../layouts/DocsLayout.astro';
+---
+
+<DocsLayout title="Layout Test" description="Test page demonstrating the docs layout with sidebar, breadcrumbs, and navigation.">
+  <h1 class="mb-6">Layout Test Page</h1>
+
+  <p class="mb-6 text-text-secondary">
+    This page demonstrates the DocsLayout with sidebar navigation, breadcrumbs, content area (720px max),
+    previous/next links, and footer. It will be removed before merging the final ticket.
+  </p>
+
+  <h2 class="mb-4 mt-10">Typography</h2>
+  <p class="mb-4">Body text uses Inter at 16px with 1.7 line height. This paragraph demonstrates the default prose styling. The content area is capped at 720px for optimal readability.</p>
+
+  <h3 class="mb-3 mt-8">Heading 3</h3>
+  <p class="mb-4">Inter 600 weight at 22px (20px on mobile).</p>
+
+  <h4 class="mb-2 mt-6">Heading 4</h4>
+  <p class="mb-4">Inter 600 weight at 18px.</p>
+
+  <h2 class="mb-4 mt-10">Colours</h2>
+  <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-8">
+    <div>
+      <div class="w-full h-12 rounded-lg bg-primary mb-2"></div>
+      <p class="text-sm text-text-secondary">Primary #2563EB</p>
+    </div>
+    <div>
+      <div class="w-full h-12 rounded-lg bg-primary-dark mb-2"></div>
+      <p class="text-sm text-text-secondary">Primary dark #1D4ED8</p>
+    </div>
+    <div>
+      <div class="w-full h-12 rounded-lg bg-primary-bg border border-border mb-2"></div>
+      <p class="text-sm text-text-secondary">Primary bg #EFF6FF</p>
+    </div>
+    <div>
+      <div class="w-full h-12 rounded-lg bg-success mb-2"></div>
+      <p class="text-sm text-text-secondary">Success #16A34A</p>
+    </div>
+    <div>
+      <div class="w-full h-12 rounded-lg bg-warning mb-2"></div>
+      <p class="text-sm text-text-secondary">Warning #D97706</p>
+    </div>
+    <div>
+      <div class="w-full h-12 rounded-lg bg-sidebar-bg mb-2"></div>
+      <p class="text-sm text-text-secondary">Sidebar #1E293B</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Sidebar</h2>
+  <ul class="list-disc list-inside mb-4 text-text-secondary space-y-1">
+    <li>Dark background (#1E293B) — visible on desktop ≥1024px</li>
+    <li>Current page is highlighted (this page won't be since it's a test)</li>
+    <li>Sections expand without collapsing others</li>
+    <li>On mobile: hamburger icon in header, sidebar slides in as overlay</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Details / Summary</h2>
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>Click to expand this section</summary>
+    <div class="p-4">
+      <p>This content was hidden. The chevron rotates on open. Native HTML, no JavaScript required.</p>
+    </div>
+  </details>
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>Another expandable section</summary>
+    <div class="p-4">
+      <p>Opening this section does not close the one above. Each operates independently.</p>
+    </div>
+  </details>
+
+  <h2 class="mb-4 mt-10">Spacing Reference</h2>
+  <p class="text-text-secondary mb-4">Base unit: 4px. Multiples used throughout: 4, 8, 12, 16, 24, 32, 48, 64, 80.</p>
+
+  <div class="p-6 bg-bg-subtle rounded-lg border border-border">
+    <p class="text-sm text-text-secondary">This box uses: 24px padding (space-6), 8px border-radius, bg-subtle background, standard border.</p>
+  </div>
+</DocsLayout>
