@@ -64,116 +64,164 @@ import StepList from '../../components/StepList.astro';
 
   <!-- Setup -->
   <h2 class="mb-6 mt-16 pt-8 border-t border-border">Setup</h2>
-  <p class="text-text-secondary mb-8">Six tools and two accounts. Install them in order — each one builds on the last.</p>
+  <p class="text-text-secondary mb-8">Your operating system, six tools, and two accounts. About 30–60 minutes.</p>
+
+  <!-- Choose your platform -->
+  <h3 class="mb-4">Choose your platform</h3>
+  <p class="text-text-secondary mb-4">Everything in this course runs in a terminal. The commands are written for Mac and Linux. If you're on Windows, you have two good options.</p>
+
+  <div class="grid gap-4 sm:grid-cols-3 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h4 class="text-base font-semibold mb-2">Mac</h4>
+      <p class="text-sm text-text-secondary">Works out of the box. Open Terminal (in Applications → Utilities) and you're ready. All commands in this guide work as-is.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h4 class="text-base font-semibold mb-2">Linux</h4>
+      <p class="text-sm text-text-secondary">The best development experience. If you have a Windows machine, consider dual-booting Ubuntu — you'll have a native Linux environment with no compatibility issues. All commands work as-is.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h4 class="text-base font-semibold mb-2">Windows + WSL</h4>
+      <p class="text-sm text-text-secondary">If you'd rather not dual-boot, install WSL (Windows Subsystem for Linux). It gives you a real Linux terminal inside Windows. All commands work as-is inside WSL.</p>
+    </div>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Recommended for Windows users:</strong> Install WSL before anything else. It avoids path issues, permission headaches, and incompatible line endings that trip people up later. Once WSL is set up, follow the Linux instructions for everything below.</p>
+  </Callout>
+
+  <details class="mt-4 mb-8 border border-border rounded-lg overflow-hidden">
+    <summary>How to install WSL</summary>
+    <div class="p-4 space-y-3">
+      <p class="text-sm text-text-secondary">Open PowerShell as Administrator and run:</p>
+      <CodeBlock terminal copy>{`$ wsl --install`}</CodeBlock>
+      <p class="text-sm text-text-secondary">This installs WSL 2 with Ubuntu. Restart your computer when prompted.</p>
+      <p class="text-sm text-text-secondary">After restart, Ubuntu will open and ask you to create a username and password. These are for Linux only — they don't need to match your Windows credentials.</p>
+      <p class="text-sm text-text-secondary">From now on, open <strong>Ubuntu</strong> from your Start menu (not PowerShell or Command Prompt) for all development work. VS Code integrates with WSL automatically — when you run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">code .</code> from WSL, it opens with full Linux support.</p>
+    </div>
+  </details>
 
   <!-- 1. VS Code -->
   <h3 class="mb-4">1. VS Code</h3>
-  <p class="text-text-secondary mb-4"><strong class="text-text">What it is:</strong> A free code editor. You'll read what Claude creates and verify it.</p>
+  <p class="text-text-secondary mb-4"><strong class="text-text">What it is:</strong> A free code editor. You won't write code in it — you'll read what Claude creates and verify it.</p>
 
-  <StepList steps={[
-    { title: "Go to code.visualstudio.com" },
-    { title: "Download for your operating system" },
-    { title: "Install it" },
-  ]} />
+  <p class="text-sm text-text-secondary mb-2"><strong>Mac:</strong> Download from <a href="https://code.visualstudio.com">code.visualstudio.com</a> and drag to Applications.</p>
+  <p class="text-sm text-text-secondary mb-2"><strong>Linux / WSL:</strong></p>
+  <CodeBlock terminal copy>{`$ sudo apt update
+$ sudo apt install code`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-2">Or download the .deb package from <a href="https://code.visualstudio.com">code.visualstudio.com</a> and install with <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">sudo dpkg -i code_*.deb</code>.</p>
+  <p class="text-sm text-text-secondary mb-4"><strong>Windows (without WSL):</strong> Download from <a href="https://code.visualstudio.com">code.visualstudio.com</a> and run the installer.</p>
 
-  <h4 class="mb-2">Verify</h4>
+  <Callout variant="info">
+    <p class="text-sm"><strong>WSL users:</strong> Install VS Code on Windows (not inside WSL). Then install the <strong>WSL extension</strong> in VS Code. When you run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">code .</code> from your WSL terminal, VS Code opens with full Linux filesystem access.</p>
+  </Callout>
+
+  <h4 class="mb-2 mt-4">Verify</h4>
   <CodeBlock terminal copy>{`$ code --version`}</CodeBlock>
 
   <details class="mb-8 border border-border rounded-lg overflow-hidden">
     <summary>Troubleshooting: "command not found: code"</summary>
     <div class="p-4">
-      <p class="text-sm text-text-secondary">Open VS Code → Cmd+Shift+P (Mac) or Ctrl+Shift+P (Windows) → "Shell Command" → "Install 'code' command in PATH."</p>
+      <p class="text-sm text-text-secondary"><strong>Mac:</strong> Open VS Code → Cmd+Shift+P → type "Shell Command" → click "Install 'code' command in PATH."</p>
+      <p class="text-sm text-text-secondary mt-2"><strong>Linux:</strong> If you installed via .deb, the command should be available. Try restarting your terminal.</p>
     </div>
   </details>
 
   <!-- 2. Git -->
   <h3 class="mb-4">2. Git</h3>
-  <p class="text-text-secondary mb-4"><strong class="text-text">What it is:</strong> Version control. Every change is tracked. You can always go back.</p>
+  <p class="text-text-secondary mb-4"><strong class="text-text">What it is:</strong> Version control. Every change to every file is tracked. You can always go back.</p>
 
-  <p class="text-sm text-text-secondary mb-2"><strong>Mac:</strong> Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">git --version</code> — if not installed, macOS will prompt you to install Command Line Tools.</p>
-  <p class="text-sm text-text-secondary mb-2"><strong>Windows:</strong> Download from <a href="https://git-scm.com/download/win">git-scm.com</a>, install with default settings.</p>
-  <p class="text-sm text-text-secondary mb-2"><strong>Linux:</strong></p>
+  <p class="text-sm text-text-secondary mb-2"><strong>Mac:</strong></p>
+  <CodeBlock terminal copy>{`$ git --version`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-4">If Git isn't installed, macOS will prompt you to install Command Line Tools — click Install and wait.</p>
+
+  <p class="text-sm text-text-secondary mb-2"><strong>Linux / WSL:</strong></p>
   <CodeBlock terminal copy>{`$ sudo apt update && sudo apt install git -y`}</CodeBlock>
 
-  <h4 class="mb-2 mt-4">Configure</h4>
+  <h4 class="mb-2 mt-4">Configure (all platforms)</h4>
   <CodeBlock terminal copy>{`$ git config --global user.name "Your Name"
 $ git config --global user.email "your.email@example.com"`}</CodeBlock>
-  <p class="text-sm text-text-secondary mb-2">Use the same email as your GitHub account.</p>
+  <p class="text-sm text-text-secondary mb-2">Use the same email you'll use for your GitHub account.</p>
 
   <h4 class="mb-2 mt-4">Verify</h4>
   <CodeBlock terminal copy>{`$ git --version`}</CodeBlock>
 
   <!-- 3. GitHub -->
   <h3 class="mb-4 mt-8">3. GitHub Account & CLI</h3>
-  <p class="text-text-secondary mb-4"><strong class="text-text">What it is:</strong> GitHub stores your code online. The CLI lets you create repos and manage PRs from the terminal.</p>
+  <p class="text-text-secondary mb-4"><strong class="text-text">What it is:</strong> GitHub stores your code online. The CLI lets you create repos, open PRs, and manage boards from the terminal.</p>
 
-  <p class="text-sm text-text-secondary mb-4">Create a GitHub account at <a href="https://github.com">github.com</a> (free).</p>
+  <p class="text-sm text-text-secondary mb-4"><strong>Create an account:</strong> Go to <a href="https://github.com">github.com</a> and sign up (free).</p>
 
-  <p class="text-sm text-text-secondary mb-2"><strong>Mac:</strong></p>
+  <p class="text-sm text-text-secondary mb-2"><strong>Install the CLI — Mac:</strong></p>
   <CodeBlock terminal copy>{`$ brew install gh`}</CodeBlock>
-  <details class="mb-2 border border-border rounded-lg overflow-hidden">
+  <details class="mb-4 border border-border rounded-lg overflow-hidden">
     <summary>Don't have Homebrew?</summary>
     <div class="p-4">
+      <p class="text-sm text-text-secondary">Homebrew is a package manager for Mac. Install it first:</p>
       <CodeBlock terminal copy>{`$ /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"`}</CodeBlock>
+      <p class="text-sm text-text-secondary mt-2">Follow the instructions it prints at the end — you may need to add Homebrew to your PATH.</p>
     </div>
   </details>
 
-  <p class="text-sm text-text-secondary mb-2 mt-4"><strong>Windows:</strong></p>
-  <CodeBlock terminal copy>{`$ winget install GitHub.cli`}</CodeBlock>
-
-  <p class="text-sm text-text-secondary mb-2"><strong>Linux:</strong></p>
+  <p class="text-sm text-text-secondary mb-2"><strong>Linux / WSL:</strong></p>
   <CodeBlock terminal copy>{`$ sudo apt install gh -y`}</CodeBlock>
 
   <h4 class="mb-2 mt-4">Log in</h4>
   <CodeBlock terminal copy>{`$ gh auth login`}</CodeBlock>
-  <p class="text-sm text-text-secondary mb-2">Choose: GitHub.com → HTTPS → Login with a web browser.</p>
+  <p class="text-sm text-text-secondary mb-2">Choose: GitHub.com → HTTPS → Login with a web browser. It will give you a code to enter at github.com/login/device.</p>
 
   <h4 class="mb-2 mt-4">Verify</h4>
   <CodeBlock terminal copy>{`$ gh auth status`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-2">Should show "Logged in to github.com."</p>
 
   <details class="mb-8 border border-border rounded-lg overflow-hidden">
-    <summary>Troubleshooting: "gh auth login" hangs</summary>
+    <summary>Troubleshooting: "gh auth login" hangs or fails</summary>
     <div class="p-4">
-      <p class="text-sm text-text-secondary">Try: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">gh auth login --web</code> to force browser-based auth.</p>
+      <p class="text-sm text-text-secondary">Try: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">gh auth login --web</code> to force browser-based auth. If you're in WSL, make sure your default browser is configured — or copy the URL manually.</p>
     </div>
   </details>
 
-  <!-- 4. Claude Code -->
-  <h3 class="mb-4">4. Claude Code</h3>
-  <p class="text-text-secondary mb-4"><strong class="text-text">What it is:</strong> Your AI developer. Writes code, creates files, runs tests, opens pull requests.</p>
-  <p class="text-text-secondary mb-4"><strong class="text-text">You need:</strong> A Claude Pro ($20/month) or Max subscription from <a href="https://claude.ai">claude.ai</a>.</p>
+  <!-- 4. Node.js -->
+  <h3 class="mb-4">4. Node.js</h3>
+  <p class="text-text-secondary mb-4"><strong class="text-text">What it is:</strong> The JavaScript runtime. The project tooling, build system, and web stack all depend on it.</p>
+  <p class="text-text-secondary mb-4"><strong class="text-text">Target version:</strong> Node.js 20 LTS — the current Long Term Support release with the widest compatibility.</p>
+
+  <p class="text-sm text-text-secondary mb-2"><strong>Mac:</strong></p>
+  <CodeBlock terminal copy>{`$ brew install node@20`}</CodeBlock>
+
+  <p class="text-sm text-text-secondary mb-2"><strong>Linux / WSL:</strong></p>
+  <CodeBlock terminal copy>{`$ curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+$ sudo apt install nodejs -y`}</CodeBlock>
+
+  <p class="text-sm text-text-secondary mb-4"><strong>Any platform:</strong> Or download the installer from <a href="https://nodejs.org">nodejs.org</a> — choose the <strong>LTS</strong> version.</p>
+
+  <h4 class="mb-2">Verify</h4>
+  <CodeBlock terminal copy>{`$ node --version
+$ npm --version`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-2">Node should show v20.x.x. npm comes bundled with Node.</p>
+
+  <details class="mb-8 border border-border rounded-lg overflow-hidden">
+    <summary>Troubleshooting: wrong Node version</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">If you have an older version, uninstall it and reinstall from <a href="https://nodejs.org">nodejs.org</a>. If you use nvm, run: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">nvm install 20 && nvm use 20</code>.</p>
+    </div>
+  </details>
+
+  <!-- 5. Claude Code -->
+  <h3 class="mb-4">5. Claude Code</h3>
+  <p class="text-text-secondary mb-4"><strong class="text-text">What it is:</strong> Your AI developer. You direct it from the terminal — it writes code, creates files, runs tests, and opens pull requests.</p>
+  <p class="text-text-secondary mb-4"><strong class="text-text">You need:</strong> A Claude Pro ($20/month) or Max subscription from <a href="https://claude.ai">claude.ai</a>. This gives you access to Claude Code. Note: this is a subscription to claude.ai, not API credits — they're different products.</p>
 
   <CodeBlock terminal copy>{`$ npm install -g @anthropic-ai/claude-code`}</CodeBlock>
 
   <h4 class="mb-2 mt-4">Verify</h4>
   <CodeBlock terminal copy>{`$ claude --version`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-2">When you run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">claude</code> for the first time, it will open your browser to authenticate.</p>
 
   <details class="mb-8 border border-border rounded-lg overflow-hidden">
     <summary>Troubleshooting: permission errors on Mac/Linux</summary>
     <div class="p-4">
-      <p class="text-sm text-text-secondary">Run: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">sudo npm install -g @anthropic-ai/claude-code</code></p>
-    </div>
-  </details>
-
-  <!-- 5. Node.js -->
-  <h3 class="mb-4">5. Node.js</h3>
-  <p class="text-text-secondary mb-4"><strong class="text-text">What it is:</strong> The JavaScript runtime. The project tooling and web stack depend on it.</p>
-  <p class="text-text-secondary mb-4"><strong class="text-text">Target version:</strong> Node.js 20 LTS.</p>
-
-  <StepList steps={[
-    { title: "Go to nodejs.org" },
-    { title: "Download the LTS version (v20.x.x)" },
-    { title: "Run the installer" },
-  ]} />
-
-  <h4 class="mb-2">Verify</h4>
-  <CodeBlock terminal copy>{`$ node --version
-$ npm --version`}</CodeBlock>
-
-  <details class="mb-8 border border-border rounded-lg overflow-hidden">
-    <summary>Troubleshooting: Node.js version too old</summary>
-    <div class="p-4">
-      <p class="text-sm text-text-secondary">Uninstall and reinstall from <a href="https://nodejs.org">nodejs.org</a> — get the LTS version.</p>
+      <p class="text-sm text-text-secondary">Run with sudo: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">sudo npm install -g @anthropic-ai/claude-code</code></p>
+      <p class="text-sm text-text-secondary mt-2">Or fix npm permissions permanently: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">mkdir ~/.npm-global && npm config set prefix '~/.npm-global'</code> then add <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">export PATH=~/.npm-global/bin:$PATH</code> to your ~/.bashrc or ~/.zshrc.</p>
     </div>
   </details>
 
@@ -185,28 +233,31 @@ $ npm --version`}</CodeBlock>
     <p class="text-sm">You don't need Docker for Project 1. Install it now so it's ready for Project 2.</p>
   </Callout>
 
-  <p class="text-sm text-text-secondary mb-2 mt-4"><strong>Mac:</strong> Download Docker Desktop from <a href="https://www.docker.com/products/docker-desktop/">docker.com</a>, install, and open it.</p>
-  <p class="text-sm text-text-secondary mb-2"><strong>Windows:</strong> Download Docker Desktop, install, restart if prompted, and open it.</p>
+  <p class="text-sm text-text-secondary mb-2 mt-4"><strong>Mac:</strong></p>
+  <StepList steps={[
+    { title: "Download Docker Desktop from docker.com/products/docker-desktop" },
+    { title: "Install (drag to Applications)" },
+    { title: "Open Docker Desktop — it runs in the background" },
+  ]} />
+
   <p class="text-sm text-text-secondary mb-2"><strong>Linux:</strong></p>
   <CodeBlock terminal copy>{`$ sudo apt update
 $ sudo apt install docker.io docker-compose-v2 -y
 $ sudo usermod -aG docker $USER`}</CodeBlock>
   <p class="text-sm text-text-secondary mb-4">Log out and back in for the group change to take effect.</p>
 
-  <h4 class="mb-2">Verify</h4>
+  <p class="text-sm text-text-secondary mb-2"><strong>WSL:</strong> Install Docker Desktop on Windows (not inside WSL). In Docker Desktop settings, enable <strong>"Use the WSL 2 based engine"</strong> and under Resources → WSL Integration, enable your Ubuntu distribution. Docker commands will then work from your WSL terminal.</p>
+
+  <h4 class="mb-2 mt-4">Verify</h4>
   <CodeBlock terminal copy>{`$ docker --version
 $ docker compose version`}</CodeBlock>
 
-  <details class="mb-4 border border-border rounded-lg overflow-hidden">
+  <details class="mb-8 border border-border rounded-lg overflow-hidden">
     <summary>Troubleshooting: "docker: command not found"</summary>
     <div class="p-4">
-      <p class="text-sm text-text-secondary">Docker Desktop must be running. Look for the whale icon in your system tray.</p>
-    </div>
-  </details>
-  <details class="mb-8 border border-border rounded-lg overflow-hidden">
-    <summary>Windows note: WSL 2</summary>
-    <div class="p-4">
-      <p class="text-sm text-text-secondary">Docker Desktop works best with WSL 2. The installer will prompt you to enable it.</p>
+      <p class="text-sm text-text-secondary"><strong>Mac/Windows:</strong> Docker Desktop must be running. Look for the whale icon in your system tray.</p>
+      <p class="text-sm text-text-secondary mt-2"><strong>Linux:</strong> If you just added yourself to the docker group, you need to log out and back in (or run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">newgrp docker</code>).</p>
+      <p class="text-sm text-text-secondary mt-2"><strong>WSL:</strong> Make sure Docker Desktop is running on Windows and WSL integration is enabled in settings.</p>
     </div>
   </details>
 
@@ -238,17 +289,18 @@ $ docker compose version`}</CodeBlock>
     </table>
   </div>
 
-  <p class="text-sm text-text-secondary mb-2"><strong>Netlify:</strong> Sign up at <a href="https://netlify.com">netlify.com</a> with your GitHub account.</p>
-  <p class="text-sm text-text-secondary mb-6"><strong>Gemini API key:</strong> Go to <a href="https://aistudio.google.com/apikey">aistudio.google.com/apikey</a>, create a key, save it somewhere safe.</p>
+  <p class="text-sm text-text-secondary mb-2"><strong>Netlify:</strong> Sign up at <a href="https://netlify.com">netlify.com</a> with your GitHub account. You'll connect it to your project repo in Project 1.</p>
+  <p class="text-sm text-text-secondary mb-6"><strong>Gemini API key:</strong> Go to <a href="https://aistudio.google.com/apikey">aistudio.google.com/apikey</a>, sign in with Google, click "Create API Key", and save it somewhere safe. You'll add it to GitHub Secrets in Project 2.</p>
 
   <!-- Verify everything -->
   <h2 class="mb-4 mt-12">Verify everything</h2>
+  <p class="text-text-secondary mb-4">Run all of these. Every one should succeed:</p>
   <CodeBlock terminal copy>{`$ code --version
 $ git --version
 $ gh auth status
-$ claude --version
 $ node --version
 $ npm --version
+$ claude --version
 $ docker --version
 $ docker compose version`}</CodeBlock>
 
