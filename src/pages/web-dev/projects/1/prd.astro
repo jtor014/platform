@@ -122,5 +122,10 @@ const prdRaw = fs.readFileSync('content/projects/project-1/prd-greenscape.md', '
   </ul>
 
   <h2 class="mb-4 mt-10">Technical Constraints</h2>
-  <p class="text-text-secondary mb-2">React + Vite + Tailwind CSS. Static site on Netlify free tier. Must work in Chrome, Firefox, Safari, Edge. Accessible (headings, alt text, contrast).</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-2">
+    <li>Static site — no backend, no database, no server-side processing</li>
+    <li>Must work in Chrome, Firefox, Safari, and Edge (latest 2 versions)</li>
+    <li>Accessible — proper heading hierarchy, alt text on images, sufficient colour contrast</li>
+    <li>Deployed to a live, publicly accessible URL</li>
+  </ul>
 </DocsLayout>
