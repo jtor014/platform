@@ -64,11 +64,43 @@ import StepList from '../../components/StepList.astro';
 
   <!-- Setup -->
   <h2 class="mb-6 mt-16 pt-8 border-t border-border">Setup</h2>
-  <p class="text-text-secondary mb-8">Your operating system, six tools, and two accounts. About 30–60 minutes.</p>
+  <p class="text-text-secondary mb-8">Your operating system, the terminal, six tools, and two accounts. About 30–60 minutes.</p>
+
+  <!-- The Terminal -->
+  <h3 class="mb-4">The terminal</h3>
+  <p class="text-text-secondary mb-4">Everything in this course happens in a terminal — a text-based interface where you type commands instead of clicking buttons. If you've never used one, that's fine. Here's what you need to know:</p>
+
+  <div class="space-y-3 mb-6">
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">$</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">The dollar sign is a prompt.</strong> When you see <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">$ git --version</code>, you type <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">git --version</code> and press Enter. Don't type the $.</p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">→</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Commands run in a directory.</strong> Your terminal is always "in" a folder. Use <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">pwd</code> to see where you are, <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">cd foldername</code> to move into a folder, and <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">ls</code> to list what's inside.</p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">↑</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Press ↑ to repeat.</strong> The up arrow cycles through previous commands. You'll use this constantly.</p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">⌃</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Ctrl+C stops things.</strong> If a command is running and you want to stop it (like a dev server), press Ctrl+C.</p>
+    </div>
+  </div>
+
+  <p class="text-text-secondary mb-4"><strong>How to open it:</strong> On Mac, open <strong>Terminal</strong> (Applications → Utilities). On Linux, open your terminal emulator. On Windows with WSL, open <strong>Ubuntu</strong> from the Start menu.</p>
+
+  <details class="mb-8 border border-border rounded-lg overflow-hidden">
+    <summary>Want a fuller introduction?</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">MDN has a good beginner guide: <a href="https://developer.mozilla.org/en-US/docs/Learn_web_development/Getting_started/Environment_setup/Command_line">Command line crash course</a>. Read the first few sections — you don't need to memorise everything. You'll pick up the rest as you go.</p>
+    </div>
+  </details>
 
   <!-- Choose your platform -->
   <h3 class="mb-4">Choose your platform</h3>
-  <p class="text-text-secondary mb-4">Everything in this course runs in a terminal. The commands are written for Mac and Linux. If you're on Windows, you have two good options.</p>
+  <p class="text-text-secondary mb-4">The commands in this course are written for Mac and Linux. If you're on Windows, you have two good options.</p>
 
   <div class="grid gap-4 sm:grid-cols-3 mb-8">
     <div class="border border-border rounded-lg p-6">
