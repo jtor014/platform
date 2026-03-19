@@ -1,0 +1,27 @@
+---
+import { getPageNav } from '../data/manifest';
+
+interface Props {
+  currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+const { prev, next } = getPageNav(currentPath);
+---
+
+{(prev || next) && (
+  <nav aria-label="Page navigation" class="mt-12 pt-8 border-t border-border flex justify-between items-center gap-4">
+    {prev ? (
+      <a href={prev.route} class="group flex flex-col items-start text-sm hover:text-primary transition-colors">
+        <span class="text-text-muted text-xs mb-1">← Previous</span>
+        <span class="font-medium text-text group-hover:text-primary">{prev.title}</span>
+      </a>
+    ) : <div />}
+    {next ? (
+      <a href={next.route} class="group flex flex-col items-end text-sm text-right hover:text-primary transition-colors">
+        <span class="text-text-muted text-xs mb-1">Next →</span>
+        <span class="font-medium text-text group-hover:text-primary">{next.title}</span>
+      </a>
+    ) : <div />}
+  </nav>
+)}

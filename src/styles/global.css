@@ -1,1 +1,96 @@
 @import "tailwindcss";
+
+@theme {
+  --color-bg: #FFFFFF;
+  --color-bg-subtle: #F8FAFC;
+  --color-bg-muted: #F1F5F9;
+  --color-text: #0F172A;
+  --color-text-secondary: #475569;
+  --color-text-muted: #94A3B8;
+  --color-primary: #2563EB;
+  --color-primary-dark: #1D4ED8;
+  --color-primary-bg: #EFF6FF;
+  --color-border: #E2E8F0;
+  --color-border-strong: #CBD5E1;
+  --color-success: #16A34A;
+  --color-success-bg: #F0FDF4;
+  --color-warning: #D97706;
+  --color-warning-bg: #FFFBEB;
+  --color-sidebar-bg: #1E293B;
+  --color-sidebar-text: #CBD5E1;
+  --color-sidebar-active-text: #FFFFFF;
+  --color-sidebar-active-bg: #334155;
+  --color-code-bg: #1E293B;
+  --color-code-text: #E2E8F0;
+
+  --font-sans: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+/* Base prose styles */
+body {
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--color-text);
+  background: var(--color-bg);
+}
+
+/* Heading styles */
+h1 { font-weight: 700; font-size: 36px; line-height: 1.2; color: var(--color-text); }
+h2 { font-weight: 600; font-size: 28px; line-height: 1.3; color: var(--color-text); }
+h3 { font-weight: 600; font-size: 22px; line-height: 1.4; color: var(--color-text); }
+h4 { font-weight: 600; font-size: 18px; line-height: 1.4; color: var(--color-text); }
+
+@media (max-width: 767px) {
+  h1 { font-size: 30px; }
+  h2 { font-size: 24px; }
+  h3 { font-size: 20px; }
+}
+
+/* Link styles */
+a { color: var(--color-primary); text-decoration: none; }
+a:hover { color: var(--color-primary-dark); }
+
+/* Details/summary styling */
+details summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  font-weight: 500;
+  color: var(--color-primary);
+  user-select: none;
+}
+
+details summary::-webkit-details-marker {
+  display: none;
+}
+
+details summary::before {
+  content: '▸';
+  display: inline-block;
+  transition: transform 0.2s ease;
+  font-size: 12px;
+}
+
+details[open] summary::before {
+  transform: rotate(90deg);
+}
+
+details[open] > :not(summary) {
+  animation: details-open 0.2s ease;
+}
+
+details > div,
+details > p {
+  padding: 12px 14px;
+  background: var(--color-bg-subtle);
+}
+
+@keyframes details-open {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,10 +1,13 @@
 ---
+import '../styles/global.css';
+
 interface Props {
   title: string;
   description?: string;
 }
 
 const { title, description = 'Build real software. Direct AI to do it.' } = Astro.props;
+const pageTitle = title === 'Home' ? 'The Platform' : `${title} | The Platform`;
 ---
 
 <!doctype html>
@@ -13,15 +16,16 @@ const { title, description = 'Build real software. Direct AI to do it.' } = Astr
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content={description} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap"
       rel="stylesheet"
     />
-    <title>{title} | The Platform</title>
+    <title>{pageTitle}</title>
   </head>
-  <body class="bg-white text-[#0F172A] font-['Inter',sans-serif] text-base leading-[1.7]">
+  <body>
     <slot />
   </body>
 </html>

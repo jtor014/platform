@@ -1,0 +1,914 @@
+export interface PageEntry {
+  route: string;
+  title: string;
+  description: string;
+  section: string;
+  navLabel: string;
+  navParent?: string;
+  order: number;
+  contentFile: string;
+  layout: 'landing' | 'docs';
+  prev?: string;
+  next?: string;
+}
+
+export const manifest: PageEntry[] = [
+  // === Shared ===
+  {
+    route: '/',
+    title: 'Home',
+    description: 'Build real software. Direct AI to do it.',
+    section: 'home',
+    navLabel: 'Home',
+    order: 0,
+    contentFile: 'getting-started/homepage.md',
+    layout: 'landing',
+    next: '/getting-started',
+  },
+  {
+    route: '/getting-started',
+    title: 'How this works',
+    description: 'Understand the methodology: roles, the loop, and the six-project progression.',
+    section: 'getting-started',
+    navLabel: 'How this works',
+    navParent: 'Getting Started',
+    order: 1,
+    contentFile: 'getting-started/how-this-works.md',
+    layout: 'docs',
+    prev: '/',
+    next: '/getting-started/setup',
+  },
+  {
+    route: '/getting-started/setup',
+    title: 'Shared setup',
+    description: 'Install VS Code, Git, GitHub CLI, and Claude Code.',
+    section: 'getting-started',
+    navLabel: 'Shared setup',
+    navParent: 'Getting Started',
+    order: 2,
+    contentFile: 'getting-started/shared-setup.md',
+    layout: 'docs',
+    prev: '/getting-started',
+    next: '/web-dev/getting-started',
+  },
+  {
+    route: '/templates',
+    title: 'Templates',
+    description: 'Copy-paste templates for PRDs, architecture docs, backlogs, and more.',
+    section: 'templates',
+    navLabel: 'Templates',
+    order: 100,
+    contentFile: 'templates/*.md',
+    layout: 'docs',
+  },
+
+  // === Web Dev Category ===
+  {
+    route: '/web-dev',
+    title: 'Web Development',
+    description: 'Six projects from static site to live system. Build real web software with AI.',
+    section: 'web-dev',
+    navLabel: 'Web Development',
+    navParent: 'Web Development',
+    order: 10,
+    contentFile: 'web-dev/category-landing.md',
+    layout: 'docs',
+  },
+  {
+    route: '/web-dev/getting-started',
+    title: 'Web dev setup',
+    description: 'Install Node.js, Docker, Gemini API key, and Netlify for web development.',
+    section: 'web-dev',
+    navLabel: 'Web dev setup',
+    navParent: 'Web Development',
+    order: 11,
+    contentFile: 'getting-started/web-dev-setup.md',
+    layout: 'docs',
+    prev: '/getting-started/setup',
+    next: '/web-dev/projects/1',
+  },
+
+  // === Project 1 ===
+  {
+    route: '/web-dev/projects/1',
+    title: 'Project 1: The static site',
+    description: 'Deploy a website to a real URL. Your first project.',
+    section: 'web-dev',
+    navLabel: 'Project 1',
+    navParent: 'Projects',
+    order: 20,
+    contentFile: 'projects/project-1/landing.md',
+    layout: 'docs',
+    prev: '/web-dev/getting-started',
+    next: '/web-dev/projects/1/prd',
+  },
+  {
+    route: '/web-dev/projects/1/prd',
+    title: 'PRD: GreenScape',
+    description: 'Product requirements document for the GreenScape static site project.',
+    section: 'web-dev',
+    navLabel: 'PRD',
+    navParent: 'Project 1',
+    order: 21,
+    contentFile: 'projects/project-1/prd-greenscape.md',
+    layout: 'docs',
+    prev: '/web-dev/projects/1',
+    next: '/web-dev/projects/1/backlog',
+  },
+  {
+    route: '/web-dev/projects/1/backlog',
+    title: 'BACKLOG: GreenScape',
+    description: 'Ticket backlog for the GreenScape project.',
+    section: 'web-dev',
+    navLabel: 'Backlog',
+    navParent: 'Project 1',
+    order: 22,
+    contentFile: 'projects/project-1/backlog-greenscape.md',
+    layout: 'docs',
+    prev: '/web-dev/projects/1/prd',
+    next: '/web-dev/projects/1/guide',
+  },
+  {
+    route: '/web-dev/projects/1/guide',
+    title: 'Step-by-step guide',
+    description: 'Walkthrough for building GreenScape with Claude Code.',
+    section: 'web-dev',
+    navLabel: 'Guide',
+    navParent: 'Project 1',
+    order: 23,
+    contentFile: 'projects/project-1/step-by-step-guide.md',
+    layout: 'docs',
+    prev: '/web-dev/projects/1/backlog',
+    next: '/web-dev/projects/1/design',
+  },
+  {
+    route: '/web-dev/projects/1/design',
+    title: 'Design specification',
+    description: 'Visual design spec for GreenScape: colours, typography, spacing.',
+    section: 'web-dev',
+    navLabel: 'Design spec',
+    navParent: 'Project 1',
+    order: 24,
+    contentFile: 'projects/project-1/design-spec-greenscape.md',
+    layout: 'docs',
+    prev: '/web-dev/projects/1/guide',
+    next: '/web-dev/projects/1/claude-md',
+  },
+  {
+    route: '/web-dev/projects/1/claude-md',
+    title: 'CLAUDE.md',
+    description: 'Pre-filled CLAUDE.md for the GreenScape project.',
+    section: 'web-dev',
+    navLabel: 'CLAUDE.md',
+    navParent: 'Project 1',
+    order: 25,
+    contentFile: 'projects/project-1/claude-md-greenscape.md',
+    layout: 'docs',
+    prev: '/web-dev/projects/1/design',
+    next: '/web-dev/checkpoints/after-project-1',
+  },
+
+  // === Checkpoint 1 ===
+  {
+    route: '/web-dev/checkpoints/after-project-1',
+    title: 'Checkpoint: After Project 1',
+    description: 'Self-assessment exercises after completing Project 1.',
+    section: 'web-dev',
+    navLabel: 'After Project 1',
+    navParent: 'Checkpoints',
+    order: 70,
+    contentFile: 'checkpoints/checkpoint-after-project-1.md',
+    layout: 'docs',
+    prev: '/web-dev/projects/1/claude-md',
+    next: '/web-dev/projects/2',
+  },
+
+  // === Project 2 ===
+  {
+    route: '/web-dev/projects/2',
+    title: 'Project 2: The dynamic app',
+    description: 'Build a dynamic web application with CI and code review.',
+    section: 'web-dev',
+    navLabel: 'Project 2',
+    navParent: 'Projects',
+    order: 30,
+    contentFile: 'projects/project-2/landing.md',
+    layout: 'docs',
+    prev: '/web-dev/checkpoints/after-project-1',
+    next: '/web-dev/projects/2/prd',
+  },
+  {
+    route: '/web-dev/projects/2/prd',
+    title: 'PRD: FactFeed',
+    description: 'Product requirements document for FactFeed.',
+    section: 'web-dev',
+    navLabel: 'PRD',
+    navParent: 'Project 2',
+    order: 31,
+    contentFile: 'projects/project-2/prd-factfeed.md',
+    layout: 'docs',
+    prev: '/web-dev/projects/2',
+    next: '/web-dev/projects/2/backlog',
+  },
+  {
+    route: '/web-dev/projects/2/backlog',
+    title: 'BACKLOG: FactFeed',
+    description: 'Ticket backlog for FactFeed with Phase A and Phase B.',
+    section: 'web-dev',
+    navLabel: 'Backlog',
+    navParent: 'Project 2',
+    order: 32,
+    contentFile: 'projects/project-2/backlog-factfeed.md',
+    layout: 'docs',
+    prev: '/web-dev/projects/2/prd',
+    next: '/web-dev/projects/2/guide',
+  },
+  {
+    route: '/web-dev/projects/2/guide',
+    title: 'Step-by-step guide',
+    description: 'Walkthrough for building FactFeed with CI and Gemini review.',
+    section: 'web-dev',
+    navLabel: 'Guide',
+    navParent: 'Project 2',
+    order: 33,
+    contentFile: 'projects/project-2/step-by-step-guide.md',
+    layout: 'docs',
+    prev: '/web-dev/projects/2/backlog',
+    next: '/web-dev/projects/2/claude-md',
+  },
+  {
+    route: '/web-dev/projects/2/claude-md',
+    title: 'CLAUDE.md',
+    description: 'Pre-filled CLAUDE.md for the FactFeed project.',
+    section: 'web-dev',
+    navLabel: 'CLAUDE.md',
+    navParent: 'Project 2',
+    order: 34,
+    contentFile: 'projects/project-2/claude-md-factfeed.md',
+    layout: 'docs',
+    prev: '/web-dev/projects/2/guide',
+    next: '/web-dev/checkpoints/after-project-2',
+  },
+
+  // === Checkpoint 2 ===
+  {
+    route: '/web-dev/checkpoints/after-project-2',
+    title: 'Checkpoint: After Project 2',
+    description: 'Self-assessment exercises after completing Project 2.',
+    section: 'web-dev',
+    navLabel: 'After Project 2',
+    navParent: 'Checkpoints',
+    order: 71,
+    contentFile: 'checkpoints/checkpoint-after-project-2.md',
+    layout: 'docs',
+    prev: '/web-dev/projects/2/claude-md',
+    next: '/web-dev/bridge',
+  },
+
+  // === Guides ===
+  {
+    route: '/web-dev/guides/ci-setup',
+    title: 'CI pipeline setup',
+    description: 'Set up GitHub Actions CI for your project.',
+    section: 'web-dev',
+    navLabel: 'CI setup',
+    navParent: 'Guides',
+    order: 90,
+    contentFile: 'guides/ci-setup-guide.md',
+    layout: 'docs',
+  },
+  {
+    route: '/web-dev/guides/gemini-setup',
+    title: 'Gemini reviewer setup',
+    description: 'Set up Gemini as an automated PR reviewer.',
+    section: 'web-dev',
+    navLabel: 'Gemini setup',
+    navParent: 'Guides',
+    order: 91,
+    contentFile: 'guides/gemini-setup-guide.md',
+    layout: 'docs',
+  },
+
+  // === Bridge ===
+  {
+    route: '/web-dev/bridge',
+    title: 'Bridge to Project 3',
+    description: 'Annotate, repair, and generate: the bridge exercise between Project 2 and 3.',
+    section: 'web-dev',
+    navLabel: 'Bridge',
+    navParent: 'Bridge',
+    order: 40,
+    contentFile: 'bridge/bridge-instructions.md',
+    layout: 'docs',
+    prev: '/web-dev/checkpoints/after-project-2',
+    next: '/web-dev/bridge/choose-arc',
+  },
+  {
+    route: '/web-dev/bridge/choose-arc',
+    title: 'Choose your arc',
+    description: 'Pick the business story arc that matches your interests.',
+    section: 'web-dev',
+    navLabel: 'Choose your arc',
+    navParent: 'Bridge',
+    order: 41,
+    contentFile: 'getting-started/choose-your-arc.md',
+    layout: 'docs',
+    prev: '/web-dev/bridge',
+  },
+
+  // === Arc A ===
+  {
+    route: '/web-dev/arcs/a',
+    title: 'Arc A: Service business',
+    description: 'Build software for a service business — bookings, quotes, and subcontractors.',
+    section: 'web-dev',
+    navLabel: 'Arc A: Service',
+    navParent: 'Arcs',
+    order: 50,
+    contentFile: 'arcs/arc-a/landing.md',
+    layout: 'docs',
+    prev: '/web-dev/bridge/choose-arc',
+    next: '/web-dev/arcs/a/flawed-prd',
+  },
+  {
+    route: '/web-dev/arcs/a/flawed-prd',
+    title: 'Flawed PRD: Booking system',
+    description: 'An AI-generated PRD with deliberate flaws. Find and fix every one.',
+    section: 'web-dev',
+    navLabel: 'Flawed PRD',
+    navParent: 'Arc A: Service',
+    order: 51,
+    contentFile: 'arcs/arc-a/flawed-prd-arc-a.md',
+    layout: 'docs',
+    prev: '/web-dev/arcs/a',
+    next: '/web-dev/arcs/a/project-3',
+  },
+  {
+    route: '/web-dev/arcs/a/project-3',
+    title: 'Project 3: Customers want to book',
+    description: 'Arc A Project 3 — online booking for a service business.',
+    section: 'web-dev',
+    navLabel: 'Project 3',
+    navParent: 'Arc A: Service',
+    order: 52,
+    contentFile: 'arcs/arc-a/client-briefs-arc-a.md',
+    layout: 'docs',
+    prev: '/web-dev/arcs/a/flawed-prd',
+    next: '/web-dev/checkpoints/after-project-3',
+  },
+  {
+    route: '/web-dev/arcs/a/project-4',
+    title: 'Project 4: Quotes and job tracking',
+    description: 'Arc A Project 4 — quotes, invoicing, and job management.',
+    section: 'web-dev',
+    navLabel: 'Project 4',
+    navParent: 'Arc A: Service',
+    order: 53,
+    contentFile: 'arcs/arc-a/client-briefs-arc-a.md',
+    layout: 'docs',
+    prev: '/web-dev/checkpoints/after-project-3',
+    next: '/web-dev/checkpoints/after-project-4',
+  },
+  {
+    route: '/web-dev/arcs/a/project-5',
+    title: 'Project 5: Subcontractor access',
+    description: 'Arc A Project 5 — multi-role access and subcontractor portal.',
+    section: 'web-dev',
+    navLabel: 'Project 5',
+    navParent: 'Arc A: Service',
+    order: 54,
+    contentFile: 'arcs/arc-a/client-briefs-arc-a.md',
+    layout: 'docs',
+    prev: '/web-dev/checkpoints/after-project-4',
+    next: '/web-dev/checkpoints/after-project-5',
+  },
+
+  // === Arc B ===
+  {
+    route: '/web-dev/arcs/b',
+    title: 'Arc B: Online store',
+    description: 'Build an e-commerce store — products, cart, and payments.',
+    section: 'web-dev',
+    navLabel: 'Arc B: Store',
+    navParent: 'Arcs',
+    order: 55,
+    contentFile: 'arcs/arc-b/landing.md',
+    layout: 'docs',
+    prev: '/web-dev/bridge/choose-arc',
+    next: '/web-dev/arcs/b/flawed-prd',
+  },
+  {
+    route: '/web-dev/arcs/b/flawed-prd',
+    title: 'Flawed PRD: Candle store',
+    description: 'An AI-generated PRD with deliberate flaws. Find and fix every one.',
+    section: 'web-dev',
+    navLabel: 'Flawed PRD',
+    navParent: 'Arc B: Store',
+    order: 56,
+    contentFile: 'arcs/arc-b/flawed-prd-arc-b.md',
+    layout: 'docs',
+    prev: '/web-dev/arcs/b',
+    next: '/web-dev/arcs/b/project-3',
+  },
+  {
+    route: '/web-dev/arcs/b/project-3',
+    title: 'Project 3',
+    description: 'Arc B Project 3 — online candle store.',
+    section: 'web-dev',
+    navLabel: 'Project 3',
+    navParent: 'Arc B: Store',
+    order: 57,
+    contentFile: 'arcs/arc-b/client-briefs-arc-b.md',
+    layout: 'docs',
+    prev: '/web-dev/arcs/b/flawed-prd',
+    next: '/web-dev/checkpoints/after-project-3',
+  },
+  {
+    route: '/web-dev/arcs/b/project-4',
+    title: 'Project 4',
+    description: 'Arc B Project 4.',
+    section: 'web-dev',
+    navLabel: 'Project 4',
+    navParent: 'Arc B: Store',
+    order: 58,
+    contentFile: 'arcs/arc-b/client-briefs-arc-b.md',
+    layout: 'docs',
+    prev: '/web-dev/checkpoints/after-project-3',
+    next: '/web-dev/checkpoints/after-project-4',
+  },
+  {
+    route: '/web-dev/arcs/b/project-5',
+    title: 'Project 5',
+    description: 'Arc B Project 5.',
+    section: 'web-dev',
+    navLabel: 'Project 5',
+    navParent: 'Arc B: Store',
+    order: 59,
+    contentFile: 'arcs/arc-b/client-briefs-arc-b.md',
+    layout: 'docs',
+    prev: '/web-dev/checkpoints/after-project-4',
+    next: '/web-dev/checkpoints/after-project-5',
+  },
+
+  // === Arc C ===
+  {
+    route: '/web-dev/arcs/c',
+    title: 'Arc C: Content platform',
+    description: 'Build a content platform — publishing, moderation, and community.',
+    section: 'web-dev',
+    navLabel: 'Arc C: Content',
+    navParent: 'Arcs',
+    order: 60,
+    contentFile: 'arcs/arc-c/landing.md',
+    layout: 'docs',
+    prev: '/web-dev/bridge/choose-arc',
+    next: '/web-dev/arcs/c/flawed-prd',
+  },
+  {
+    route: '/web-dev/arcs/c/flawed-prd',
+    title: 'Flawed PRD: Publication site',
+    description: 'An AI-generated PRD with deliberate flaws. Find and fix every one.',
+    section: 'web-dev',
+    navLabel: 'Flawed PRD',
+    navParent: 'Arc C: Content',
+    order: 61,
+    contentFile: 'arcs/arc-c/flawed-prd-arc-c.md',
+    layout: 'docs',
+    prev: '/web-dev/arcs/c',
+    next: '/web-dev/arcs/c/project-3',
+  },
+  {
+    route: '/web-dev/arcs/c/project-3',
+    title: 'Project 3',
+    description: 'Arc C Project 3.',
+    section: 'web-dev',
+    navLabel: 'Project 3',
+    navParent: 'Arc C: Content',
+    order: 62,
+    contentFile: 'arcs/arc-c/client-briefs-arc-c.md',
+    layout: 'docs',
+    prev: '/web-dev/arcs/c/flawed-prd',
+    next: '/web-dev/checkpoints/after-project-3',
+  },
+  {
+    route: '/web-dev/arcs/c/project-4',
+    title: 'Project 4',
+    description: 'Arc C Project 4.',
+    section: 'web-dev',
+    navLabel: 'Project 4',
+    navParent: 'Arc C: Content',
+    order: 63,
+    contentFile: 'arcs/arc-c/client-briefs-arc-c.md',
+    layout: 'docs',
+    prev: '/web-dev/checkpoints/after-project-3',
+    next: '/web-dev/checkpoints/after-project-4',
+  },
+  {
+    route: '/web-dev/arcs/c/project-5',
+    title: 'Project 5',
+    description: 'Arc C Project 5.',
+    section: 'web-dev',
+    navLabel: 'Project 5',
+    navParent: 'Arc C: Content',
+    order: 64,
+    contentFile: 'arcs/arc-c/client-briefs-arc-c.md',
+    layout: 'docs',
+    prev: '/web-dev/checkpoints/after-project-4',
+    next: '/web-dev/checkpoints/after-project-5',
+  },
+
+  // === Arc D ===
+  {
+    route: '/web-dev/arcs/d',
+    title: 'Arc D: Event platform',
+    description: 'Build an event platform — registration, scheduling, and check-in.',
+    section: 'web-dev',
+    navLabel: 'Arc D: Events',
+    navParent: 'Arcs',
+    order: 65,
+    contentFile: 'arcs/arc-d/landing.md',
+    layout: 'docs',
+    prev: '/web-dev/bridge/choose-arc',
+    next: '/web-dev/arcs/d/flawed-prd',
+  },
+  {
+    route: '/web-dev/arcs/d/flawed-prd',
+    title: 'Flawed PRD: Event registration',
+    description: 'An AI-generated PRD with deliberate flaws. Find and fix every one.',
+    section: 'web-dev',
+    navLabel: 'Flawed PRD',
+    navParent: 'Arc D: Events',
+    order: 66,
+    contentFile: 'arcs/arc-d/flawed-prd-arc-d.md',
+    layout: 'docs',
+    prev: '/web-dev/arcs/d',
+    next: '/web-dev/arcs/d/project-3',
+  },
+  {
+    route: '/web-dev/arcs/d/project-3',
+    title: 'Project 3',
+    description: 'Arc D Project 3.',
+    section: 'web-dev',
+    navLabel: 'Project 3',
+    navParent: 'Arc D: Events',
+    order: 67,
+    contentFile: 'arcs/arc-d/client-briefs-arc-d.md',
+    layout: 'docs',
+    prev: '/web-dev/arcs/d/flawed-prd',
+    next: '/web-dev/checkpoints/after-project-3',
+  },
+  {
+    route: '/web-dev/arcs/d/project-4',
+    title: 'Project 4',
+    description: 'Arc D Project 4.',
+    section: 'web-dev',
+    navLabel: 'Project 4',
+    navParent: 'Arc D: Events',
+    order: 68,
+    contentFile: 'arcs/arc-d/client-briefs-arc-d.md',
+    layout: 'docs',
+    prev: '/web-dev/checkpoints/after-project-3',
+    next: '/web-dev/checkpoints/after-project-4',
+  },
+  {
+    route: '/web-dev/arcs/d/project-5',
+    title: 'Project 5',
+    description: 'Arc D Project 5.',
+    section: 'web-dev',
+    navLabel: 'Project 5',
+    navParent: 'Arc D: Events',
+    order: 69,
+    contentFile: 'arcs/arc-d/client-briefs-arc-d.md',
+    layout: 'docs',
+    prev: '/web-dev/checkpoints/after-project-4',
+    next: '/web-dev/checkpoints/after-project-5',
+  },
+
+  // === Arc E ===
+  {
+    route: '/web-dev/arcs/e',
+    title: 'Arc E: Community directory',
+    description: 'Build a community directory — listings, search, and verification.',
+    section: 'web-dev',
+    navLabel: 'Arc E: Directory',
+    navParent: 'Arcs',
+    order: 70,
+    contentFile: 'arcs/arc-e/landing.md',
+    layout: 'docs',
+    prev: '/web-dev/bridge/choose-arc',
+    next: '/web-dev/arcs/e/flawed-prd',
+  },
+  {
+    route: '/web-dev/arcs/e/flawed-prd',
+    title: 'Flawed PRD: Business directory',
+    description: 'An AI-generated PRD with deliberate flaws. Find and fix every one.',
+    section: 'web-dev',
+    navLabel: 'Flawed PRD',
+    navParent: 'Arc E: Directory',
+    order: 71,
+    contentFile: 'arcs/arc-e/flawed-prd-arc-e.md',
+    layout: 'docs',
+    prev: '/web-dev/arcs/e',
+    next: '/web-dev/arcs/e/project-3',
+  },
+  {
+    route: '/web-dev/arcs/e/project-3',
+    title: 'Project 3',
+    description: 'Arc E Project 3.',
+    section: 'web-dev',
+    navLabel: 'Project 3',
+    navParent: 'Arc E: Directory',
+    order: 72,
+    contentFile: 'arcs/arc-e/client-briefs-arc-e.md',
+    layout: 'docs',
+    prev: '/web-dev/arcs/e/flawed-prd',
+    next: '/web-dev/checkpoints/after-project-3',
+  },
+  {
+    route: '/web-dev/arcs/e/project-4',
+    title: 'Project 4',
+    description: 'Arc E Project 4.',
+    section: 'web-dev',
+    navLabel: 'Project 4',
+    navParent: 'Arc E: Directory',
+    order: 73,
+    contentFile: 'arcs/arc-e/client-briefs-arc-e.md',
+    layout: 'docs',
+    prev: '/web-dev/checkpoints/after-project-3',
+    next: '/web-dev/checkpoints/after-project-4',
+  },
+  {
+    route: '/web-dev/arcs/e/project-5',
+    title: 'Project 5',
+    description: 'Arc E Project 5.',
+    section: 'web-dev',
+    navLabel: 'Project 5',
+    navParent: 'Arc E: Directory',
+    order: 74,
+    contentFile: 'arcs/arc-e/client-briefs-arc-e.md',
+    layout: 'docs',
+    prev: '/web-dev/checkpoints/after-project-4',
+    next: '/web-dev/checkpoints/after-project-5',
+  },
+
+  // === Checkpoints 3-6 ===
+  {
+    route: '/web-dev/checkpoints/after-project-3',
+    title: 'Checkpoint: After Project 3',
+    description: 'Self-assessment exercises after completing Project 3.',
+    section: 'web-dev',
+    navLabel: 'After Project 3',
+    navParent: 'Checkpoints',
+    order: 75,
+    contentFile: 'checkpoints/checkpoint-after-project-3.md',
+    layout: 'docs',
+  },
+  {
+    route: '/web-dev/checkpoints/after-project-4',
+    title: 'Checkpoint: After Project 4',
+    description: 'Self-assessment exercises after completing Project 4.',
+    section: 'web-dev',
+    navLabel: 'After Project 4',
+    navParent: 'Checkpoints',
+    order: 76,
+    contentFile: 'checkpoints/checkpoint-after-project-4.md',
+    layout: 'docs',
+  },
+  {
+    route: '/web-dev/checkpoints/after-project-5',
+    title: 'Checkpoint: After Project 5',
+    description: 'Self-assessment exercises after completing Project 5.',
+    section: 'web-dev',
+    navLabel: 'After Project 5',
+    navParent: 'Checkpoints',
+    order: 77,
+    contentFile: 'checkpoints/checkpoint-after-project-5.md',
+    layout: 'docs',
+    next: '/web-dev/projects/6',
+  },
+
+  // === Project 6 ===
+  {
+    route: '/web-dev/projects/6',
+    title: 'Project 6: The live system',
+    description: 'Operate a live system — monitoring, incidents, and handover.',
+    section: 'web-dev',
+    navLabel: 'Project 6',
+    navParent: 'Projects',
+    order: 35,
+    contentFile: 'projects/project-6/project-6-universal.md',
+    layout: 'docs',
+    prev: '/web-dev/checkpoints/after-project-5',
+    next: '/web-dev/checkpoints/after-project-6',
+  },
+
+  // === Checkpoint 6 ===
+  {
+    route: '/web-dev/checkpoints/after-project-6',
+    title: 'Checkpoint: After Project 6',
+    description: 'Final self-assessment after completing all six projects.',
+    section: 'web-dev',
+    navLabel: 'After Project 6',
+    navParent: 'Checkpoints',
+    order: 78,
+    contentFile: 'checkpoints/checkpoint-after-project-6.md',
+    layout: 'docs',
+    prev: '/web-dev/projects/6',
+    next: '/',
+  },
+];
+
+// Helper to find a page by route
+export function getPage(route: string): PageEntry | undefined {
+  return manifest.find((p) => p.route === route);
+}
+
+// Helper to get prev/next pages
+export function getPageNav(route: string): { prev?: PageEntry; next?: PageEntry } {
+  const page = getPage(route);
+  return {
+    prev: page?.prev ? getPage(page.prev) : undefined,
+    next: page?.next ? getPage(page.next) : undefined,
+  };
+}
+
+// Helper to get breadcrumb trail
+export function getBreadcrumbs(route: string): { label: string; href: string }[] {
+  const crumbs: { label: string; href: string }[] = [];
+  if (route === '/') return crumbs;
+
+  crumbs.push({ label: 'Home', href: '/' });
+
+  const page = getPage(route);
+  if (!page) return crumbs;
+
+  // Build intermediate crumbs from navParent chain
+  if (page.navParent) {
+    const parentPage = manifest.find(
+      (p) => p.navLabel === page.navParent || p.title === page.navParent
+    );
+    if (parentPage && parentPage.route !== route) {
+      // Check if the parent itself has a parent
+      if (parentPage.navParent) {
+        const grandparent = manifest.find(
+          (p) => p.navLabel === parentPage.navParent || p.title === parentPage.navParent
+        );
+        if (grandparent && grandparent.route !== parentPage.route) {
+          crumbs.push({ label: grandparent.navLabel, href: grandparent.route });
+        }
+      }
+      crumbs.push({ label: parentPage.navLabel, href: parentPage.route });
+    }
+  }
+
+  crumbs.push({ label: page.navLabel, href: page.route });
+  return crumbs;
+}
+
+// Navigation structure for sidebar
+export interface NavSection {
+  label: string;
+  href?: string;
+  children: NavItem[];
+}
+
+export interface NavItem {
+  label: string;
+  href: string;
+  children?: NavItem[];
+}
+
+export function getNavSections(): NavSection[] {
+  return [
+    {
+      label: 'Getting Started',
+      children: [
+        { label: 'How this works', href: '/getting-started' },
+        { label: 'Shared setup', href: '/getting-started/setup' },
+      ],
+    },
+    {
+      label: 'Web Development',
+      href: '/web-dev',
+      children: [
+        { label: 'Web dev setup', href: '/web-dev/getting-started' },
+        {
+          label: 'Projects',
+          href: '/web-dev/projects/1',
+          children: [
+            {
+              label: 'Project 1',
+              href: '/web-dev/projects/1',
+              children: [
+                { label: 'PRD', href: '/web-dev/projects/1/prd' },
+                { label: 'Backlog', href: '/web-dev/projects/1/backlog' },
+                { label: 'Guide', href: '/web-dev/projects/1/guide' },
+                { label: 'Design spec', href: '/web-dev/projects/1/design' },
+                { label: 'CLAUDE.md', href: '/web-dev/projects/1/claude-md' },
+              ],
+            },
+            {
+              label: 'Project 2',
+              href: '/web-dev/projects/2',
+              children: [
+                { label: 'PRD', href: '/web-dev/projects/2/prd' },
+                { label: 'Backlog', href: '/web-dev/projects/2/backlog' },
+                { label: 'Guide', href: '/web-dev/projects/2/guide' },
+                { label: 'CLAUDE.md', href: '/web-dev/projects/2/claude-md' },
+              ],
+            },
+            { label: 'Project 6', href: '/web-dev/projects/6' },
+          ],
+        },
+        {
+          label: 'Bridge',
+          href: '/web-dev/bridge',
+          children: [
+            { label: 'Bridge instructions', href: '/web-dev/bridge' },
+            { label: 'Choose your arc', href: '/web-dev/bridge/choose-arc' },
+          ],
+        },
+        {
+          label: 'Arcs',
+          href: '/web-dev/arcs/a',
+          children: [
+            {
+              label: 'Arc A: Service',
+              href: '/web-dev/arcs/a',
+              children: [
+                { label: 'Flawed PRD', href: '/web-dev/arcs/a/flawed-prd' },
+                { label: 'Project 3', href: '/web-dev/arcs/a/project-3' },
+                { label: 'Project 4', href: '/web-dev/arcs/a/project-4' },
+                { label: 'Project 5', href: '/web-dev/arcs/a/project-5' },
+              ],
+            },
+            {
+              label: 'Arc B: Store',
+              href: '/web-dev/arcs/b',
+              children: [
+                { label: 'Flawed PRD', href: '/web-dev/arcs/b/flawed-prd' },
+                { label: 'Project 3', href: '/web-dev/arcs/b/project-3' },
+                { label: 'Project 4', href: '/web-dev/arcs/b/project-4' },
+                { label: 'Project 5', href: '/web-dev/arcs/b/project-5' },
+              ],
+            },
+            {
+              label: 'Arc C: Content',
+              href: '/web-dev/arcs/c',
+              children: [
+                { label: 'Flawed PRD', href: '/web-dev/arcs/c/flawed-prd' },
+                { label: 'Project 3', href: '/web-dev/arcs/c/project-3' },
+                { label: 'Project 4', href: '/web-dev/arcs/c/project-4' },
+                { label: 'Project 5', href: '/web-dev/arcs/c/project-5' },
+              ],
+            },
+            {
+              label: 'Arc D: Events',
+              href: '/web-dev/arcs/d',
+              children: [
+                { label: 'Flawed PRD', href: '/web-dev/arcs/d/flawed-prd' },
+                { label: 'Project 3', href: '/web-dev/arcs/d/project-3' },
+                { label: 'Project 4', href: '/web-dev/arcs/d/project-4' },
+                { label: 'Project 5', href: '/web-dev/arcs/d/project-5' },
+              ],
+            },
+            {
+              label: 'Arc E: Directory',
+              href: '/web-dev/arcs/e',
+              children: [
+                { label: 'Flawed PRD', href: '/web-dev/arcs/e/flawed-prd' },
+                { label: 'Project 3', href: '/web-dev/arcs/e/project-3' },
+                { label: 'Project 4', href: '/web-dev/arcs/e/project-4' },
+                { label: 'Project 5', href: '/web-dev/arcs/e/project-5' },
+              ],
+            },
+          ],
+        },
+        {
+          label: 'Checkpoints',
+          href: '/web-dev/checkpoints/after-project-1',
+          children: [
+            { label: 'After Project 1', href: '/web-dev/checkpoints/after-project-1' },
+            { label: 'After Project 2', href: '/web-dev/checkpoints/after-project-2' },
+            { label: 'After Project 3', href: '/web-dev/checkpoints/after-project-3' },
+            { label: 'After Project 4', href: '/web-dev/checkpoints/after-project-4' },
+            { label: 'After Project 5', href: '/web-dev/checkpoints/after-project-5' },
+            { label: 'After Project 6', href: '/web-dev/checkpoints/after-project-6' },
+          ],
+        },
+        {
+          label: 'Guides',
+          href: '/web-dev/guides/ci-setup',
+          children: [
+            { label: 'CI setup', href: '/web-dev/guides/ci-setup' },
+            { label: 'Gemini setup', href: '/web-dev/guides/gemini-setup' },
+          ],
+        },
+      ],
+    },
+    {
+      label: 'Templates',
+      children: [{ label: 'All templates', href: '/templates' }],
+    },
+  ];
+}
