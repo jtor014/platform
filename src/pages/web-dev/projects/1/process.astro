@@ -41,13 +41,15 @@ import DocsLayout from '../../../../layouts/DocsLayout.astro';
     <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
 
     <!-- 3. Architecture -->
-    <div class="border border-border rounded-lg p-6 bg-bg-subtle">
+    <div class="border border-border rounded-lg p-6">
       <div class="flex items-center gap-3 mb-3">
-        <div class="w-8 h-8 rounded-full bg-bg-muted text-text-muted font-bold text-sm flex items-center justify-center flex-shrink-0">3</div>
-        <h2 class="text-lg font-semibold text-text-secondary">Architecture <span class="text-text-muted font-normal text-sm ml-2">skipped in this project</span></h2>
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">3</div>
+        <h2 class="text-lg font-semibold">Architecture</h2>
       </div>
-      <p class="text-sm text-text-secondary mb-3">The architecture document defines <em>how to build it</em> technically — database schema, API contracts, component structure, technology choices, and how the pieces fit together. You produce it from the PRD and design spec.</p>
-      <p class="text-sm text-text-secondary"><strong>Why we skip it here:</strong> Project 1 is a simple static site — no database, no API, no complex component relationships. The backlog was written directly from the PRD. <strong>From Project 2 onwards:</strong> architecture becomes essential, and you'll direct AI to generate it. Your job will be catching over-engineering and missing dependencies.</p>
+      <p class="text-sm text-text-secondary mb-3">The architecture document defines <em>how to build it</em> technically — what technologies to use, how to structure the code, how data flows through the system, and how the pieces connect. You produce it from the PRD and design spec.</p>
+      <p class="text-sm text-text-secondary mb-3">For GreenScape, the architecture is simple: React + Vite + Tailwind, eight components, one data file, deploy to Netlify. But even a simple project has architecture decisions — and seeing them written down shows you what to look for. In later projects, this will include database schemas, API contracts, and complex component relationships. You'll direct AI to generate the architecture, and your job will be catching over-engineering and missing dependencies.</p>
+      <p class="text-sm text-text-secondary"><strong>In this project:</strong> the architecture has been written for you. <strong>In later projects:</strong> you'll direct AI to produce it from the PRD and design spec.</p>
+      <p class="text-sm mt-3"><a href="/web-dev/projects/1/architecture">Read the GreenScape architecture →</a></p>
     </div>
 
     <!-- Connector -->
