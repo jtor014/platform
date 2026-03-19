@@ -25,6 +25,11 @@ const prdRaw = fs.readFileSync('content/projects/project-1/prd-greenscape.md', '
   <h2 class="mb-4 mt-10">Executive Summary</h2>
   <p class="text-text-secondary mb-4">Build a professional website for GreenScape Landscaping, a small landscaping business in Melbourne. The site showcases services, displays past work, shares client testimonials, and provides contact information. This replaces word-of-mouth as the primary way new customers discover the business.</p>
 
+  <h2 class="mb-4 mt-10">Client Brief</h2>
+  <Callout variant="client">
+    <p>"I need a website. Nothing fancy — just something professional that shows what we do, what people say about us, and how to get in touch. I don't want to have to update it or manage anything. Set it and forget it. If something breaks, I'll call you. Budget is minimal — I'm not paying monthly fees for hosting."</p>
+  </Callout>
+
   <h2 class="mb-4 mt-10">Problem Statement</h2>
   <p class="text-text-secondary mb-8">The owner currently gets all work through word-of-mouth referrals. There's no online presence — no way for potential customers to see the quality of work, understand what services are available, or confirm the business is legitimate.</p>
 
@@ -124,6 +129,9 @@ const prdRaw = fs.readFileSync('content/projects/project-1/prd-greenscape.md', '
   <h2 class="mb-4 mt-10">Technical Constraints</h2>
   <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-2">
     <li>Static site — no backend, no database, no server-side processing</li>
+    <li>No ongoing costs — free hosting tier (client won't pay monthly fees)</li>
+    <li>No maintenance required — set and forget, no CMS, no content updates workflow</li>
+    <li>No support contract — if it breaks, the client calls</li>
     <li>Must work in Chrome, Firefox, Safari, and Edge (latest 2 versions)</li>
     <li>Accessible — proper heading hierarchy, alt text on images, sufficient colour contrast</li>
     <li>Deployed to a live, publicly accessible URL</li>
