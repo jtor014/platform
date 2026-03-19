@@ -1,0 +1,154 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import CodeBlock from '../../components/CodeBlock.astro';
+import Callout from '../../components/Callout.astro';
+import StepList from '../../components/StepList.astro';
+---
+
+<DocsLayout title="Web dev setup" description="Install Web Development tools: Node.js, Docker, Gemini API key, Netlify.">
+  <h1 class="mb-6">Web Dev Setup</h1>
+  <p class="text-text-secondary mb-8">You've installed the shared tools. Now install what's needed for Web Development.</p>
+
+  <!-- 5. Node.js -->
+  <h2 class="mb-4 mt-12">5. Node.js</h2>
+  <p class="text-text-secondary mb-4"><strong class="text-text">What it is:</strong> The JavaScript runtime. The project tooling, build system, and web stack all depend on it.</p>
+  <p class="text-text-secondary mb-4"><strong class="text-text">Target version:</strong> Node.js 20 LTS. This is a deliberate choice — it's the current Long Term Support release with the widest compatibility.</p>
+
+  <h4 class="mb-2">Install</h4>
+  <StepList steps={[
+    { title: "Go to nodejs.org" },
+    { title: "Download the LTS version (should show v20.x.x)" },
+    { title: "Run the installer" },
+  ]} />
+
+  <h4 class="mb-2">Verify</h4>
+  <CodeBlock terminal copy>{`$ node --version`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-2">Should show v20.x.x.</p>
+  <CodeBlock terminal copy>{`$ npm --version`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-4">Should show a version number. npm is the package manager that comes with Node.</p>
+
+  <details class="mb-8 border border-border rounded-lg overflow-hidden">
+    <summary>Troubleshooting: Node.js version too old</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Uninstall and reinstall from <a href="https://nodejs.org">nodejs.org</a> — get the LTS version.</p>
+    </div>
+  </details>
+
+  <!-- 6. Docker -->
+  <h2 class="mb-4 mt-12">6. Docker</h2>
+  <p class="text-text-secondary mb-4"><strong class="text-text">What it is:</strong> Runs applications in isolated containers. From Project 2 onwards, your database, backend, and frontend all run in Docker.</p>
+
+  <Callout variant="info">
+    <p class="text-sm">You don't need Docker for Project 1. Install it now so it's ready for Project 2.</p>
+  </Callout>
+
+  <h4 class="mb-2 mt-4">Install</h4>
+  <p class="text-sm text-text-secondary mb-2"><strong>Mac:</strong></p>
+  <StepList steps={[
+    { title: "Go to docker.com/products/docker-desktop" },
+    { title: "Download Docker Desktop for Mac" },
+    { title: "Install (drag to Applications)" },
+    { title: "Open Docker Desktop — it runs in the background" },
+  ]} />
+
+  <p class="text-sm text-text-secondary mb-2"><strong>Windows:</strong></p>
+  <StepList steps={[
+    { title: "Go to docker.com/products/docker-desktop" },
+    { title: "Download Docker Desktop for Windows" },
+    { title: "Install and restart your computer if prompted" },
+    { title: "Open Docker Desktop" },
+  ]} />
+
+  <p class="text-sm text-text-secondary mb-2"><strong>Linux:</strong></p>
+  <CodeBlock terminal copy>{`$ sudo apt update
+$ sudo apt install docker.io docker-compose-v2 -y
+$ sudo usermod -aG docker $USER`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-4">Log out and back in for the group change to take effect.</p>
+
+  <h4 class="mb-2">Verify</h4>
+  <CodeBlock terminal copy>{`$ docker --version
+$ docker compose version`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-2">Both should show version numbers.</p>
+
+  <details class="mb-4 border border-border rounded-lg overflow-hidden">
+    <summary>Troubleshooting: "docker: command not found"</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Docker Desktop isn't installed or isn't running. Install it and make sure the Docker Desktop application is open.</p>
+    </div>
+  </details>
+  <details class="mb-4 border border-border rounded-lg overflow-hidden">
+    <summary>Troubleshooting: Docker permission denied on Linux</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">sudo usermod -aG docker $USER</code> then log out and back in.</p>
+    </div>
+  </details>
+  <details class="mb-8 border border-border rounded-lg overflow-hidden">
+    <summary>Windows note: WSL 2</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Docker Desktop for Windows works best with WSL 2 (Windows Subsystem for Linux). The Docker installer will prompt you to enable it. If you're comfortable with Linux, you can run all your development inside WSL Ubuntu — this gives you the same experience as Mac and Linux students.</p>
+    </div>
+  </details>
+
+  <!-- Accounts -->
+  <h2 class="mb-4 mt-12">Accounts you'll need later</h2>
+  <p class="text-text-secondary mb-4">These aren't part of the base toolchain — you'll set them up when the projects need them. Create the accounts now so they're ready.</p>
+
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Account</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Free?</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">When you need it</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Netlify</td>
+          <td class="px-4 py-3 text-text-secondary">Yes — free tier</td>
+          <td class="px-4 py-3 text-text-secondary">Project 1 (deployment)</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Gemini API key</td>
+          <td class="px-4 py-3 text-text-secondary">Yes — free tier</td>
+          <td class="px-4 py-3 text-text-secondary">Project 2 (AI code reviewer)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h4 class="mb-2">Netlify account</h4>
+  <StepList steps={[
+    { title: "Go to netlify.com" },
+    { title: "Sign up with your GitHub account" },
+    { title: "You'll connect it to your project repo in Project 1" },
+  ]} />
+
+  <h4 class="mb-2 mt-4">Gemini API key</h4>
+  <StepList steps={[
+    { title: "Go to aistudio.google.com/apikey" },
+    { title: "Sign in with a Google account" },
+    { title: "Click \"Create API Key\"" },
+    { title: "Copy and save the key somewhere safe — you'll add it to GitHub Secrets in Project 2" },
+  ]} />
+
+  <!-- Verify everything -->
+  <h2 class="mb-4 mt-12">Verify everything</h2>
+  <p class="text-text-secondary mb-4">Run these commands. All should succeed:</p>
+  <CodeBlock terminal copy>{`$ node --version
+$ npm --version
+$ docker --version
+$ docker compose version`}</CodeBlock>
+
+  <!-- Ready -->
+  <div class="mt-12 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">You're ready</h2>
+    <p class="text-text-secondary mb-4">All tools installed. Time to build your first project.</p>
+    <a
+      href="/web-dev/projects/1"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Start Project 1: The Static Site
+    </a>
+  </div>
+</DocsLayout>
