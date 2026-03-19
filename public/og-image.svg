@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#1E293B"/>
+  <text x="600" y="270" text-anchor="middle" font-family="Inter, sans-serif" font-weight="700" font-size="64" fill="#FFFFFF">The Platform</text>
+  <text x="600" y="340" text-anchor="middle" font-family="Inter, sans-serif" font-weight="400" font-size="28" fill="#94A3B8">Build real software. Direct AI to do it.</text>
+  <rect x="450" y="390" width="300" height="48" rx="6" fill="#2563EB"/>
+  <text x="600" y="422" text-anchor="middle" font-family="Inter, sans-serif" font-weight="600" font-size="18" fill="#FFFFFF">Start here</text>
+</svg>
