@@ -4,39 +4,44 @@ import Hero from '../components/Hero.astro';
 import Card from '../components/Card.astro';
 ---
 
-<LandingLayout title="Home" description="A free learning platform that teaches AI-directed development. Build real software by directing AI agents.">
+<LandingLayout title="Home" description="Learn to deliver real projects by directing AI.">
   <Hero
     heading="Build real software. Direct AI to do it."
-    subtitle="A free learning platform that teaches you to build websites, apps, and APIs by directing AI agents — and to read, inspect, and challenge everything they produce."
+    subtitle="Learn to deliver real projects by directing AI."
     ctaText="Start here"
     ctaHref="/getting-started"
   />
 
-  <!-- What You'll Build -->
+  <!-- Categories -->
   <section class="pb-16">
-    <h2 class="mb-2">What you'll build</h2>
-    <p class="text-text-secondary mb-8">Real projects. Working products. Deployed to the internet.</p>
+    <h2 class="mb-2">Six disciplines. One methodology.</h2>
+    <p class="text-text-secondary mb-8">Each category has six projects that take you from beginner to production-grade. The same loop — plan, build, verify, deploy, reflect — applied to different domains.</p>
     <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      <Card title="Project 1: The Static Site" metadata="Foundation">
-        <p class="text-sm text-text-secondary mt-2">A professional business website — live at a real URL.</p>
+      <Card title="Web Development" metadata="Available" href="/web-dev">
+        <p class="text-sm text-text-secondary mt-2">Build full-stack web apps, APIs, and deployed systems. Static sites to production-grade multi-user platforms.</p>
+        <p class="mt-3"><span class="text-success bg-success-bg px-2.5 py-0.5 rounded-full text-xs font-medium">6 projects ready</span></p>
       </Card>
-      <Card title="Project 2: The Dynamic App" metadata="Foundation">
-        <p class="text-sm text-text-secondary mt-2">A full-stack app with a database, API, Docker, CI, and dual AI review.</p>
+      <Card title="Data Engineering">
+        <p class="text-sm text-text-secondary mt-2">Build data pipelines, warehouses, and dashboards. Raw data to automated reporting.</p>
+        <p class="mt-3"><span class="text-text-muted bg-bg-muted px-2.5 py-0.5 rounded-full text-xs font-medium">Coming soon</span></p>
       </Card>
-      <Card title="Project 3: The Client Brief" metadata="Your arc">
-        <p class="text-sm text-text-secondary mt-2">An interactive app with forms and email — planned by you from a client brief.</p>
+      <Card title="Machine Learning">
+        <p class="text-sm text-text-secondary mt-2">Build ML models, training pipelines, and prediction APIs. Datasets to deployed models.</p>
+        <p class="mt-3"><span class="text-text-muted bg-bg-muted px-2.5 py-0.5 rounded-full text-xs font-medium">Coming soon</span></p>
       </Card>
-      <Card title="Project 4: The Integration" metadata="Your arc">
-        <p class="text-sm text-text-secondary mt-2">An app integrated with payment or map services — verified against real API docs.</p>
+      <Card title="AI Integration">
+        <p class="text-sm text-text-secondary mt-2">Build apps powered by language models, embeddings, and AI agents. Prompts to production systems.</p>
+        <p class="mt-3"><span class="text-text-muted bg-bg-muted px-2.5 py-0.5 rounded-full text-xs font-medium">Coming soon</span></p>
       </Card>
-      <Card title="Project 5: The Multi-User System" metadata="Your arc">
-        <p class="text-sm text-text-secondary mt-2">A multi-user system with roles and permissions — tested by trying to break it.</p>
+      <Card title="Cybersecurity">
+        <p class="text-sm text-text-secondary mt-2">Build secure systems, audit tools, and incident response playbooks. Vulnerabilities to hardened infrastructure.</p>
+        <p class="mt-3"><span class="text-text-muted bg-bg-muted px-2.5 py-0.5 rounded-full text-xs font-medium">Coming soon</span></p>
       </Card>
-      <Card title="Project 6: The Live System" metadata="Capstone">
-        <p class="text-sm text-text-secondary mt-2">A production-grade system with monitoring, backups, and handover documentation.</p>
+      <Card title="Cloud & DevOps">
+        <p class="text-sm text-text-secondary mt-2">Build cloud infrastructure, CI/CD pipelines, and container orchestration. Local to scalable deployments.</p>
+        <p class="mt-3"><span class="text-text-muted bg-bg-muted px-2.5 py-0.5 rounded-full text-xs font-medium">Coming soon</span></p>
       </Card>
     </div>
-    <p class="text-sm text-text-secondary mt-6">Six projects. Each one builds on the last. By the end, you'll have a portfolio of deployed projects and the delivery skills to contribute to real teams.</p>
   </section>
 
   <!-- How It Works -->
@@ -138,53 +143,6 @@ import Card from '../components/Card.astro';
     </ul>
   </section>
 
-  <!-- Categories -->
-  <section class="pb-16">
-    <h2 class="mb-6">Categories</h2>
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm border-collapse">
-        <thead>
-          <tr class="bg-bg-muted">
-            <th class="text-left px-4 py-3 font-semibold border-b border-border">Category</th>
-            <th class="text-left px-4 py-3 font-semibold border-b border-border">Status</th>
-            <th class="text-left px-4 py-3 font-semibold border-b border-border">Projects</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-b border-border">
-            <td class="px-4 py-3"><a href="/web-dev" class="font-medium">Web Development</a></td>
-            <td class="px-4 py-3"><span class="text-success bg-success-bg px-2.5 py-0.5 rounded-full text-xs font-medium">Available</span></td>
-            <td class="px-4 py-3">6</td>
-          </tr>
-          <tr class="border-b border-border bg-bg-subtle">
-            <td class="px-4 py-3 text-text-secondary">Data Engineering</td>
-            <td class="px-4 py-3"><span class="text-text-muted bg-bg-muted px-2.5 py-0.5 rounded-full text-xs font-medium">Coming soon</span></td>
-            <td class="px-4 py-3 text-text-secondary">6</td>
-          </tr>
-          <tr class="border-b border-border">
-            <td class="px-4 py-3 text-text-secondary">Machine Learning</td>
-            <td class="px-4 py-3"><span class="text-text-muted bg-bg-muted px-2.5 py-0.5 rounded-full text-xs font-medium">Coming soon</span></td>
-            <td class="px-4 py-3 text-text-secondary">6</td>
-          </tr>
-          <tr class="border-b border-border bg-bg-subtle">
-            <td class="px-4 py-3 text-text-secondary">AI Integration</td>
-            <td class="px-4 py-3"><span class="text-text-muted bg-bg-muted px-2.5 py-0.5 rounded-full text-xs font-medium">Coming soon</span></td>
-            <td class="px-4 py-3 text-text-secondary">6</td>
-          </tr>
-          <tr class="border-b border-border">
-            <td class="px-4 py-3 text-text-secondary">Cybersecurity</td>
-            <td class="px-4 py-3"><span class="text-text-muted bg-bg-muted px-2.5 py-0.5 rounded-full text-xs font-medium">Coming soon</span></td>
-            <td class="px-4 py-3 text-text-secondary">6</td>
-          </tr>
-          <tr class="border-b border-border bg-bg-subtle">
-            <td class="px-4 py-3 text-text-secondary">Cloud & DevOps</td>
-            <td class="px-4 py-3"><span class="text-text-muted bg-bg-muted px-2.5 py-0.5 rounded-full text-xs font-medium">Coming soon</span></td>
-            <td class="px-4 py-3 text-text-secondary">6</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
 
   <!-- CTA -->
   <section class="pb-20 text-center">
