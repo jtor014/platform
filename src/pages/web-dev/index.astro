@@ -1,0 +1,110 @@
+---
+import DocsLayout from '../../layouts/DocsLayout.astro';
+import Card from '../../components/Card.astro';
+import Callout from '../../components/Callout.astro';
+---
+
+<DocsLayout title="Web Development" description="Build full-stack web applications, APIs, and deployed systems by directing AI agents.">
+  <h1 class="mb-4">Web Development</h1>
+  <p class="text-text-secondary mb-4">Build full-stack web applications by directing AI agents. Start with a static website, end with a production-grade multi-user system with monitoring, backups, and handover documentation. Every project ships to a real URL.</p>
+  <p class="text-text-secondary mb-8">Web Development is the first category because it produces the most tangible results the fastest — you can show someone a working website after your first project. The skills you learn here (planning, directing, verifying, deploying) transfer directly to every other category.</p>
+
+  <!-- How this is different -->
+  <h2 class="mb-4 mt-10">How this is different from coding tutorials</h2>
+  <p class="text-text-secondary mb-4">Coding tutorials teach you to write code. This teaches you to direct AI to write it — and to catch when AI gets it wrong. You won't learn JavaScript syntax. You will learn to read a pull request, spot scope creep in an AI-generated PRD, verify a payment integration against real Stripe documentation, and break your own access controls before a user does.</p>
+  <p class="text-text-secondary mb-8">The output isn't "I understand React." It's "I shipped six deployed products and I can explain every decision I made."</p>
+
+  <!-- The Progression -->
+  <h2 class="mb-4 mt-10">The progression</h2>
+  <p class="text-text-secondary mb-6">Six projects. Each repeats the same loop with one new capability — and one shift in what's expected of you as a Director.</p>
+
+  <div class="grid gap-4 sm:grid-cols-2">
+    <Card title="Project 1: The Static Site" metadata="Foundation" href="/web-dev/projects/1">
+      <p class="text-sm text-text-secondary mt-2">A professional business website for a landscaping company. Deployed to a live URL.</p>
+      <p class="text-xs text-text-muted mt-2">+1: You learn the loop — branch, direct, verify, merge</p>
+    </Card>
+    <Card title="Project 2: The Dynamic App" metadata="Foundation" href="/web-dev/projects/2">
+      <p class="text-sm text-text-secondary mt-2">A full-stack facts app. React, FastAPI, PostgreSQL, Docker, CI, Gemini reviewer.</p>
+      <p class="text-xs text-text-muted mt-2">+1: You learn to verify systems — databases, APIs, containers</p>
+    </Card>
+    <Card title="Project 3: The Interactive App" metadata="Your arc">
+      <p class="text-sm text-text-secondary mt-2">Forms, validation, email. You plan it yourself from a client brief.</p>
+      <p class="text-xs text-text-muted mt-2">+1: You write the PRD — planning judgment becomes the new skill</p>
+    </Card>
+    <Card title="Project 4: The Integrated App" metadata="Your arc">
+      <p class="text-sm text-text-secondary mt-2">Third-party API integration (Stripe, Google Maps, or similar).</p>
+      <p class="text-xs text-text-muted mt-2">+1: You verify against external documentation — hallucination detection</p>
+    </Card>
+    <Card title="Project 5: The Multi-User App" metadata="Your arc">
+      <p class="text-sm text-text-secondary mt-2">Auth, roles, permissions. Different users see different things.</p>
+      <p class="text-xs text-text-muted mt-2">+1: You think adversarially — can you break your own access controls?</p>
+    </Card>
+    <Card title="Project 6: The Live System" metadata="Capstone" href="/web-dev/projects/6">
+      <p class="text-sm text-text-secondary mt-2">Monitoring, backups, security, handover documentation.</p>
+      <p class="text-xs text-text-muted mt-2">+1: You make it production-grade — could someone else keep this running?</p>
+    </Card>
+  </div>
+
+  <!-- The Arcs -->
+  <h2 class="mb-4 mt-12">The arcs</h2>
+  <p class="text-text-secondary mb-4">Projects 1–2 are shared foundations — everyone does them. Projects 3–5 are contextual variations. You choose a business story (an "arc") that provides the client briefs, scope changes, and domain-specific challenges for those three projects.</p>
+  <p class="text-text-secondary mb-6">You don't need to choose your arc until after Project 2. The <a href="/web-dev/bridge/choose-arc">bridge exercises</a> help you decide.</p>
+
+  <div class="overflow-x-auto mb-8">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Arc</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Domain</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Signature Challenge</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-medium"><a href="/web-dev/arcs/a">A: Service Business</a></td>
+          <td class="px-4 py-3 text-text-secondary">Landscaping/trades</td>
+          <td class="px-4 py-3 text-text-secondary">Progressive client relationship, full lifecycle</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-medium"><a href="/web-dev/arcs/b">B: Online Store</a></td>
+          <td class="px-4 py-3 text-text-secondary">Handmade products</td>
+          <td class="px-4 py-3 text-text-secondary">Financial accuracy, Stripe verification</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-medium"><a href="/web-dev/arcs/c">C: Content Platform</a></td>
+          <td class="px-4 py-3 text-text-secondary">Community publication</td>
+          <td class="px-4 py-3 text-text-secondary">Anti-scope vigilance, non-technical users</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-medium"><a href="/web-dev/arcs/d">D: Event Platform</a></td>
+          <td class="px-4 py-3 text-text-secondary">Workshops/markets</td>
+          <td class="px-4 py-3 text-text-secondary">Date/time precision, offline-first</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-medium"><a href="/web-dev/arcs/e">E: Community Directory</a></td>
+          <td class="px-4 py-3 text-text-secondary">Business directory</td>
+          <td class="px-4 py-3 text-text-secondary">Search specification, adversarial trust</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Start Here -->
+  <h2 class="mb-4 mt-10">Start here</h2>
+  <Callout variant="info">
+    <p>If you haven't completed the setup:</p>
+    <ol class="list-decimal list-inside mt-2 space-y-1 text-sm">
+      <li><a href="/getting-started/setup">Shared Setup</a> — VS Code, Git, GitHub CLI, Claude Code</li>
+      <li><a href="/web-dev/getting-started">Web Dev Setup</a> — Node.js, Docker, Gemini API key, Netlify</li>
+    </ol>
+  </Callout>
+
+  <div class="mt-8">
+    <a
+      href="/web-dev/projects/1"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Start Project 1: The Static Site
+    </a>
+  </div>
+</DocsLayout>
