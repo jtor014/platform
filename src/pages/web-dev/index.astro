@@ -1,7 +1,6 @@
 ---
 import DocsLayout from '../../layouts/DocsLayout.astro';
 import Card from '../../components/Card.astro';
-import Callout from '../../components/Callout.astro';
 ---
 
 <DocsLayout title="Web Development" description="Build full-stack web applications, APIs, and deployed systems by directing AI agents.">
@@ -91,15 +90,7 @@ import Callout from '../../components/Callout.astro';
 
   <!-- Start Here -->
   <h2 class="mb-4 mt-10">Start here</h2>
-  <Callout variant="info">
-    <p>If you haven't completed the setup:</p>
-    <ol class="list-decimal list-inside mt-2 space-y-1 text-sm">
-      <li><a href="/getting-started/setup">Shared Setup</a> — VS Code, Git, GitHub CLI, Claude Code</li>
-      <li><a href="/web-dev/getting-started">Web Dev Setup</a> — Node.js, Docker, Gemini API key, Netlify</li>
-    </ol>
-  </Callout>
-
-  <div class="mt-8">
+  <div class="mt-4">
     <a
       href="/web-dev/projects/1"
       class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
