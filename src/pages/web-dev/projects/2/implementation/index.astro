@@ -4,10 +4,10 @@ import Card from '../../../../../components/Card.astro';
 import Callout from '../../../../../components/Callout.astro';
 ---
 
-<DocsLayout title="Build" description="Direct Claude through 11 tickets in two phases to build FactFeed.">
-  <h1 class="mb-6">Build</h1>
+<DocsLayout title="Implementation" description="Direct Claude through 11 tickets in two phases to build FactFeed.">
+  <h1 class="mb-6">Implementation</h1>
   <p class="text-text-secondary mb-4">You know the loop: direct, verify, review, merge. This guide doesn't repeat that. Instead, it highlights what's new and what to verify at each stage.</p>
-  <p class="text-text-secondary mb-8">The build is split into two phases with a pause point between them.</p>
+  <p class="text-text-secondary mb-8">The implementation is split into two phases with a pause point between them. Start with the backlog, then work through each phase.</p>
 
   <h2 class="mb-4 mt-10">What's new</h2>
   <div class="overflow-x-auto mb-8">
@@ -31,10 +31,13 @@ import Callout from '../../../../../components/Callout.astro';
     </table>
   </div>
 
-  <h2 class="mb-4 mt-10">Two phases</h2>
+  <h2 class="mb-4 mt-10">Backlog & phases</h2>
+  <div class="grid gap-4 mb-8">
+    <Card title="Backlog" subtitle="The ordered list of 11 tickets — what you'll implement" href="/web-dev/projects/2/implementation/backlog" />
+  </div>
   <div class="grid gap-4 sm:grid-cols-2 mb-8">
-    <Card title="Phase A — &quot;The Stack Appears&quot;" subtitle="Docker, containers, CI, Gemini, database. Tickets 1–5." href="/web-dev/projects/2/build/phase-a" />
-    <Card title="Phase B — &quot;The System Proves Itself&quot;" subtitle="Worker, API, frontend, full request flow. Tickets 6–11." href="/web-dev/projects/2/build/phase-b" />
+    <Card title="Phase A — &quot;The Stack Appears&quot;" subtitle="Docker, containers, CI, Gemini, database. Tickets 1–5." href="/web-dev/projects/2/implementation/phase-a" />
+    <Card title="Phase B — &quot;The System Proves Itself&quot;" subtitle="Worker, API, frontend, full request flow. Tickets 6–11." href="/web-dev/projects/2/implementation/phase-b" />
   </div>
 
   <Callout variant="info">

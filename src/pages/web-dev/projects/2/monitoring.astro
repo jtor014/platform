@@ -3,9 +3,9 @@ import DocsLayout from '../../../../layouts/DocsLayout.astro';
 import Callout from '../../../../components/Callout.astro';
 ---
 
-<DocsLayout title="Production" description="Final verification, The Loop reflection, and bridge to what's next.">
-  <h1 class="mb-6">Production</h1>
-  <p class="text-text-secondary mb-8">The reviewer signed off. Client feedback items are fixed and deployed. FactFeed is ready for production.</p>
+<DocsLayout title="Monitoring & Iteration" description="Final verification, The Loop reflection, and bridge to what's next.">
+  <h1 class="mb-6">Monitoring & Iteration</h1>
+  <p class="text-text-secondary mb-8">The reviewer signed off. UAT items are fixed and deployed. FactFeed is ready for production — now monitor, iterate, and reflect.</p>
 
   <h2 class="mb-4">Production verification</h2>
   <p class="text-text-secondary mb-4">Run through this checklist on the production URL:</p>
@@ -28,50 +28,57 @@ import Callout from '../../../../components/Callout.astro';
     <div class="flex gap-4 items-start opacity-50">
       <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">1</span>
       <div>
-        <p class="font-semibold text-sm">Plan</p>
-        <p class="text-sm text-text-secondary">You reviewed the PRD — API endpoints, database schema, background worker scope.</p>
+        <p class="font-semibold text-sm">Requirements</p>
+        <p class="text-sm text-text-secondary">You reviewed the requirements — API endpoints, database schema, background worker scope.</p>
       </div>
     </div>
     <div class="flex gap-4 items-start opacity-50">
       <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">2</span>
       <div>
-        <p class="font-semibold text-sm">Architect</p>
-        <p class="text-sm text-text-secondary">You reviewed the design spec, architecture, and Docker Compose setup.</p>
+        <p class="font-semibold text-sm">Design</p>
+        <p class="text-sm text-text-secondary">You reviewed the design spec and validated the UX intent.</p>
       </div>
     </div>
     <div class="flex gap-4 items-start opacity-50">
       <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">3</span>
       <div>
-        <p class="font-semibold text-sm">Build</p>
-        <p class="text-sm text-text-secondary">You directed Claude through 11 tickets across two phases.</p>
+        <p class="font-semibold text-sm">Architecture</p>
+        <p class="text-sm text-text-secondary">You reviewed the architecture and Docker Compose setup.</p>
       </div>
     </div>
     <div class="flex gap-4 items-start opacity-50">
       <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">4</span>
+      <div>
+        <p class="font-semibold text-sm">Implement</p>
+        <p class="text-sm text-text-secondary">You directed Claude through 11 tickets across two phases.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">5</span>
+      <div>
+        <p class="font-semibold text-sm">Test</p>
+        <p class="text-sm text-text-secondary">You verified with pytest, API testing, and CI results.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">6</span>
       <div>
         <p class="font-semibold text-sm">Deploy</p>
         <p class="text-sm text-text-secondary">You deployed a full-stack app — backend, database, worker, frontend.</p>
       </div>
     </div>
     <div class="flex gap-4 items-start opacity-50">
-      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">5</span>
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">7</span>
       <div>
-        <p class="font-semibold text-sm">Client Feedback</p>
+        <p class="font-semibold text-sm">UAT</p>
         <p class="text-sm text-text-secondary">You collected feedback, turned it into tickets, and iterated.</p>
       </div>
     </div>
-    <div class="flex gap-4 items-start opacity-50">
-      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">6</span>
-      <div>
-        <p class="font-semibold text-sm">Production</p>
-        <p class="text-sm text-text-secondary">You verified the live system — API, worker, frontend, error states.</p>
-      </div>
-    </div>
     <div class="flex gap-4 items-start">
-      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">7</span>
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">8</span>
       <div>
-        <p class="font-semibold text-sm">Reflect</p>
-        <p class="text-sm text-text-secondary">What went well? What did AI get wrong? What would you do differently?</p>
+        <p class="font-semibold text-sm">Monitor</p>
+        <p class="text-sm text-text-secondary">You verified the live system, reflected on what went well and what AI got wrong.</p>
       </div>
     </div>
   </div>
@@ -83,7 +90,7 @@ import Callout from '../../../../components/Callout.astro';
     <li>When something broke, how did you debug it? (Logs? Database queries? Network tab?)</li>
     <li>Did the CI pipeline catch anything you would have missed?</li>
     <li>How useful was Gemini's review? Did it find real issues or mostly noise?</li>
-    <li>How did client feedback feel this time? Was the feedback more technical?</li>
+    <li>How did UAT feel this time? Was the feedback more technical?</li>
     <li>Could you explain to someone what each container does and how they connect?</li>
   </ul>
 

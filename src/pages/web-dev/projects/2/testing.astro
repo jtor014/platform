@@ -1,0 +1,59 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Testing" description="Verify FactFeed with pytest, API testing, error states, and CI results.">
+  <h1 class="mb-6">Testing</h1>
+  <p class="text-text-secondary mb-4">In Project 1, testing meant Lighthouse and a real phone. FactFeed has a backend, a database, and a worker — now testing means automated tests that prove the system works.</p>
+  <p class="text-text-secondary mb-8">AI writes the tests. You validate they cover the acceptance criteria from the requirements.</p>
+
+  <h2 class="mb-4">What to verify</h2>
+
+  <h3 class="mb-3 mt-6">pytest results</h3>
+  <p class="text-text-secondary mb-4">The CI pipeline runs pytest on every PR. Before deployment, check that all tests pass:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>All unit tests pass (models, utilities, data validation)</li>
+    <li>All integration tests pass (API endpoints hit the real database)</li>
+    <li>No skipped or xfail tests hiding real failures</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">API testing</h3>
+  <p class="text-text-secondary mb-4">With Docker running locally, test the API manually:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/api/health</code> returns <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">{'{"status": "ok"}'}</code></li>
+    <li><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/api/facts</code> returns facts from the database</li>
+    <li>Invalid requests return proper error responses (not 500s)</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Error states</h3>
+  <p class="text-text-secondary mb-4">What happens when things break? Verify the app handles failures gracefully:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>If the database is unreachable, does the API return a clear error?</li>
+    <li>If the external facts API is down, does the worker fail gracefully?</li>
+    <li>If the frontend can't reach the backend, does it show an error state?</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">CI results</h3>
+  <p class="text-text-secondary mb-4">Check the GitHub Actions tab on your repository. Every PR should show:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>Green check on the CI pipeline</li>
+    <li>Tests ran and passed (not skipped)</li>
+    <li>Lint checks passed</li>
+  </ul>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>The AI-first shift:</strong> AI generates test cases and writes the test code. Your job is checking that the tests actually cover the acceptance criteria — not just that they pass. A test suite that only tests the happy path is worse than no tests, because it gives false confidence.</p>
+  </Callout>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: deploy to staging</h2>
+    <p class="text-text-secondary mb-4">Tests pass. Time to ship the full stack to a live URL.</p>
+    <a
+      href="/web-dev/projects/2/deployment"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Deployment →
+    </a>
+  </div>
+</DocsLayout>

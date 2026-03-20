@@ -1,9 +1,9 @@
 ---
 import fs from 'node:fs';
-import DocsLayout from '../../../../layouts/DocsLayout.astro';
-import CodeBlock from '../../../../components/CodeBlock.astro';
-import Callout from '../../../../components/Callout.astro';
-import Checklist from '../../../../components/Checklist.astro';
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+import Callout from '../../../../../components/Callout.astro';
+import Checklist from '../../../../../components/Checklist.astro';
 
 const backlogRaw = fs.readFileSync('content/projects/project-2/backlog-factfeed.md', 'utf-8')
   .replace(/^---[\s\S]*?---\n/, '');
