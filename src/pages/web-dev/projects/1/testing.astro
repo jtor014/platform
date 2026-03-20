@@ -1,0 +1,53 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Testing" description="Verify your static site with Lighthouse, DevTools, and real-device testing.">
+  <h1 class="mb-6">Testing</h1>
+  <p class="text-text-secondary mb-4">In every SDLC, testing comes after implementation and before deployment. For a static site, there's no backend to unit-test and no database to integration-test — but that doesn't mean you skip this step.</p>
+  <p class="text-text-secondary mb-8">What you <em>can</em> verify: does the site meet the acceptance criteria from the requirements? Is it fast, accessible, and correct? This step becomes critical from Project 2 onwards when you have real automated tests — but the habit starts here.</p>
+
+  <h2 class="mb-4">What to check</h2>
+
+  <h3 class="mb-3 mt-6">Lighthouse audit</h3>
+  <p class="text-text-secondary mb-4">Open your site in Chrome, open DevTools (F12), go to the Lighthouse tab, and run an audit. Check all categories: Performance, Accessibility, Best Practices, SEO. Your targets from the requirements:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>Performance: 80+</li>
+    <li>SEO: 90+</li>
+    <li>Accessibility: check for any red flags</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">DevTools check against design spec</h3>
+  <p class="text-text-secondary mb-4">Open the design spec side by side with your site. Use DevTools to inspect:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>Colours match the design tokens</li>
+    <li>Font sizes and weights match the spec</li>
+    <li>Spacing (padding, margins) looks right</li>
+    <li>Responsive breakpoints work — resize the browser from mobile to desktop</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Real device testing</h3>
+  <p class="text-text-secondary mb-4">DevTools mobile view is not the same as a real phone. Open your <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">localhost</code> URL on an actual phone (they need to be on the same network). Check:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>No horizontal scrolling</li>
+    <li>Phone number link opens the dialer</li>
+    <li>Text is readable without zooming</li>
+    <li>Tap targets are large enough (44x44px minimum)</li>
+  </ul>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>From Project 2 onwards:</strong> Testing means automated tests — pytest, API tests, error state coverage, CI running tests on every PR. For a static site, manual verification is the right level. The point is that you <em>have</em> a testing step in your process, even when it's lightweight.</p>
+  </Callout>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: deploy to staging</h2>
+    <p class="text-text-secondary mb-4">The site passes your checks. Time to ship it to a live URL.</p>
+    <a
+      href="/web-dev/projects/1/deployment"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Deployment →
+    </a>
+  </div>
+</DocsLayout>

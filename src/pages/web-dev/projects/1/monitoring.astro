@@ -3,9 +3,9 @@ import DocsLayout from '../../../../layouts/DocsLayout.astro';
 import Callout from '../../../../components/Callout.astro';
 ---
 
-<DocsLayout title="Production" description="Go live on a custom domain, verify everything, and reflect on the full cycle.">
-  <h1 class="mb-6">Production</h1>
-  <p class="text-text-secondary mb-8">The client signed off. The staging site is verified. Now you go live — optionally on a custom domain, or the Netlify URL becomes the production URL. Then reflect on the full cycle.</p>
+<DocsLayout title="Monitoring & Iteration" description="Go live, monitor, iterate, and reflect on the full cycle.">
+  <h1 class="mb-6">Monitoring & Iteration</h1>
+  <p class="text-text-secondary mb-8">The client signed off. The staging site is verified. Now you go live — optionally on a custom domain, or the Netlify URL becomes the production URL. Then monitor, iterate, and reflect on the full cycle.</p>
 
   <h2 class="mb-4">Custom domain (optional)</h2>
   <p class="text-text-secondary mb-4">The <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.netlify.app</code> URL works fine. But if you were handing this to a real client, you'd want a custom domain.</p>
@@ -43,50 +43,57 @@ import Callout from '../../../../components/Callout.astro';
     <div class="flex gap-4 items-start opacity-50">
       <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">1</span>
       <div>
-        <p class="font-semibold text-sm">Plan</p>
-        <p class="text-sm text-text-secondary">You reviewed the PRD and caught what didn't belong.</p>
+        <p class="font-semibold text-sm">Requirements</p>
+        <p class="text-sm text-text-secondary">You reviewed the requirements and caught what didn't belong.</p>
       </div>
     </div>
     <div class="flex gap-4 items-start opacity-50">
       <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">2</span>
       <div>
-        <p class="font-semibold text-sm">Architect</p>
-        <p class="text-sm text-text-secondary">You reviewed the design spec, architecture, and backlog.</p>
+        <p class="font-semibold text-sm">Design</p>
+        <p class="text-sm text-text-secondary">You reviewed the design spec and validated the UX intent.</p>
       </div>
     </div>
     <div class="flex gap-4 items-start opacity-50">
       <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">3</span>
       <div>
-        <p class="font-semibold text-sm">Build</p>
-        <p class="text-sm text-text-secondary">You directed Claude through every ticket — verify, review, merge.</p>
+        <p class="font-semibold text-sm">Architecture</p>
+        <p class="text-sm text-text-secondary">You reviewed the architecture and challenged AI's proposals.</p>
       </div>
     </div>
     <div class="flex gap-4 items-start opacity-50">
       <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">4</span>
+      <div>
+        <p class="font-semibold text-sm">Implement</p>
+        <p class="text-sm text-text-secondary">You directed Claude through every ticket — verify, review, merge.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">5</span>
+      <div>
+        <p class="font-semibold text-sm">Test</p>
+        <p class="text-sm text-text-secondary">You verified the site with Lighthouse, DevTools, and real-device testing.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">6</span>
       <div>
         <p class="font-semibold text-sm">Deploy</p>
         <p class="text-sm text-text-secondary">You shipped to a staging URL and verified it on a real server.</p>
       </div>
     </div>
     <div class="flex gap-4 items-start opacity-50">
-      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">5</span>
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">7</span>
       <div>
-        <p class="font-semibold text-sm">Client Feedback</p>
+        <p class="font-semibold text-sm">UAT</p>
         <p class="text-sm text-text-secondary">You showed the client, turned feedback into tickets, and iterated.</p>
       </div>
     </div>
-    <div class="flex gap-4 items-start opacity-50">
-      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">6</span>
-      <div>
-        <p class="font-semibold text-sm">Production</p>
-        <p class="text-sm text-text-secondary">You went live on a real domain and ran a final checklist.</p>
-      </div>
-    </div>
     <div class="flex gap-4 items-start">
-      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">7</span>
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">8</span>
       <div>
-        <p class="font-semibold text-sm">Reflect</p>
-        <p class="text-sm text-text-secondary">What went well? What did AI get wrong? What would you do differently?</p>
+        <p class="font-semibold text-sm">Monitor</p>
+        <p class="text-sm text-text-secondary">You went live, ran a final checklist, and reflected on what went well and what AI got wrong.</p>
       </div>
     </div>
   </div>
@@ -94,10 +101,10 @@ import Callout from '../../../../components/Callout.astro';
   <h2 class="mb-4 mt-10">Reflect</h2>
   <p class="text-text-secondary mb-4">Before moving on, ask yourself:</p>
   <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
-    <li>Did Claude add anything not in the PRD? Did I catch it?</li>
+    <li>Did Claude add anything not in the requirements? Did I catch it?</li>
     <li>Did the design match what I expected? Did I catch any discrepancies?</li>
-    <li>How did the deploy go? Did something go wrong? How did I handle it?</li>
-    <li>How did client feedback feel? Was turning feedback into tickets natural?</li>
+    <li>How did the deployment go? Did something go wrong? How did I handle it?</li>
+    <li>How did UAT feel? Was turning feedback into tickets natural?</li>
     <li>What was confusing? What felt natural?</li>
     <li>Could I do this again without the guide?</li>
   </ul>
