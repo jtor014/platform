@@ -41,9 +41,10 @@ import StepList from '../../components/StepList.astro';
     { title: "Implement", content: "Direct AI through tickets one at a time. Claude creates a branch, implements, commits, opens a PR. Both AIs review. You verify and decide: merge or fix." },
     { title: "Test", content: "AI generates test cases and writes tests. You validate that tests cover the acceptance criteria from step 1." },
     { title: "Deploy", content: "Ship to a staging URL. AI writes pipeline configs — you set up once, then it's automated." },
-    { title: "UAT", content: "Show the client. Collect feedback. This is humans validating with humans — the client doesn't care how it was built." },
     { title: "Monitor", content: "Go live. AI interprets logs and suggests fixes. You own the feedback loop and decide what to iterate on." },
   ]} />
+
+  <p class="text-text-secondary mt-4 mb-8"><strong class="text-text">Client feedback is continuous, not a step.</strong> You check in with the client after requirements ("Have we understood what you need?"), after design ("Is this what you envisioned?"), during implementation (demos and previews), and after deployment (formal sign-off). Good teams keep clients close throughout — the formality just varies.</p>
 
   <h3 class="mb-4 mt-8">What you actually do</h3>
   <div class="space-y-4 mb-8">
