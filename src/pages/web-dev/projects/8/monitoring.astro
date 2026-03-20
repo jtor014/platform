@@ -1,0 +1,353 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import StepList from '../../../../components/StepList.astro';
+---
+
+<DocsLayout title="Monitoring & Iteration" description="Go live with Prometheus dashboards, PagerDuty alerting, incident response runbooks, and the Event Day Crisis extension scenario.">
+  <h1 class="mb-6">Monitoring & Iteration</h1>
+  <p class="text-text-secondary mb-8">Liam signed off. UAT issues are fixed and deployed. SurfCoast Events is ready for production — and for the first time, production means more than "it's live." It means dashboards, alerts, runbooks, and an on-call plan.</p>
+
+  <h2 class="mb-4">Prometheus metrics</h2>
+  <p class="text-text-secondary mb-4">The application exposes these metrics via the <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/metrics</code> endpoint. Prometheus scrapes them every 15 seconds.</p>
+
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Metric</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Type</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">What it measures</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-xs">request_count</td>
+          <td class="px-4 py-3 text-text-secondary">Counter</td>
+          <td class="px-4 py-3 text-text-secondary">Total HTTP requests, labelled by endpoint and status code</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono text-xs">request_duration_seconds</td>
+          <td class="px-4 py-3 text-text-secondary">Histogram</td>
+          <td class="px-4 py-3 text-text-secondary">Request latency distribution (for p50, p95, p99 calculations)</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-xs">tickets_sold_total</td>
+          <td class="px-4 py-3 text-text-secondary">Counter</td>
+          <td class="px-4 py-3 text-text-secondary">Total tickets sold, labelled by event and ticket type</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono text-xs">checkins_total</td>
+          <td class="px-4 py-3 text-text-secondary">Counter</td>
+          <td class="px-4 py-3 text-text-secondary">Total check-ins, labelled by event</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="mb-4 mt-10">Grafana dashboards</h2>
+  <p class="text-text-secondary mb-4">Three dashboards, each serving a different purpose:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Event-day dashboard</h3>
+      <p class="text-sm text-text-secondary">Tickets sold (total and rate), check-ins (total and rate), revenue, check-in percentage. This is the Grafana equivalent of Liam's in-app dashboard — but with historical graphs showing trends over the event day.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">System dashboard</h3>
+      <p class="text-sm text-text-secondary">CPU utilisation, memory usage, RDS database connections (current vs max), disk I/O. The infrastructure health view. If CPU is at 90% during check-in, you know you need to scale.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Application dashboard</h3>
+      <p class="text-sm text-text-secondary">Request rate (requests per second), error rate (4xx and 5xx as percentage), latency percentiles (p50, p95, p99). The application health view. If p95 latency is climbing, something is slow.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">PagerDuty alerting</h2>
+  <p class="text-text-secondary mb-4">Grafana fires alerts to PagerDuty when metrics breach thresholds. These thresholds come directly from the non-functional requirements:</p>
+
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Condition</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Severity</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Error rate > 5% for 2 minutes</td>
+          <td class="px-4 py-3 text-text-secondary">Critical</td>
+          <td class="px-4 py-3 text-text-secondary">Page on-call immediately</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">API latency p95 > 3 seconds for 5 minutes</td>
+          <td class="px-4 py-3 text-text-secondary">Critical</td>
+          <td class="px-4 py-3 text-text-secondary">Page on-call immediately</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">RDS connections > 80% of max</td>
+          <td class="px-4 py-3 text-text-secondary">Warning</td>
+          <td class="px-4 py-3 text-text-secondary">Email notification</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">CPU utilisation > 85% for 10 minutes</td>
+          <td class="px-4 py-3 text-text-secondary">Warning</td>
+          <td class="px-4 py-3 text-text-secondary">Email notification</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Health check failing for 1 minute</td>
+          <td class="px-4 py-3 text-text-secondary">Critical</td>
+          <td class="px-4 py-3 text-text-secondary">Page on-call immediately</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Critical vs warning:</strong> Critical alerts page you immediately — phone notification, SMS, the works. Warning alerts send an email. The distinction matters: if everything is critical, nothing is. Reserve paging for conditions that affect users right now.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Incident response runbook</h2>
+  <p class="text-text-secondary mb-4">A new deliverable. The incident response runbook is a written document — a step-by-step checklist for when things go wrong in production. It lives in the repository alongside the code.</p>
+
+  <StepList steps={[
+    { title: "Alert received", description: "PagerDuty notification arrives. Note the time, the alert condition, and which metric triggered it." },
+    { title: "Acknowledge", description: "Acknowledge the alert in PagerDuty so the escalation stops. You own it now." },
+    { title: "Diagnose", description: "Check Grafana dashboards. Which metrics are abnormal? Is it the application (high error rate, slow responses) or infrastructure (CPU, memory, database connections)? Check the application logs for errors." },
+    { title: "Assess impact", description: "Are users affected? How many? Is ticket purchasing working? Is check-in working? Is the entire site down or just one feature?" },
+    { title: "Fix or mitigate", description: "Apply the fix. If the fix is complex, mitigate first — scale the instance, restart the service, disable a feature flag, roll back to the previous version. Get the system stable, then fix the root cause." },
+    { title: "Verify", description: "Confirm the fix works. Check Grafana — are the metrics back to normal? Check the application — can users buy tickets and check in? Run a quick smoke test." },
+    { title: "Communicate", description: "Tell Liam what happened, what you did, and whether it's resolved. A simple message: 'We saw slow response times for about 10 minutes. We scaled the server and it's back to normal. No data was lost.'" },
+    { title: "Post-incident review", description: "After the incident: what happened, why, what did we do, how do we prevent it next time? Write it down. This is not blame — it's learning." },
+  ]} />
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>The runbook exists before the incident.</strong> You don't write it during the crisis. You write it now, when everything is calm, so that when something breaks at 7am on the morning of the Bells Beach Classic, you have a checklist instead of panic.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Incident response exercise</h2>
+  <p class="text-text-secondary mb-4">Walk through a simulated incident. This is practice — you do it now so you have muscle memory when it happens for real.</p>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Simulated incident:</strong> It's 9:15am on the morning of the Bells Beach Classic. Gates opened at 9am. 2,500 ticket holders are queuing. PagerDuty fires: "check-in endpoint returning 500s — error rate 23%." Liam's staff are standing at the gates with phones that show red error screens instead of green check-in confirmations. 500 people are waiting.</p>
+  </Callout>
+
+  <p class="text-text-secondary mb-4">Walk through the runbook:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">1</span>
+        <h3 class="text-base font-semibold">Acknowledge the alert</h3>
+      </div>
+      <p class="text-sm text-text-secondary">9:15am. PagerDuty notification. Acknowledge it — the escalation timer stops. You own this now. Note the time: the clock is ticking while people queue at the gates.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">2</span>
+        <h3 class="text-base font-semibold">Check Grafana</h3>
+      </div>
+      <p class="text-sm text-text-secondary">Open the application dashboard. The check-in endpoint error rate is 23%. The p95 latency on check-in is 8 seconds. Other endpoints are fine — ticket sales, event listings, dashboard are all healthy. The problem is isolated to check-in. Check the system dashboard: CPU is at 40%, memory is fine, but RDS connections are at 95% of max.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">3</span>
+        <h3 class="text-base font-semibold">Identify root cause</h3>
+      </div>
+      <p class="text-sm text-text-secondary">Database connections exhausted. The check-in endpoint is holding connections open too long — a query that worked fine in testing is slow under 500 concurrent users because it's doing a full table scan on the tickets table instead of using the index. Each request holds a connection while waiting for the slow query. New requests can't get a connection. 500 errors.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">4</span>
+        <h3 class="text-base font-semibold">Mitigate immediately</h3>
+      </div>
+      <p class="text-sm text-text-secondary">Two options. Option A: disable the new check-in feature flag, falling back to the previous check-in implementation. Instant — no deployment. Option B: if there's no previous implementation to fall back to, increase the RDS connection pool and instance size. Option A is faster. Disable the flag. 9:22am — 7 minutes since the alert. Check-in is working again using the fallback code path.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">5</span>
+        <h3 class="text-base font-semibold">Verify recovery</h3>
+      </div>
+      <p class="text-sm text-text-secondary">Check Grafana. Error rate dropping to 0%. Check-in latency back to normal. RDS connections back to 30% of max. Staff at the gates confirm: scans are green again. The queue is moving.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">6</span>
+        <h3 class="text-base font-semibold">Communicate</h3>
+      </div>
+      <p class="text-sm text-text-secondary">Message to Liam: "Check-in had issues for about 7 minutes this morning. We identified the problem and rolled back to the stable version. Check-in is working normally now. No data was lost — all scans that failed can be re-scanned. We'll fix the underlying issue after the event and re-enable the new version next week."</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">7</span>
+        <h3 class="text-base font-semibold">Post-incident report</h3>
+      </div>
+      <p class="text-sm text-text-secondary">After the event. Write the post-incident report: what happened (check-in 500s), when (9:15-9:22am), impact (7 minutes of degraded check-in), root cause (missing database index causing full table scan under load), mitigation (feature flag rollback), fix (add index, re-enable flag after testing), prevention (add the missing index query to the k6 load test so this specific scenario is caught before production).</p>
+    </div>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>7 minutes.</strong> From PagerDuty alert to resolution. That's the difference between having a runbook and not having one. Without the runbook: panic, SSH into the server, read logs, guess, try things. With the runbook: acknowledge, check Grafana, identify, mitigate, verify, communicate. The runbook turns crisis into process.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Extension scenario: Event Day Crisis</h2>
+  <p class="text-text-secondary mb-4">Day before the Bells Beach Classic. Liam calls:</p>
+
+  <Callout variant="client">
+    <p>"Ticket sales are going viral on Instagram. We've sold 2,000 tickets in the last hour and the site is getting slow. The event is in 18 hours."</p>
+  </Callout>
+
+  <p class="text-text-secondary mb-4">Walk through the runbook again. This is the second scenario you prepared for:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">1</span>
+        <h3 class="text-base font-semibold">Diagnose via Grafana/Prometheus</h3>
+      </div>
+      <p class="text-sm text-text-secondary">Check the application dashboard. What's the request rate? What's the p95 latency? Check the system dashboard. Is CPU maxed? Are database connections exhausted? The metrics tell you where the bottleneck is.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">2</span>
+        <h3 class="text-base font-semibold">Scale the EC2 instance</h3>
+      </div>
+      <p class="text-sm text-text-secondary">If CPU is the bottleneck, scale up the EC2 instance (larger instance type) or scale out (add instances behind the ALB). Terraform makes this a configuration change. Apply, wait for the new instance to pass health checks, traffic is distributed.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">3</span>
+        <h3 class="text-base font-semibold">Verify with load test</h3>
+      </div>
+      <p class="text-sm text-text-secondary">Run the k6 load test against the scaled environment. Does it now handle 500+ concurrent users within the latency targets? If not, continue diagnosing — maybe the database is the bottleneck, not the application server.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">4</span>
+        <h3 class="text-base font-semibold">Communicate status to Liam</h3>
+      </div>
+      <p class="text-sm text-text-secondary">"We saw the traffic spike. The site was slow because the server was handling more traffic than expected. We've scaled the infrastructure and verified it can handle the expected event-day load. The system is stable. We'll be monitoring throughout the event tomorrow."</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">The loop</h2>
+  <p class="text-text-secondary mb-6">You've completed the full 8-step cycle — this time with production operations:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">1</span>
+      <div>
+        <p class="font-semibold text-sm">Requirements</p>
+        <p class="text-sm text-text-secondary">You wrote a PRD with non-functional requirements (500 users, sub-3s latency, 99.9% availability) and a feature flag strategy.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">2</span>
+      <div>
+        <p class="font-semibold text-sm">Design</p>
+        <p class="text-sm text-text-secondary">You designed an event platform with a dashboard readable in bright sunlight and a QR check-in flow optimised for speed.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">3</span>
+      <div>
+        <p class="font-semibold text-sm">Architecture</p>
+        <p class="text-sm text-text-secondary">You reviewed CI/CD pipeline architecture, feature flag integration, Prometheus + Grafana observability, and PagerDuty alerting.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">4</span>
+      <div>
+        <p class="font-semibold text-sm">Implement</p>
+        <p class="text-sm text-text-secondary">You built with operational infrastructure first — Prometheus, Unleash, Grafana, PagerDuty — then features behind flags with trunk-based development.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">5</span>
+      <div>
+        <p class="font-semibold text-sm">Test</p>
+        <p class="text-sm text-text-secondary">You wrote load tests with k6 proving 500 concurrent users at target latency, tested feature flag states, and verified graceful degradation.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">6</span>
+      <div>
+        <p class="font-semibold text-sm">Deploy</p>
+        <p class="text-sm text-text-secondary">You deployed with blue/green via ALB, environment approvals in GitHub Actions, smoke tests, and rollback capability.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">7</span>
+      <div>
+        <p class="font-semibold text-sm">UAT</p>
+        <p class="text-sm text-text-secondary">Liam tested with feature flags and caught a real-time update need, a historical data gap, and a training mode request — solved by polling, a past-events view, and a feature flag.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">8</span>
+      <div>
+        <p class="font-semibold text-sm">Monitor</p>
+        <p class="text-sm text-text-secondary">You set up Prometheus metrics, Grafana dashboards, PagerDuty alerting, and wrote an incident response runbook. You walked through the Event Day Crisis scenario.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Reflection on P8</h2>
+  <p class="text-text-secondary mb-4">This is the shift. You can now operate a production system, not just build one. Building is getting code to work. Operating is keeping it working — under load, under failure, under pressure. Ask yourself:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li><strong class="text-text">Feature flags:</strong> How did trunk-based development with flags feel compared to long-lived feature branches? Was it easier or harder to reason about what's deployed vs what's enabled?</li>
+    <li><strong class="text-text">Monitoring:</strong> Did the Grafana dashboards tell you things you wouldn't have noticed without them? Were there metrics you wish you had added earlier?</li>
+    <li><strong class="text-text">Load testing:</strong> What did the first k6 run reveal? Did the system pass immediately or did you need to optimise? What was the bottleneck?</li>
+    <li><strong class="text-text">Incident response:</strong> Walking through the extension scenario — did the runbook help? Were there steps you'd add or change?</li>
+    <li><strong class="text-text">Non-functional requirements:</strong> How early in the process should you have been thinking about performance and availability? Did specifying targets in the PRD change how you built?</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">The "show someone" moment</h2>
+  <p class="text-text-secondary mb-4">Open three browser tabs:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>The live event page — public-facing, ticket purchase, event details with weather</li>
+    <li>The Grafana application dashboard — request rate, error rate, latency percentiles updating in real-time</li>
+    <li>The Unleash/LaunchDarkly dashboard — feature flags you can toggle</li>
+  </ul>
+  <p class="text-text-secondary mb-4">Buy a test ticket on the event page. Watch the <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">tickets_sold_total</code> metric tick up in Grafana. Toggle a feature flag. Refresh the event page — the feature appears or disappears. Explain the pipeline: "I push code, it goes to staging automatically, I approve it for production, it deploys with zero downtime, and if anything goes wrong, I get paged and I can roll back in seconds."</p>
+  <p class="text-text-secondary mb-4">"I can run a full CI/CD pipeline with staging, production, feature flags, and zero-downtime deploys."</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Key insight:</strong> This project is the shift from builder to operator. Builders ship code. Operators keep systems alive. The best engineers do both — they build systems that are observable, controllable, and recoverable from the start. Feature flags, metrics, dashboards, alerts, and runbooks aren't afterthoughts. They're part of the system.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: incident management</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use PagerDuty for alerting and a markdown runbook for process. Here's the broader landscape of incident management tools.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">PagerDuty</strong> — <span class="text-text-secondary">What we use. On-call scheduling, alert routing, escalation policies. The industry standard for waking people up when things break. Free tier for small teams.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">OpsGenie (Atlassian)</strong> — <span class="text-text-secondary">PagerDuty competitor. Tight integration with Jira for post-incident tracking. Similar features. Good if your team lives in Atlassian tools.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">incident.io</strong> — <span class="text-text-secondary">Incident management through Slack. Declare an incident, coordinate in a channel, auto-generate post-incident reports. Built for teams that already communicate in Slack. Newer but growing fast.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Statuspage (Atlassian)</strong> — <span class="text-text-secondary">Public-facing status page. Communicate outages to users. "We're investigating elevated error rates on check-in." Not an alerting tool — a communication tool. Often used alongside PagerDuty or OpsGenie.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Jira Service Management</strong> — <span class="text-text-secondary">Full ITSM platform. Incident management, change management, problem management. Enterprise-grade. Overkill for small teams but common in large organisations.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">PagerDuty for alerting, a markdown runbook for process, and a post-incident report template is enough for most teams. incident.io adds value when you have multiple responders coordinating during an incident. Statuspage adds value when you have external users who need to know about outages.</p>
+    </div>
+  </details>
+
+  <h2 class="mb-4 mt-10">What's next</h2>
+  <p class="text-text-secondary mb-4">Complete the <a href="/web-dev/checkpoints/after-p8">Checkpoint: After Project 8</a>. Then: <a href="/web-dev/projects/9">Project 9</a>.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>What you've added:</strong> Feature flags, Prometheus metrics, Grafana dashboards, PagerDuty alerting, k6 load testing, incident response runbooks, non-functional requirements, trunk-based development, blue/green deployment with rollback. You can build a system, deploy it safely, monitor it in production, and respond when things go wrong.</p>
+  </Callout>
+</DocsLayout>

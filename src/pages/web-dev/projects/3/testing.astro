@@ -1,0 +1,137 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Testing" description="Automated tests, form edge cases, email verification, and the full integration flow.">
+  <h1 class="mb-6">Testing</h1>
+  <p class="text-text-secondary mb-4">Project 1 had no backend to test — just Lighthouse and a real phone. Project 2 introduced pytest and API testing. Project 3 raises the bar again: you have forms, email, database writes, and a full user flow from signup to confirmation.</p>
+  <p class="text-text-secondary mb-8">The acceptance criteria in your PRD are your test plan. Every criterion should have a corresponding test — automated where possible, manual where not.</p>
+
+  <h2 class="mb-4">Automated tests</h2>
+
+  <h3 class="mb-3 mt-6">API tests (pytest)</h3>
+  <p class="text-text-secondary mb-4">Every API endpoint should have automated tests. Tell Claude to write them from your acceptance criteria:</p>
+  <CodeBlock copy>{`Here are the acceptance criteria from my PRD:
+
+[Paste your acceptance criteria]
+
+Write pytest test cases that verify every criterion. Include tests for:
+- Happy path: successful class listing, successful signup
+- Error cases: full class, invalid data, duplicate signup
+- Edge cases: no classes exist, class doesn't exist
+- Email: verify the email service is called with correct data`}</CodeBlock>
+
+  <p class="text-text-secondary mt-4 mb-4">At minimum, your test suite should cover:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>GET classes — returns correct format, filters past classes, shows accurate spots remaining</li>
+    <li>POST signup — creates a signup, decrements spots, returns confirmation</li>
+    <li>POST signup to a full class — returns appropriate error</li>
+    <li>POST signup with invalid data — returns validation errors</li>
+    <li>POST duplicate signup — handles gracefully</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Form validation tests</h3>
+  <p class="text-text-secondary mb-4">Test both client-side (JavaScript) and server-side (FastAPI) validation:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Required fields show errors when empty</li>
+    <li>Email format validation works (test: no @, no domain, double @)</li>
+    <li>Name length limits are enforced</li>
+    <li>Error messages are clear and specific</li>
+    <li>Validation prevents submission, not just warns</li>
+  </ul>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Review the generated tests.</strong> AI-generated tests sometimes test the implementation rather than the requirement. A test should verify behaviour ("signing up for a full class returns a 409 error with message 'Class is full'"), not implementation details ("the database query uses SELECT COUNT"). If the tests are testing how the code works rather than what it does, tell Claude to rewrite them.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Manual testing</h2>
+
+  <h3 class="mb-3 mt-6">Form edge cases</h3>
+  <p class="text-text-secondary mb-4">Open the form in your browser and try each of these manually. Automated tests cover the API, but manual testing catches UI problems that tests miss:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Empty fields — submit with nothing filled in</li>
+    <li>Invalid email — "not-an-email", "test@", "@domain.com"</li>
+    <li>Duplicate signup — sign up, then try signing up again with the same email for the same class</li>
+    <li>Full class — fill the last spot, then try signing up another person</li>
+    <li>Long names — paste a 500-character name and see what happens to the form layout</li>
+    <li>Special characters — names with accents, apostrophes, hyphens (O'Brien, Martinez-Lopez)</li>
+    <li>Rapid double-click on submit — does it create duplicate signups?</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Lighthouse audit</h3>
+  <p class="text-text-secondary mb-4">Same as Project 1, but now also check form accessibility. Open Chrome DevTools, run a Lighthouse audit, and check:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Performance: 80+</li>
+    <li>Accessibility: check specifically for form-related issues</li>
+    <li>Every form input has an associated label (not just placeholder text)</li>
+    <li>Error messages are announced to screen readers (aria-live regions or role="alert")</li>
+    <li>Form fields have appropriate autocomplete attributes (name, email)</li>
+    <li>Focus order makes sense — tab through the form and check the sequence</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Email testing</h2>
+  <p class="text-text-secondary mb-4">Email is hard to test automatically. Verify manually:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Confirmation email arrives after successful signup</li>
+    <li>Admin notification email arrives for Sarah</li>
+    <li>Email content includes class name, date, and time</li>
+    <li>Emails do NOT send when signup fails (validation error, full class)</li>
+    <li>Check your email service dashboard (SendGrid/Mailgun/Resend) — does it show the emails were sent?</li>
+    <li>Check spam folders</li>
+  </ul>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Use test mode for email during development.</strong> Most email services have a sandbox or test mode that logs emails without actually sending them. This prevents accidentally emailing real people during testing and avoids burning through your free tier quota.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Integration testing: the full flow</h2>
+  <p class="text-text-secondary mb-4">The most important test is the complete user flow. Walk through it end-to-end:</p>
+  <ol class="list-decimal list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Open the class listings page — classes load from the database with correct spots remaining</li>
+    <li>Click signup on a class — the form appears with the class pre-selected</li>
+    <li>Fill out the form and submit — the frontend sends a POST to the API</li>
+    <li>The API validates the data, writes to the database, and triggers the email service</li>
+    <li>The confirmation email arrives with the correct class details</li>
+    <li>Sarah's admin notification email arrives</li>
+    <li>The class listing now shows one fewer spot remaining</li>
+    <li>Trying to sign up when the class is full shows the correct error</li>
+  </ol>
+  <p class="text-text-secondary mb-4">If any step breaks, the integration is incomplete. The frontend, API, database, and email service all need to work together. This is the test that matters most.</p>
+
+  <h2 class="mb-4 mt-10">Coverage reports</h2>
+  <p class="text-text-secondary mb-4">Tests tell you what works. Coverage tells you what you forgot to test. A coverage report shows the percentage of your code that is executed during tests — which lines, branches, and functions are covered, and which are not.</p>
+  <p class="text-text-secondary mb-4">Tell Claude to add coverage:</p>
+  <CodeBlock copy>{`Add pytest-cov to the project. Configure it to generate a coverage report when tests run. Set a coverage threshold of 80% — if coverage drops below that, the test command should fail.`}</CodeBlock>
+  <p class="text-text-secondary mt-4 mb-4">When you run the tests, you'll see a table showing which files have coverage and which lines are missed. Focus on the missed lines — they often reveal untested edge cases or error paths.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>80% is a reasonable target, not a ceiling.</strong> 100% coverage doesn't mean your code is bug-free — it means every line runs during tests, which is different from every behaviour being tested. Some code (error handlers, edge cases) is hard to reach. Aim for 80%, and make sure the remaining 20% isn't the critical path. Coverage is a signal, not a score.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: test coverage & quality</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">Coverage tools measure how much of your code is exercised by tests. Some integrate with CI to block merges when coverage drops.</p>
+      <div class="space-y-3">
+        <div><p class="text-sm"><strong class="text-text">pytest-cov</strong> — <span class="text-text-secondary">Coverage plugin for pytest. Generates terminal reports and HTML visualisations. Used in this project.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">istanbul / c8</strong> — <span class="text-text-secondary">JavaScript coverage tools. istanbul (nyc) is the classic; c8 uses V8's built-in coverage for speed. Used with Jest, Vitest, or Mocha.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Codecov</strong> — <span class="text-text-secondary">Cloud service that tracks coverage over time. Adds coverage reports to PRs and blocks merges if coverage drops. Free for open source.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Coveralls</strong> — <span class="text-text-secondary">Similar to Codecov. Tracks coverage trends and integrates with CI. Posts coverage status on PRs.</span></p></div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">Coverage as a CI gate is common in professional teams — PRs that decrease coverage are flagged automatically.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: Deployment</h2>
+    <p class="text-text-secondary mb-4">Tests pass. Time to deploy to staging.</p>
+    <a
+      href="/web-dev/projects/3/deployment"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Deployment →
+    </a>
+  </div>
+</DocsLayout>

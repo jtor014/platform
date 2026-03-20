@@ -1,0 +1,75 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Setup" description="Set up Stripe test account, Google Maps API key, and project scaffold.">
+  <h1 class="mb-6">Setup</h1>
+  <p class="text-text-secondary mb-8">Third time doing this — folder, git, CLAUDE.md, BACKLOG.md, Claude Code. The new step: set up your third-party API accounts before starting implementation.</p>
+
+  <h2 class="mb-4">Step 1: Create the project</h2>
+  <CodeBlock terminal copy>{`$ cd ~/dev
+$ mkdir vinyl-vault && cd vinyl-vault
+$ git init`}</CodeBlock>
+  <p class="text-sm text-text-secondary mt-2 mb-4">Copy CLAUDE.md and BACKLOG.md into the project root.</p>
+
+  <h2 class="mb-4 mt-10">Step 2: Stripe test account</h2>
+  <ol class="list-decimal list-inside text-text-secondary space-y-2 text-sm mb-4">
+    <li>Go to <a href="https://dashboard.stripe.com/register">dashboard.stripe.com/register</a> and create an account</li>
+    <li>Make sure <strong class="text-text">Test mode</strong> is on (toggle in the top right)</li>
+    <li>Go to <strong class="text-text">Developers > API keys</strong></li>
+    <li>Copy your <strong class="text-text">Publishable key</strong> (<code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">pk_test_</code>) and <strong class="text-text">Secret key</strong> (<code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">sk_test_</code>)</li>
+  </ol>
+
+  <h2 class="mb-4 mt-10">Step 3: Google Maps</h2>
+  <p class="text-text-secondary mb-4">Two options depending on your architecture:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-4">
+    <li><strong class="text-text">Simple embed (no API key needed):</strong> A Google Maps iframe embed for a single location works without an API key. If your architecture chose this approach, skip this step.</li>
+    <li><strong class="text-text">Maps JavaScript API or Embed API with key:</strong> Go to <a href="https://console.cloud.google.com/">console.cloud.google.com</a>, create a project, enable the API, create a key, restrict it to your domain.</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Step 4: Store your keys</h2>
+  <p class="text-text-secondary mb-4">Create a <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.env</code> file in the project root:</p>
+
+  <CodeBlock lang="bash">{`# .env — DO NOT COMMIT THIS FILE
+STRIPE_SECRET_KEY=sk_test_your_key_here
+STRIPE_PUBLISHABLE_KEY=pk_test_your_key_here
+GOOGLE_MAPS_API_KEY=your_key_here`}</CodeBlock>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>NEVER commit API keys to git.</strong> Before your first commit, verify that <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.env</code> is in <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.gitignore</code>. If you accidentally commit a secret key, Stripe will detect it and email you — but prevention is better than cleanup.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Step 5: Set up Sentry</h2>
+  <ol class="list-decimal list-inside text-text-secondary space-y-2 text-sm mb-4">
+    <li>Go to <a href="https://sentry.io/signup/">sentry.io/signup</a> and create a free account</li>
+    <li>Create a new project — select <strong class="text-text">FastAPI</strong> (or Python) as the platform</li>
+    <li>Copy the <strong class="text-text">DSN</strong> (Data Source Name) from the project settings</li>
+    <li>Add it to your <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.env</code> file:</li>
+  </ol>
+  <CodeBlock lang="bash">{`SENTRY_DSN=https://your-key@o123456.ingest.sentry.io/your-project-id`}</CodeBlock>
+  <p class="text-text-secondary mb-4">Then tell Claude Code to install the Sentry SDK and configure error reporting:</p>
+  <CodeBlock copy>{`Install the Sentry Python SDK (sentry-sdk). Configure it in the FastAPI app startup using the SENTRY_DSN from environment variables. Sentry should capture unhandled exceptions automatically.`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Step 6: Enable Dependabot</h2>
+  <p class="text-text-secondary mb-4">Go to your GitHub repo settings → <strong class="text-text">Security</strong> → <strong class="text-text">Code security and analysis</strong> → <strong class="text-text">Enable Dependabot alerts</strong>. This automatically scans your dependencies for known vulnerabilities. It's a one-click setup that every project should have.</p>
+  <p class="text-text-secondary mb-4">When Dependabot finds a vulnerable dependency, it opens a PR with the fix. You review it like any other PR.</p>
+
+  <h2 class="mb-4 mt-10">Step 7: Launch Claude Code</h2>
+  <CodeBlock terminal copy>{`$ code .`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-2">Open the terminal in VS Code and launch Claude:</p>
+  <CodeBlock terminal copy>{`$ claude`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-4">Claude reads CLAUDE.md automatically. Start Ticket 1.</p>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: building</h2>
+    <p class="text-text-secondary mb-4">Setup complete. Time to build — with API verification for every integration ticket.</p>
+    <a
+      href="/web-dev/projects/4/implementation/building"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Building →
+    </a>
+  </div>
+</DocsLayout>

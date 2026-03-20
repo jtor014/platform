@@ -1,0 +1,134 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Deployment" description="Deploy the full-stack app — frontend, backend, database, and email service.">
+  <h1 class="mb-6">Deployment</h1>
+  <p class="text-text-secondary mb-4">Project 1 deployed a static site to Netlify — one click. Project 2 added Docker with a backend and database. Project 3 adds another service: email. You're deploying four connected pieces: frontend, backend, database, and email integration.</p>
+  <p class="text-text-secondary mb-8">The deploy ticket is in your backlog like any other ticket. Direct Claude, verify the result.</p>
+
+  <h2 class="mb-4">Docker Compose for the full stack</h2>
+  <p class="text-text-secondary mb-4">Tell Claude to set up the deployment:</p>
+  <CodeBlock copy>{`Set up Docker Compose for deployment. The stack includes:
+- Frontend (React, served via nginx or similar)
+- Backend (FastAPI)
+- PostgreSQL database
+- Environment variables for the email API key and database URL
+
+Use the deploy ticket from the backlog.`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Hosting options</h2>
+  <p class="text-text-secondary mb-4">The frontend is static once built — it goes to Netlify (same as Project 1). The backend and database need a server. Free tier options:</p>
+  <div class="overflow-x-auto mb-8">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Service</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">What it gives you</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Free tier notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border"><td class="px-4 py-3 font-semibold">Netlify</td><td class="px-4 py-3 text-text-secondary">Frontend hosting</td><td class="px-4 py-3 text-text-secondary">Same as P1. Git-based deploy, automatic builds.</td></tr>
+        <tr class="border-b border-border bg-bg-subtle"><td class="px-4 py-3 font-semibold">Railway</td><td class="px-4 py-3 text-text-secondary">Backend + PostgreSQL</td><td class="px-4 py-3 text-text-secondary">$5 free credit/month. Supports Docker, managed Postgres.</td></tr>
+        <tr class="border-b border-border"><td class="px-4 py-3 font-semibold">Render</td><td class="px-4 py-3 text-text-secondary">Backend + PostgreSQL</td><td class="px-4 py-3 text-text-secondary">Free web service (spins down after inactivity). Free Postgres for 90 days.</td></tr>
+        <tr class="border-b border-border bg-bg-subtle"><td class="px-4 py-3 font-semibold">Fly.io</td><td class="px-4 py-3 text-text-secondary">Backend + PostgreSQL</td><td class="px-4 py-3 text-text-secondary">Free allowance for small apps. Supports Docker natively.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="text-text-secondary mb-4">Pick one for the backend. Tell Claude which service you're using so it configures the deployment correctly.</p>
+
+  <h2 class="mb-4 mt-10">Environment variables</h2>
+  <p class="text-text-secondary mb-4">Full-stack apps use environment variables for secrets and configuration. You'll need to set these in your hosting provider:</p>
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Variable</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border"><td class="px-4 py-3 font-mono text-sm">DATABASE_URL</td><td class="px-4 py-3 text-text-secondary">PostgreSQL connection string</td></tr>
+        <tr class="border-b border-border bg-bg-subtle"><td class="px-4 py-3 font-mono text-sm">EMAIL_API_KEY</td><td class="px-4 py-3 text-text-secondary">SendGrid / Mailgun / Resend API key</td></tr>
+        <tr class="border-b border-border"><td class="px-4 py-3 font-mono text-sm">ADMIN_EMAIL</td><td class="px-4 py-3 text-text-secondary">Sarah's email for signup notifications</td></tr>
+        <tr class="border-b border-border bg-bg-subtle"><td class="px-4 py-3 font-mono text-sm">CORS_ORIGINS</td><td class="px-4 py-3 text-text-secondary">Allowed frontend origins</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>API keys should NEVER be in your code.</strong> Not in a JavaScript file. Not in a Python file. Not in a Docker Compose file committed to git. They go in <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.env</code> files (which are in <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.gitignore</code>) for local development, and in your hosting provider's environment variable settings for production. If Claude puts an API key in a committed file, tell it to move it to an environment variable immediately.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Verification checklist</h2>
+  <p class="text-text-secondary mb-2">Once deployed, verify each of these on the staging URL:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-4">
+    <li>Class listings load with correct data from the production database</li>
+    <li>Spots remaining is accurate</li>
+    <li>Signup form works — submit a test signup on the live URL</li>
+    <li>Confirmation email arrives (check inbox and spam)</li>
+    <li>Admin notification email arrives for Sarah</li>
+    <li>Full class shows correct state — no ability to sign up</li>
+    <li>Open DevTools, Network tab — requests go to the live API, not localhost</li>
+    <li>Mobile responsive — test on an actual phone</li>
+    <li>API endpoints respond correctly from the live backend</li>
+  </ul>
+
+  <p class="text-text-secondary mb-4">The key question: <strong class="text-text">does the live form actually submit, trigger the email, and update the database?</strong> If anything in that chain is broken, the deploy isn't done.</p>
+
+  <h2 class="mb-4 mt-10">Troubleshooting</h2>
+
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>Deploy fails on the hosting provider</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Read the deploy logs on the hosting provider's dashboard. Copy the error. Paste to Claude: "The deploy to [Railway/Render/Fly.io] failed with this error: [paste]. Fix it." Full-stack deploy errors are often about missing environment variables, wrong port configuration, or Docker build failures.</p>
+    </div>
+  </details>
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>Frontend loads but API calls fail</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">The frontend is deployed but can't reach the backend. Check: (1) Is the backend actually running? Check the hosting provider's dashboard. (2) Is the frontend configured with the correct backend URL? It should point to the live backend, not localhost. (3) CORS — is the backend allowing requests from the frontend's domain?</p>
+    </div>
+  </details>
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>Emails work locally but not from staging</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Check: (1) Is the EMAIL_API_KEY environment variable set on the hosting provider? (2) Has the sending domain been verified with the email service? Most providers require domain verification for production sending. (3) Check the email service dashboard for failed deliveries or errors.</p>
+    </div>
+  </details>
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>Database is empty on staging</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">The production database is a different database than your local one. You need to run migrations and seed data on the production database. Tell Claude: "The production database is empty. Run the migrations and seed the class data on the staging database."</p>
+    </div>
+  </details>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: full-stack deployment</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">You deployed to a PaaS (Platform as a Service) that handles servers for you. These are the main options for full-stack apps.</p>
+      <div class="space-y-3">
+        <div><p class="text-sm"><strong class="text-text">Railway</strong> — <span class="text-text-secondary">Deploy from GitHub with managed Postgres. Simple dashboard, good free tier. Handles Docker natively.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Render</strong> — <span class="text-text-secondary">Similar to Railway. Free web services (with sleep on inactivity), managed databases, straightforward deploy from git.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Fly.io</strong> — <span class="text-text-secondary">Runs Docker containers on edge servers worldwide. More control than Railway/Render, slightly more configuration. Good for apps that need low latency globally.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">DigitalOcean App Platform</strong> — <span class="text-text-secondary">PaaS from DigitalOcean. Detects your stack and deploys automatically. Managed databases available. Straightforward pricing.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Heroku</strong> — <span class="text-text-secondary">The original PaaS. Simple git-push deploys. No longer has a free tier, but still widely used in tutorials and enterprise.</span></p></div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">From Project 6 onwards, you'll use Terraform and AWS instead of PaaS. Infrastructure as code gives you full control — and full responsibility — over your deployment environment.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: Show the client</h2>
+    <p class="text-text-secondary mb-4">Staging is live. Time to show Sarah and get sign-off.</p>
+    <a
+      href="/web-dev/projects/3/uat"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      UAT (User Acceptance Testing) →
+    </a>
+  </div>
+</DocsLayout>

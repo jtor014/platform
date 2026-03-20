@@ -1,0 +1,95 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="UAT (User Acceptance Testing)" description="Show Priya the staging site with three accounts, collect feedback, and handle an edge case about multiple owners.">
+  <h1 class="mb-6">UAT (User Acceptance Testing)</h1>
+  <p class="text-text-secondary mb-4">Show Priya the staging site. Give her three accounts — one for each role — so she can see exactly what each type of user experiences.</p>
+  <p class="text-text-secondary mb-8">She tests over the weekend, logging in as a member, then as admin, then as owner. She comes back with notes:</p>
+
+  <Callout variant="client">
+    <p>"Love it! The dashboards are great — I can really see the difference between each role. Three things:</p>
+    <ol class="list-decimal list-inside space-y-2 mt-2">
+      <li>When a member books a desk and then I look at the admin view, it doesn't show which member booked it — just 'Desk 12 - Booked'. Can it show the member's name?</li>
+      <li>Can members cancel their own bookings? Right now there's no cancel button.</li>
+      <li>My business partner Tom needs owner access too. Can there be two owners?</li>
+    </ol>
+    <p class="mt-2">Otherwise, ready to go!"</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Analyse the feedback</h2>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">UAT-1</span>
+        <h3 class="text-base font-semibold">Show member name in admin booking view</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Type:</strong> Bug / missing data. The admin view has the booking but isn't displaying the member name. The data is in the database (the booking has a user_id) — it's just not being shown in the admin UI.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Admin booking list shows the member's name next to each booking</li>
+        <li>Owner booking list also shows member names</li>
+        <li>Member booking list still only shows their own bookings (no change to member view)</li>
+      </ul>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">UAT-2</span>
+        <h3 class="text-base font-semibold">Add booking cancellation for members</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Type:</strong> Missing feature that was arguably in scope. The PRD likely had "cancel own booking" in the permissions matrix. If the cancel endpoint exists for admins but not members, this is a gap in implementation. If it doesn't exist at all, it's a missing feature.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Members see a cancel button on their upcoming bookings</li>
+        <li>Cancel removes the booking and frees the resource</li>
+        <li>Members can only cancel their own bookings — not other members'</li>
+        <li>Past bookings cannot be cancelled</li>
+      </ul>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">UAT-3</span>
+        <h3 class="text-base font-semibold">Support multiple owners</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Type:</strong> A good question the PRD may not have addressed. The architecture needs to handle it — and it probably already does. The role is a field on the user record, not a single hardcoded user. If the system supports <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">role = 'owner'</code> on any user, then creating a second owner is just setting Tom's role to "owner" in the database. No code change needed.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Admin (or existing owner) can create a new user with the owner role</li>
+        <li>Both owners see the same revenue reports and full dashboard</li>
+        <li>Verify this actually works by logging in as the second owner</li>
+      </ul>
+    </div>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Notice the pattern:</strong> UAT-1 is a display bug — the data exists but isn't shown. UAT-2 is a feature gap the PRD should have caught. UAT-3 is an architecture question — and if the architecture is sound, it's trivial to fix. Good architecture absorbs requirement changes without structural rewrites.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Fix and redeploy</h2>
+  <p class="text-text-secondary mb-4">Same loop — direct Claude, fix, verify (including adversarial test on UAT-2's cancel endpoint — can member A cancel member B's booking?), merge, redeploy.</p>
+
+  <CodeBlock copy>{`Fix the three UAT feedback items:
+
+UAT-1: Show member name in admin/owner booking list. The user_id is already in the booking — join with the users table to get the name.
+UAT-2: Add cancel button for members on their own upcoming bookings. Members can only cancel their own bookings. Past bookings can't be cancelled.
+UAT-3: Verify that multiple owners work. Create a second owner account and confirm both see the same dashboard.`}</CodeBlock>
+
+  <p class="text-text-secondary mt-4 mb-4">After fixing, run the adversarial checklist on UAT-2 specifically: can a member cancel another member's booking by changing the booking ID? The cancel endpoint needs the same ownership check as the view endpoint.</p>
+  <p class="text-text-secondary mb-4">Redeploy. Send Priya the updated staging URL. She confirms: member names visible, cancel works, Tom has access. Sign-off.</p>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: go live</h2>
+    <p class="text-text-secondary mb-4">Feedback resolved. Time to go live, monitor, and reflect.</p>
+    <a
+      href="/web-dev/projects/5/monitoring"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Monitoring & Iteration →
+    </a>
+  </div>
+</DocsLayout>

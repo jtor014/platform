@@ -1,0 +1,91 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Writing the PRD" description="Use the prompt and template to create the Vinyl Vault requirements document.">
+  <h1 class="mb-6">Writing the PRD</h1>
+  <p class="text-text-secondary mb-4">You've done this before in Project 3. Same process: get the template from <a href="/templates">/templates</a>, paste the prompt below into Claude (the chat interface), review the output, iterate, then check with the client.</p>
+  <p class="text-text-secondary mb-8">The guidance here is briefer than P3's — you know the steps. The emphasis is on what to watch for in the review.</p>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <p class="text-text-secondary mb-4">Paste this into Claude along with the PRD template:</p>
+
+  <CodeBlock copy>{`You are a product manager writing a PRD for a small development agency. Use the template provided.
+
+## Client Brief
+
+Client: Marcus, owner of Vinyl Vault Records — a small vinyl record shop in Fitzroy, Melbourne.
+
+Marcus currently sells via Discogs marketplace but wants his own online store for more control, better margins, and proper branding.
+
+What Marcus wants:
+- Browse records by artist or genre
+- Search for specific records
+- Add items to a shopping cart
+- Pay with a card (Stripe — he doesn't want to handle card numbers)
+- A map showing the physical shop location (Fitzroy, Melbourne)
+- Clean, simple store experience
+
+What Marcus explicitly does NOT want:
+- No subscriptions or membership tiers
+- No auctions
+- No user reviews or ratings
+- No wishlists or saved items
+- No user accounts (guest checkout only)
+- No Discogs integration or sync
+- No blog or news section
+- No live chat
+
+Tech stack: React frontend, FastAPI backend, PostgreSQL, Stripe for payments, Google Maps for store location, Docker, GitHub Actions CI, Gemini reviewer.
+
+Write the PRD using the template. Focus on what Marcus asked for. Do not add features he didn't request — online stores are a common pattern and you'll be tempted to add standard e-commerce features. Resist that.`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Review the output</h2>
+  <p class="text-text-secondary mb-4">Same review principles as P3, with one new emphasis:</p>
+
+  <h3 class="mb-3 mt-6">Watch for e-commerce scope creep</h3>
+  <p class="text-text-secondary mb-4">Online stores are heavily represented in AI training data. AI will try to add features Marcus never asked for. Check the PRD for:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Saved cards or payment methods</strong> — Marcus said guest checkout. No accounts means no saved payment info.</li>
+    <li><strong class="text-text">Product recommendations</strong> — "Customers who bought this also bought..." was never mentioned.</li>
+    <li><strong class="text-text">Discount codes or coupons</strong> — not in the brief.</li>
+    <li><strong class="text-text">Inventory management UI</strong> — Marcus will manage this himself. The store just displays what's available.</li>
+    <li><strong class="text-text">Email marketing</strong> — order confirmation yes, newsletters no.</li>
+    <li><strong class="text-text">Ratings or reviews</strong> — explicitly ruled out.</li>
+    <li><strong class="text-text">Abandoned cart recovery</strong> — guest checkout, no accounts, no way to follow up.</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Check the acceptance criteria</h3>
+  <p class="text-text-secondary mb-4">Same standards as P3 — specific, verifiable, no vague language. For payment-related criteria, they should reference Stripe test mode specifically (e.g., "payment completes with Stripe test card 4242 4242 4242 4242").</p>
+
+  <h3 class="mb-3 mt-6">Iterate and check with the client</h3>
+  <p class="text-text-secondary mb-8">Refine the PRD until it captures exactly what Marcus asked for — no more, no less. Then present it to the client (or review it as if you were Marcus). Would he recognise what's described? Would he spot anything he didn't ask for?</p>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: requirements documentation</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">You're writing a PRD — a product requirements document. It's one of several ways to capture what needs to be built.</p>
+      <div class="space-y-3">
+        <div><p class="text-sm"><strong class="text-text">PRDs</strong> — <span class="text-text-secondary">Product requirements documents. Feature-focused, written by product managers. What you're using in this project. Good for communicating the "what" and "why" to stakeholders.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">User Stories</strong> — <span class="text-text-secondary">"As a [user], I want [feature] so that [benefit]." Short, focused on user value. Common in Agile teams. Often live on cards in Jira or Linear.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Jobs-to-be-Done (JTBD)</strong> — <span class="text-text-secondary">Focuses on what the user is trying to accomplish, not features. "When I want to buy a record, I want to pay without creating an account." Helps avoid building features nobody needs.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Behaviour-Driven Development (BDD)</strong> — <span class="text-text-secondary">"Given [context], when [action], then [outcome]." Requirements written as executable specifications. Tools like Cucumber turn these into automated tests.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Acceptance Criteria</strong> — <span class="text-text-secondary">Specific, testable conditions that a feature must meet. Often attached to user stories. "Payment completes with test card 4242 4242 4242 4242" is an acceptance criterion.</span></p></div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">PRDs work well for this project because you're capturing a complete product scope. In a team setting, you'd likely combine PRDs with user stories and acceptance criteria. The format matters less than the discipline of writing requirements before writing code.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: design</h2>
+    <p class="text-text-secondary mb-4">PRD is done. Now create the design spec.</p>
+    <a
+      href="/web-dev/projects/4/design"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Design →
+    </a>
+  </div>
+</DocsLayout>

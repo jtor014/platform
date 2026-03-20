@@ -1,0 +1,70 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="The Client Brief: DeskHub Co-working" description="Meet Priya and understand what DeskHub needs — three user roles, three different views, one system.">
+  <h1 class="mb-6">The Client Brief: DeskHub Co-working</h1>
+  <p class="text-text-secondary mb-4"><strong class="text-text">Priya</strong> runs DeskHub, a co-working space in Collingwood, Melbourne. Thirty hot desks and three meeting rooms. Right now everything runs on email and hope — people book via email or just show up. It works when there are ten members. With fifty, it's chaos.</p>
+  <p class="text-text-secondary mb-4">You meet Priya at the space. Open plan, good coffee, a mix of designers, developers, and freelancers at the desks. She pulls up her inbox and shows you the booking requests — a mess of overlapping emails, double-bookings, and unanswered questions.</p>
+
+  <Callout variant="client">
+    <p>"I run a co-working space — 30 hot desks and 3 meeting rooms. Right now people book via email or just show up. I need a system where members can log in and book a desk or meeting room for a specific date. I need an admin view where my team can see all bookings, manage members, and handle issues. And I need an owner dashboard where I can see revenue — how much we're making per month, occupancy rates, which rooms are most popular. Three types of users: members who book, admins who manage, and me (the owner) who sees everything."</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">What to pay attention to</h2>
+  <p class="text-text-secondary mb-4">This is the most complex brief yet. The complexity isn't in any single feature — it's in <strong class="text-text">who can see what</strong>. Three distinct user types with different permissions. This is the heart of the project.</p>
+
+  <h3 class="mb-3 mt-6">What she asked for</h3>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Member booking:</strong> Log in, see availability, book a desk or meeting room for a specific date</li>
+    <li><strong class="text-text">Admin management:</strong> See all bookings across all members, manage member accounts, handle issues</li>
+    <li><strong class="text-text">Owner dashboard:</strong> Revenue per month, occupancy rates, room popularity — the business data</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">What she implied</h3>
+  <p class="text-text-secondary mb-4">Read between the lines. Priya described three levels of access without spelling out every boundary:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Members can only see their own bookings.</strong> Not other members' bookings. Some of her members are competitors — this is a hard privacy requirement.</li>
+    <li><strong class="text-text">Admins can see all bookings but not revenue.</strong> They manage day-to-day operations. Financial data is Priya's domain.</li>
+    <li><strong class="text-text">The owner sees everything.</strong> All bookings, all members, plus the business data that admins can't access.</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">What she didn't ask for</h3>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">No public-facing website</strong> — this is an internal tool for existing members</li>
+    <li><strong class="text-text">No payment processing</strong> — members pay monthly by invoice, not through the app. Priya just wants to track revenue, not collect payments.</li>
+    <li><strong class="text-text">No public registration</strong> — admin creates member accounts. There is no self-signup. Members don't find this tool on their own and register.</li>
+    <li><strong class="text-text">No messaging or chat</strong> between members</li>
+    <li><strong class="text-text">No mobile app</strong> — web is fine</li>
+    <li><strong class="text-text">No calendar integration</strong></li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Anti-scope</h2>
+  <Callout variant="warning">
+    <p class="text-sm"><strong>These are out of scope.</strong> When you generate the PRD, make sure none of these sneak in:</p>
+    <ul class="text-sm space-y-1 mt-2">
+      <li><strong>No public registration or self-signup</strong> — admin creates all accounts</li>
+      <li><strong>No payment processing</strong> — no Stripe, no card collection, no invoicing through the app</li>
+      <li><strong>No public-facing website</strong> — members-only internal tool</li>
+      <li><strong>No messaging</strong> — no chat, no notifications between members</li>
+      <li><strong>No mobile app</strong></li>
+      <li><strong>No calendar sync</strong> — no Google Calendar or Outlook integration</li>
+      <li><strong>No waitlists or queue management</strong></li>
+      <li><strong>No equipment booking</strong> — desks and rooms only</li>
+    </ul>
+  </Callout>
+
+  <p class="text-text-secondary mb-4">Multi-user apps with roles are heavily represented in AI training data. When you generate the PRD, AI will try to add features from every SaaS product it has ever seen — Slack-style messaging, Calendly-style scheduling, Stripe billing, public landing pages. None of that is in Priya's brief. Your job is to catch it and cut it.</p>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: write the PRD</h2>
+    <p class="text-text-secondary mb-4">You have the brief. Now turn it into a requirements document with a permissions matrix.</p>
+    <a
+      href="/web-dev/projects/5/requirements/writing-the-prd"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Writing the PRD →
+    </a>
+  </div>
+</DocsLayout>

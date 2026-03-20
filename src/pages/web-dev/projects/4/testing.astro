@@ -1,0 +1,135 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Testing" description="Test the full store with Stripe test payments, webhook handling, and API verification.">
+  <h1 class="mb-6">Testing</h1>
+  <p class="text-text-secondary mb-4">You know the testing step. Project 4 adds a new layer: testing third-party integrations with real (test-mode) transactions and verifying API compliance.</p>
+
+  <h2 class="mb-4 mt-10">Automated tests</h2>
+  <p class="text-text-secondary mb-4">Direct Claude to generate tests from your PRD. At minimum:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li><strong class="text-text">API tests:</strong> Product catalog endpoints, search, cart operations</li>
+    <li><strong class="text-text">Cart logic:</strong> Add, remove, update quantity, calculate total</li>
+    <li><strong class="text-text">Payment flow:</strong> Stripe Checkout session creation (mocked in unit tests, real in integration tests)</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Manual testing</h2>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>Search and filtering — try various artist names, genres, partial matches</li>
+    <li>Add items to cart, update quantities, remove items</li>
+    <li>Complete checkout end-to-end with Stripe test card <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">4242 4242 4242 4242</code></li>
+    <li>Order confirmation page shows correct details</li>
+    <li>Order confirmation email sends with correct content</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">API-specific testing</h2>
+
+  <h3 class="mb-3 mt-6">Stripe webhook handling</h3>
+  <p class="text-text-secondary mb-4">Use the <a href="https://docs.stripe.com/stripe-cli">Stripe CLI</a> to trigger test webhook events:</p>
+  <CodeBlock lang="bash" copy>{`stripe listen --forward-to localhost:8000/api/webhooks/stripe`}</CodeBlock>
+  <p class="text-text-secondary mb-4">Then make a test payment and verify:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>Webhook event arrives at your endpoint</li>
+    <li>Your code correctly parses the event</li>
+    <li>Order status updates in the database</li>
+    <li>Confirmation email triggers</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Google Maps</h3>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>Map loads on the store location page</li>
+    <li>Pin is at the correct location (Fitzroy, Melbourne — verify visually)</li>
+    <li>Map displays correctly on mobile</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Stripe test cards</h2>
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Card Number</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">What It Tests</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono">4242 4242 4242 4242</td>
+          <td class="px-4 py-3 text-text-secondary">Successful payment</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono">4000 0000 0000 0002</td>
+          <td class="px-4 py-3 text-text-secondary">Card declined</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono">4000 0000 0000 3220</td>
+          <td class="px-4 py-3 text-text-secondary">3D Secure authentication required</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="mb-4 mt-10">Edge cases</h2>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li><strong class="text-text">Empty cart checkout</strong> — does the app prevent it?</li>
+    <li><strong class="text-text">Out-of-stock item</strong> — what happens if stock runs out between adding to cart and checking out?</li>
+    <li><strong class="text-text">Network error during payment</strong> — does the app handle Stripe being unreachable?</li>
+    <li><strong class="text-text">Invalid card number</strong> — does the error message make sense to the user?</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Lighthouse audit</h2>
+  <p class="text-text-secondary mb-4">Album art can be heavy. Run a Lighthouse audit with focus on:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li><strong class="text-text">Image optimization</strong> — are album art images properly sized and compressed?</li>
+    <li><strong class="text-text">LCP (Largest Contentful Paint)</strong> — product images are likely the LCP element. Are they lazy-loaded where appropriate?</li>
+    <li><strong class="text-text">Core Web Vitals</strong> — CLS from images loading, FID from JavaScript</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">End-to-end tests with Playwright</h2>
+  <p class="text-text-secondary mb-4">Unit tests and manual testing check individual pieces. End-to-end (E2E) tests check the entire user flow — from browsing to payment — in a real browser.</p>
+  <p class="text-text-secondary mb-4">Playwright opens a real browser and automates what a user would do. It clicks buttons, fills forms, and checks results. When these tests pass in CI, you know the user flow works.</p>
+  <p class="text-text-secondary mb-4">Tell Claude Code to write Playwright tests for the checkout flow:</p>
+
+  <CodeBlock copy>{`Write Playwright E2E tests for the checkout flow:
+1. Browse the product catalog
+2. Add a record to the cart
+3. Go to checkout
+4. Complete payment with Stripe test card 4242 4242 4242 4242
+5. Verify the order confirmation page appears with correct details
+
+Use Playwright's test runner. Each step should wait for the page to load before proceeding.`}</CodeBlock>
+
+  <p class="text-text-secondary mb-4">Run the tests locally to verify they pass. If a test fails, it usually means the flow is broken — which is exactly the kind of thing you want to catch before deployment.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>The new testing layer:</strong> Projects 1-3 tested your code. Project 4 also tests your integrations. A payment flow that uses a hallucinated Stripe parameter will fail silently or produce confusing errors. The docs check during building should have caught these — testing confirms it.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: end-to-end testing</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">Playwright is the modern default for E2E testing, but it's not the only option.</p>
+      <div class="space-y-3">
+        <div><p class="text-sm"><strong class="text-text">Playwright</strong> — <span class="text-text-secondary">Microsoft's browser automation tool. Supports Chromium, Firefox, and WebKit. Fast, reliable, and actively maintained. What you're using in this project.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Cypress</strong> — <span class="text-text-secondary">Popular alternative with a clean API and built-in time-travel debugging. Runs in-browser rather than controlling it externally. Large community and plugin ecosystem.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Selenium</strong> — <span class="text-text-secondary">The original browser automation framework. Supports every browser and language. Still widely used in enterprise. Slower and more verbose than modern alternatives.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Puppeteer</strong> — <span class="text-text-secondary">Google's Node.js library for controlling Chrome/Chromium. Lightweight and fast, but Chrome-only. Good for scraping and screenshots, less feature-rich for testing.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">TestCafe</strong> — <span class="text-text-secondary">No WebDriver dependency — injects scripts directly into the page. Simple setup, cross-browser, but smaller community than Playwright or Cypress.</span></p></div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">Playwright and Cypress are the two serious contenders for new projects. Either works well. Playwright's multi-browser support and Microsoft backing make it a safe default.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: deploy to staging</h2>
+    <p class="text-text-secondary mb-4">Tests pass. Time to deploy with API keys configured in production.</p>
+    <a
+      href="/web-dev/projects/4/deployment"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Deployment →
+    </a>
+  </div>
+</DocsLayout>

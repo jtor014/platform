@@ -1,0 +1,323 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import Checklist from '../../../../components/Checklist.astro';
+---
+
+<DocsLayout title="Monitoring & Iteration" description="Grafana dashboards, CloudWatch alarms, point-in-time recovery drill, extension scenario, and 8-step reflection.">
+  <h1 class="mb-6">Monitoring & Iteration</h1>
+  <p class="text-text-secondary mb-8">Megan signed off. UAT issues are fixed and deployed. Coastal Physio is ready for production. Now: Grafana dashboards for real observability, CloudWatch alarms for early warnings, and a point-in-time recovery drill to prove the safety net works.</p>
+
+  <h2 class="mb-4">Grafana dashboards</h2>
+  <p class="text-text-secondary mb-4">Grafana is the star of this step. Build three dashboards that give you a complete picture of the system's health.</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Application metrics dashboard</h3>
+      <p class="text-sm text-text-secondary">The top-level health view. Four panels:</p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1 mt-2">
+        <li><strong class="text-text">Request rate:</strong> Requests per second over time. Shows usage patterns — peak hours, quiet periods.</li>
+        <li><strong class="text-text">Error rate:</strong> Percentage of 4xx and 5xx responses. A spike here means something is broken.</li>
+        <li><strong class="text-text">Response time:</strong> p50, p95, p99 latency. The p50 is what most users experience. The p99 is the worst case — if it's high, some users are having a bad time.</li>
+        <li><strong class="text-text">Status code breakdown:</strong> 200, 401, 403, 404, 500 over time. Useful for spotting patterns — a spike in 401s might mean token expiry issues.</li>
+      </ul>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">RDS metrics dashboard</h3>
+      <p class="text-sm text-text-secondary">The database health view. Four panels:</p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1 mt-2">
+        <li><strong class="text-text">CPU utilisation:</strong> Should be low for a physio booking system. A spike means a query is doing too much work.</li>
+        <li><strong class="text-text">Database connections:</strong> Active connections to the database. Connection exhaustion is a common production issue.</li>
+        <li><strong class="text-text">Read/Write IOPS:</strong> Input/output operations per second. Shows how hard the disk is working.</li>
+        <li><strong class="text-text">Free storage:</strong> How much disk space is left. Should never hit zero — that's a data loss scenario.</li>
+      </ul>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">System metrics dashboard</h3>
+      <p class="text-sm text-text-secondary">The infrastructure health view. Three panels:</p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1 mt-2">
+        <li><strong class="text-text">EC2 CPU utilisation:</strong> Is the application server under pressure?</li>
+        <li><strong class="text-text">EC2 memory usage:</strong> Memory leaks show up as a steady upward trend over days.</li>
+        <li><strong class="text-text">EC2 disk usage:</strong> Logs, temporary files, container images — disk fills up over time.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">CloudWatch alarms</h2>
+  <p class="text-text-secondary mb-4">Dashboards are for looking. Alarms are for telling you something is wrong when you're not looking.</p>
+
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Alarm</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Threshold</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Why</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">RDS free storage</td>
+          <td class="px-4 py-3 text-text-secondary">&lt; 20% remaining</td>
+          <td class="px-4 py-3 text-text-secondary">Running out of disk means writes fail — data loss risk</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">RDS CPU utilisation</td>
+          <td class="px-4 py-3 text-text-secondary">&gt; 70% for 5 minutes</td>
+          <td class="px-4 py-3 text-text-secondary">Sustained high CPU means a slow or runaway query</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Application error rate</td>
+          <td class="px-4 py-3 text-text-secondary">&gt; 5% of requests</td>
+          <td class="px-4 py-3 text-text-secondary">Something is broken — investigate immediately</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">ALB unhealthy targets</td>
+          <td class="px-4 py-3 text-text-secondary">&gt; 0 unhealthy</td>
+          <td class="px-4 py-3 text-text-secondary">Application is down or unreachable</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">RDS connections</td>
+          <td class="px-4 py-3 text-text-secondary">&gt; 80% of max</td>
+          <td class="px-4 py-3 text-text-secondary">Connection exhaustion causes request failures</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Alert fatigue is real.</strong> Only alert on conditions that require human action. If the CPU spikes to 70% for 30 seconds during a backup, that's normal — don't alert. If the connection pool is at 90% for 5 minutes, that's a problem. Set thresholds that trigger when something is genuinely wrong, not when something is temporarily elevated.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Grafana alerting</h2>
+  <p class="text-text-secondary mb-4">CloudWatch alarms handle infrastructure-level alerts. Grafana adds application-level alerting — conditions you define based on dashboard metrics. Two critical alerts for a database-backed booking system:</p>
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Connection pool exhaustion</h3>
+      <p class="text-sm text-text-secondary">Alert when active database connections exceed 80% of the configured pool maximum. When the pool is full, new requests queue or fail. This often happens when a slow query holds connections longer than expected, or when a traffic spike exceeds the pool size. The alert gives you time to investigate before users see errors.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">High query latency</h3>
+      <p class="text-sm text-text-secondary">Alert when p95 response time exceeds 2 seconds for 5 consecutive minutes. Sustained high latency means users are waiting. The cause is usually a missing index, a query scanning too many rows, or the database instance being under-resourced. The alert triggers investigation before patients give up and call the clinic instead.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Debugging with Grafana: the slow booking page</h2>
+  <p class="text-text-secondary mb-4">A week after launch, Megan reports an issue:</p>
+
+  <Callout variant="client">
+    <p>"The booking page is slow. When patients pick a date and location, it takes 4-5 seconds to show available slots. They're giving up and calling the clinic instead."</p>
+  </Callout>
+
+  <p class="text-text-secondary mb-4">Walk through the debugging process using Grafana:</p>
+
+  <ol class="list-decimal list-inside text-text-secondary space-y-3 text-sm mb-6">
+    <li><strong class="text-text">Application dashboard:</strong> Check p95 latency. Confirm it's elevated — p50 is 200ms but p95 is 4.5 seconds. Something is slow for a subset of requests.</li>
+    <li><strong class="text-text">Identify the endpoint:</strong> Filter by endpoint. The <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">GET /api/appointments/available</code> endpoint has a p95 of 4.2 seconds. Other endpoints are fast.</li>
+    <li><strong class="text-text">RDS dashboard:</strong> Check read IOPS. It spikes when the availability endpoint is called. The database is doing a full table scan — it's reading every row in the appointments table to find available slots.</li>
+    <li><strong class="text-text">The fix:</strong> The availability query joins appointments, practitioner_availability, and locations but there's no index on the columns used in the WHERE clause. Add a composite index on <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">(location_id, practitioner_id, start_time)</code> to the appointments table.</li>
+    <li><strong class="text-text">Migration:</strong> Create a new Alembic migration to add the index. Review it. Apply to dev first.</li>
+    <li><strong class="text-text">Deploy:</strong> Blue/green deployment. The index migration is forward-compatible — it adds an index, doesn't change the schema.</li>
+    <li><strong class="text-text">Verify:</strong> Check the Grafana dashboard. The p95 for the availability endpoint drops from 4.2 seconds to 120ms. The booking page is fast.</li>
+  </ol>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>This is observability.</strong> Without Grafana, Megan would report "it's slow" and you'd guess. With Grafana, you identify the exact endpoint, see the database impact, add an index, and verify the fix — all through dashboards. The debugging took 30 minutes, not hours.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Point-in-time recovery drill</h2>
+  <p class="text-text-secondary mb-4">This is the drill. You've told Megan that patient data is safe. Now prove it to yourself.</p>
+
+  <div class="bg-bg-muted rounded-lg p-6 mb-6">
+    <p class="mb-2 text-text font-semibold text-sm">The recovery drill</p>
+    <ol class="text-sm text-text-secondary list-decimal list-inside space-y-2">
+      <li>Note the current time and the current state of the database (number of patients, recent appointments)</li>
+      <li>Create a few test appointments and clinical notes — this is "new data" you'll verify after recovery</li>
+      <li>Restore the database to yesterday at 3pm using RDS point-in-time recovery</li>
+      <li>RDS creates a new database instance from the backup — this takes 15-30 minutes</li>
+      <li>Connect to the restored instance and verify: the data from yesterday at 3pm is there, the test data from step 2 is not (it didn't exist yet at that point)</li>
+      <li>This proves the backup works and the recovery process is understood</li>
+    </ol>
+  </div>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>This is a drill — but in production, this is how you recover from data loss or corruption.</strong> A bad migration deletes data. A bug corrupts records. A human error drops a table. Point-in-time recovery lets you go back to before the incident. The drill ensures you know the process before you need it under pressure.</p>
+  </Callout>
+
+  <CodeBlock copy>{`Run a point-in-time recovery drill:
+
+1. Document the current database state (count of patients, appointments, clinical notes)
+2. Create test data: 2 new appointments and 1 clinical note
+3. Initiate a point-in-time recovery to yesterday at 3pm AEST using the AWS console or CLI
+4. Wait for the new instance to become available
+5. Connect to the restored instance and verify:
+   - Data from before yesterday 3pm exists
+   - Test data from step 2 does NOT exist (correct — it wasn't created yet at 3pm yesterday)
+6. Document the recovery time (how long from initiation to usable database)
+7. Terminate the restored instance (it was just for the drill)`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Extension scenario: scaling up</h2>
+  <p class="text-text-secondary mb-4">Megan's practice grows. She hires two more physios and they're seeing 150 patients a week.</p>
+
+  <Callout variant="client">
+    <p>"I hired two more physios and we're seeing 150 patients a week now. Last month the database got slow during peak hours — 9am Monday mornings are chaos. Also, I'm terrified of losing patient data. We can't afford that. What can we do?"</p>
+  </Callout>
+
+  <p class="text-text-secondary mb-4">Two infrastructure upgrades address both concerns:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Multi-AZ RDS</h3>
+      <p class="text-sm text-text-secondary">Upgrade from single-AZ to multi-AZ. AWS runs a standby replica in a different data centre. If the primary fails, RDS automatically fails over to the standby — typically within 60-120 seconds. Megan's 99.5% uptime target becomes much easier to hit. The Terraform change is a single parameter: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">multi_az = true</code>.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Read replica</h3>
+      <p class="text-sm text-text-secondary">Add a read replica to handle query load. The primary handles writes (bookings, clinical notes). The replica handles reads (schedule views, patient lookups, dashboard queries). This reduces load on the primary during peak hours. The application routes read queries to the replica and write queries to the primary.</p>
+    </div>
+  </div>
+
+  <p class="text-text-secondary mb-4">The extension scenario demonstrates that good infrastructure scales without rewriting the application. The Terraform changes are small. The application changes (routing reads to the replica) are contained. The architecture absorbs the growth.</p>
+
+  <h2 class="mb-4 mt-10">Production verification</h2>
+  <Checklist items={[
+    "All three user types can log in and access their dashboards",
+    "Appointments can be booked across all three locations",
+    "Practitioners can view their schedule and write clinical notes",
+    "Admin can manage bookings, practitioners, and patient accounts across all locations",
+    "Data isolation holds — patients can't see other patients' data, practitioners only see their own patients",
+    "Clinical notes history panel shows alongside the note form (UAT-1 fix)",
+    "Location filter works in the admin schedule view (UAT-2 fix)",
+    "Booking confirmation message shows clearly after appointment creation (UAT-3 fix)",
+    "Grafana dashboards show application, RDS, and system metrics",
+    "CloudWatch alarms are configured and tested",
+    "Point-in-time recovery drill completed and documented",
+    "Blue/green deployment verified with zero-downtime",
+    "HTTPS is active on the production URL",
+  ]} />
+
+  <h2 class="mb-4 mt-10">The loop</h2>
+  <p class="text-text-secondary mb-6">You've completed the full 8-step cycle again — this time with a managed database, migrations, zero-downtime deployment, and real dashboards:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">1</span>
+      <div>
+        <p class="font-semibold text-sm">Requirements</p>
+        <p class="text-sm text-text-secondary">You wrote a PRD with a data classification table, SLA targets, and a permissions matrix with location scoping.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">2</span>
+      <div>
+        <p class="font-semibold text-sm">Design</p>
+        <p class="text-sm text-text-secondary">You designed three dashboard views with an appointment calendar as the core UI element.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">3</span>
+      <div>
+        <p class="font-semibold text-sm">Architecture</p>
+        <p class="text-sm text-text-secondary">You reviewed RDS, ALB, Alembic, blue/green deployment, Grafana, and security group layering.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">4</span>
+      <div>
+        <p class="font-semibold text-sm">Implement</p>
+        <p class="text-sm text-text-secondary">You built with three types of work — application, infrastructure, and migration tickets — using migration-first development.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">5</span>
+      <div>
+        <p class="font-semibold text-sm">Test</p>
+        <p class="text-sm text-text-secondary">You tested application logic, reviewed Terraform plans, and verified migration rollbacks.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">6</span>
+      <div>
+        <p class="font-semibold text-sm">Deploy</p>
+        <p class="text-sm text-text-secondary">You deployed with blue/green — zero downtime, automatic rollback on failure.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">7</span>
+      <div>
+        <p class="font-semibold text-sm">UAT</p>
+        <p class="text-sm text-text-secondary">Megan tested with three account types and caught a clinical notes UX gap, a missing location filter, and a booking feedback gap.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">8</span>
+      <div>
+        <p class="font-semibold text-sm">Monitor</p>
+        <p class="text-sm text-text-secondary">You built Grafana dashboards, configured alerts, debugged a slow query using real observability data, and proved the recovery process works.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Reflect</h2>
+  <p class="text-text-secondary mb-4">This project shifted your relationship with the database. It went from a container you run to infrastructure you operate. Ask yourself:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li><strong class="text-text">Managed vs self-hosted:</strong> What did RDS give you that a Docker container didn't? What did you give up (control, cost, flexibility)?</li>
+    <li><strong class="text-text">Migrations:</strong> Did Alembic change how you think about schema changes? Was reviewing migration SQL different from reviewing application code?</li>
+    <li><strong class="text-text">Blue/green deployment:</strong> How did it feel to deploy with zero downtime? What was the hardest part — the Terraform setup, the backward-compatible migrations, or the GitHub Actions pipeline?</li>
+    <li><strong class="text-text">Grafana dashboards:</strong> Were the dashboards useful during development, or only after deployment? What would you add to them?</li>
+    <li><strong class="text-text">Linear vs GitHub Projects:</strong> How did switching tools feel? Was the adjustment difficult, or did the workflow transfer naturally?</li>
+    <li><strong class="text-text">Point-in-time recovery:</strong> How did the recovery drill feel? Would you be confident running it under pressure if real data was at risk?</li>
+    <li><strong class="text-text">Data sensitivity:</strong> Did the medical data classification change how you built or tested anything? Did it influence infrastructure decisions?</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">The "show someone" moment</h2>
+  <p class="text-text-secondary mb-4">Open three browser tabs and the Grafana dashboard. Show someone:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>The patient booking an appointment at a specific location — and the confirmation message</li>
+    <li>The practitioner viewing their schedule and writing a clinical note with patient history visible</li>
+    <li>The admin filtering by location and managing appointments across all three clinics</li>
+    <li>The Grafana dashboard showing live metrics while the system is being used</li>
+    <li>Then deploy a change via blue/green while someone is using the system — they don't notice</li>
+    <li>Then show the RDS backup history — "I can restore this database to any point in the last 7 days"</li>
+  </ul>
+  <p class="text-text-secondary mb-4">"Three user types, three locations, medical data with automated backups, zero-downtime deployment, and I can see everything on a dashboard."</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Key insight:</strong> The database is the most important piece of infrastructure. If the application crashes, you redeploy. If the database is lost, the business is lost. Everything you built in this project — RDS, automated backups, migration rollbacks, point-in-time recovery, Grafana alerts — exists to protect and operate the database safely. The application is replaceable. The data is not.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: observability</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use Grafana with CloudWatch as a data source. Here's the broader observability landscape.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Grafana + Prometheus</strong> — <span class="text-text-secondary">Prometheus is a time-series database that scrapes metrics from your application. Grafana visualises them. The open-source standard for metrics and dashboards. We use Grafana with CloudWatch instead of Prometheus, but the dashboarding skills are identical.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Grafana + Loki</strong> — <span class="text-text-secondary">Loki is a log aggregation system by the Grafana team. Like Prometheus but for logs. Cheaper than Elasticsearch because it indexes labels, not content. Pair with Grafana for a unified metrics + logs view.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Datadog</strong> — <span class="text-text-secondary">All-in-one observability platform. Metrics, logs, traces, dashboards, alerting. SaaS — no infrastructure to manage. Powerful but expensive at scale. Popular with startups and mid-size companies.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">New Relic</strong> — <span class="text-text-secondary">Application Performance Monitoring (APM) with dashboards and alerting. Strong at tracing individual requests through the system. Generous free tier for small projects.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">OpenTelemetry</strong> — <span class="text-text-secondary">Not a platform — a standard. An open specification for collecting metrics, logs, and traces. Vendor-neutral: instrument your code once, send data to any backend (Grafana, Datadog, New Relic). The industry is converging on this as the standard instrumentation layer.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">AWS CloudWatch</strong> — <span class="text-text-secondary">What we use as a data source. AWS-native monitoring with automatic metrics for all AWS services. Good for infrastructure metrics, less flexible for custom application metrics. We visualise it through Grafana rather than the CloudWatch console because Grafana provides a better dashboard experience.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">The observability stack is converging: OpenTelemetry for instrumentation, Prometheus or a cloud backend for metrics storage, Grafana for visualisation. Datadog and New Relic bundle everything into one platform — the trade-off is cost vs. operational simplicity. For learning, Grafana + CloudWatch teaches the concepts without the cost.</p>
+    </div>
+  </details>
+
+  <h2 class="mb-4 mt-10">What's next</h2>
+  <p class="text-text-secondary mb-4">Complete the <a href="/web-dev/checkpoints/after-p7">Checkpoint: After Project 7</a>. Then: <a href="/web-dev/projects/8">Project 8</a> — containers and orchestration.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>What you've added:</strong> RDS PostgreSQL, Alembic migrations, ALB with HTTPS, blue/green deployment, Grafana dashboards and alerting, point-in-time recovery, Linear for project management, and data sensitivity handling. You can now operate a managed database with real observability — the foundation for every production system that handles real data. <strong>Next: containers at scale.</strong></p>
+  </Callout>
+</DocsLayout>

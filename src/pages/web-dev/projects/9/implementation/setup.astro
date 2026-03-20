@@ -1,0 +1,83 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Setup" description="Set up the FreshBox project with Terraform modules directory structure and k6 for load testing.">
+  <h1 class="mb-6">Setup</h1>
+  <p class="text-text-secondary mb-4">Ninth time. You know this.</p>
+
+  <h2 class="mb-3">Create the project</h2>
+  <CodeBlock terminal copy>{`$ mkdir -p ~/dev && cd ~/dev
+$ mkdir freshbox && cd freshbox
+$ code .`}</CodeBlock>
+
+  <h2 class="mb-3 mt-8">Terraform modules structure</h2>
+  <p class="text-text-secondary mb-4">Set up the directory structure for Terraform modules. This is the organisational foundation for all infrastructure.</p>
+  <CodeBlock terminal copy>{`$ mkdir -p terraform/modules/{vpc,compute,database,cdn}
+$ mkdir -p terraform/environments/production`}</CodeBlock>
+  <p class="text-text-secondary mt-4 mb-4">Each module directory gets three files: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">main.tf</code>, <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">variables.tf</code>, <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">outputs.tf</code>. The production environment directory gets <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">main.tf</code>, <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">variables.tf</code>, and <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform.tfvars</code>.</p>
+
+  <h2 class="mb-3 mt-8">Install k6</h2>
+  <p class="text-text-secondary mb-4">k6 is a load testing tool. You'll use it to verify that the ASG scales correctly under load and that inventory remains consistent under concurrent access.</p>
+  <CodeBlock terminal copy>{`# macOS
+$ brew install k6
+
+# Linux (Debian/Ubuntu)
+$ sudo gpg -k
+$ sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg \\
+  --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+$ echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" \\
+  | sudo tee /etc/apt/sources.list.d/k6.list
+$ sudo apt-get update && sudo apt-get install k6
+
+# Verify
+$ k6 version`}</CodeBlock>
+
+  <h2 class="mb-3 mt-8">Install Infracost</h2>
+  <p class="text-text-secondary mb-4">Infracost estimates cloud costs from your Terraform code before you apply. Install the CLI and authenticate:</p>
+  <CodeBlock terminal copy>{`# macOS
+$ brew install infracost
+
+# Linux
+$ curl -fsSL https://raw.githubusercontent.com/infracost/infracost/master/scripts/install.sh | sh
+
+# Register for free API key
+$ infracost auth login
+
+# Verify
+$ infracost --version`}</CodeBlock>
+
+  <p class="text-text-secondary mt-4 mb-4">After each Terraform module is written, run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">infracost breakdown --path .</code> in the environment directory to see estimated monthly cost. No surprises.</p>
+
+  <h2 class="mb-3 mt-8">Configure AWS Budgets</h2>
+  <p class="text-text-secondary mb-4">Set a budget alarm in AWS before provisioning anything. Go to the AWS Budgets console and create a monthly budget of $100. Configure an email alert at 80% ($80) and 100% ($100). This is your safety net — if auto-scaling drives costs higher than expected, you'll know before the bill arrives.</p>
+
+  <h2 class="mb-3 mt-8">Launch Claude Code and hand over the files</h2>
+  <p class="text-text-secondary mb-4">Open the terminal in VS Code, run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">claude</code>, and give it everything:</p>
+  <CodeBlock copy>{`Here's the CLAUDE.md for the project:
+
+[Paste CLAUDE.md here]
+
+And here's the BACKLOG.md:
+
+[Paste BACKLOG.md here]`}</CodeBlock>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Terraform state.</strong> When you initialise Terraform, it creates a state file tracking what's been provisioned. For this project, local state is fine. In a team environment, you'd use a remote backend (S3 + DynamoDB) to share state. That's not necessary here — you're the only one running <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform apply</code>.</p>
+  </Callout>
+
+  <p class="text-text-secondary mt-6 mb-4">Start Ticket 1 — the VPC module. You know what to do.</p>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: building</h2>
+    <p class="text-text-secondary mb-4">Project set up. Time to build — module by module.</p>
+    <a
+      href="/web-dev/projects/9/implementation/building"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Building →
+    </a>
+  </div>
+</DocsLayout>

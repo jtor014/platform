@@ -1,0 +1,285 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Monitoring & Iteration" description="Full monitoring stack, the TV feature extension scenario, cost optimisation, and reflection on scaling.">
+  <h1 class="mb-6">Monitoring & Iteration</h1>
+  <p class="text-text-secondary mb-8">Emma signed off. UAT issues are fixed and deployed. FreshBox is live. Now: full monitoring, the extension scenario, and reflection.</p>
+
+  <h2 class="mb-4">Production verification</h2>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-8">
+    <li>Ordering flow works end-to-end — browse, add to order, select suburb, choose delivery day, submit</li>
+    <li>Stock updates are consistent — no overselling under concurrent access</li>
+    <li>Suburb-based delivery scheduling shows correct days per suburb</li>
+    <li>Customer accounts work — registration, login, order history</li>
+    <li>Admin dashboard shows orders, stock levels, and business metrics</li>
+    <li>ASG has 2 instances running with health checks passing</li>
+    <li>CloudFront is serving static assets from edge locations</li>
+    <li>RDS multi-AZ is operational with automated backups</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Grafana dashboards</h2>
+  <p class="text-text-secondary mb-4">Three dashboard categories, each serving a different purpose:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Business metrics</h3>
+      <p class="text-sm text-text-secondary">The metrics Emma cares about. Orders per hour, revenue today, revenue this week, most popular products, delivery success rate by suburb. These come from custom Prometheus metrics exposed by the FastAPI application.</p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1 mt-2">
+        <li><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">orders_placed_total</code> — counter, labelled by suburb</li>
+        <li><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">inventory_updates_total</code> — counter, labelled by product and direction (in/out)</li>
+        <li><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">delivery_scheduled_total</code> — counter, labelled by suburb and day</li>
+        <li><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">order_value_dollars</code> — histogram for order value distribution</li>
+      </ul>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">System metrics</h3>
+      <p class="text-sm text-text-secondary">Infrastructure health. These come from CloudWatch metrics and Prometheus node exporters.</p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1 mt-2">
+        <li>ASG instance count (current, desired, minimum, maximum)</li>
+        <li>CPU utilisation across all instances (average, per-instance)</li>
+        <li>RDS connections (active, available, max)</li>
+        <li>RDS CPU and free storage space</li>
+        <li>ALB request count and latency (p50, p95, p99)</li>
+        <li>CloudFront cache hit ratio</li>
+        <li>CloudFront requests and data transfer</li>
+      </ul>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Cost metrics</h3>
+      <p class="text-sm text-text-secondary">Spending visibility. These come from AWS Cost Explorer API or CloudWatch billing metrics.</p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1 mt-2">
+        <li>Estimated daily spend (total and per-service)</li>
+        <li>Month-to-date spend vs budget ($100/month)</li>
+        <li>Cost per order (total infrastructure cost / orders this month)</li>
+        <li>Projected monthly spend based on current trend</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">AWS Budget alarm</h2>
+  <p class="text-text-secondary mb-4">Set up an AWS Budget with an alert at $100/month. When spending hits 80% of the threshold ($80), an email notification fires. When it hits 100% ($100), a second alert fires. This gives Emma and you early warning before costs spiral.</p>
+
+  <CodeBlock lang="hcl">{`resource "aws_budgets_budget" "freshbox" {
+  name              = "freshbox-monthly"
+  budget_type       = "COST"
+  limit_amount      = "100"
+  limit_unit        = "USD"
+  time_unit         = "MONTHLY"
+
+  notification {
+    comparison_operator       = "GREATER_THAN"
+    threshold                 = 80
+    threshold_type            = "PERCENTAGE"
+    notification_type         = "ACTUAL"
+    subscriber_email_addresses = ["emma@freshbox.com.au"]
+  }
+
+  notification {
+    comparison_operator       = "GREATER_THAN"
+    threshold                 = 100
+    threshold_type            = "PERCENTAGE"
+    notification_type         = "ACTUAL"
+    subscriber_email_addresses = ["emma@freshbox.com.au"]
+  }
+}`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Extension scenario: the TV feature</h2>
+  <p class="text-text-secondary mb-4">Emma gets featured on a morning TV show. Orders jump 10x overnight. Here's what happens:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">The system handles it</h3>
+      <p class="text-sm text-text-secondary">The ASG scales from 2 instances to 8 as CPU and request count spike. CloudFront absorbs most of the read traffic — product listings are served from cache, only order submissions hit the backend. RDS handles the increased connection load because it's multi-AZ and right-sized. The system stays up. Orders go through. Stock consistency holds.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">But the bill spikes</h3>
+      <p class="text-sm text-text-secondary">8 instances instead of 2 for a week. EC2 cost jumps from $30/month to $120/month (pro-rated). CloudFront data transfer increases. RDS connections are higher. The AWS Budget alarm fires at $80. Emma gets the email and calls you: "Why is this bill so high?"</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Outer suburb complaints</h3>
+      <p class="text-sm text-text-secondary">Customers in outer suburbs (not in the original service area but interested after the TV feature) complain about slow page loads. The CloudFront distribution was configured for Australian edge locations. Users from regional areas experience higher latency. This is a CloudFront configuration question, not a backend problem.</p>
+    </div>
+  </div>
+
+  <h3 class="mb-3 mt-6">Your response</h3>
+  <p class="text-text-secondary mb-4">This is the capstone exercise. You need to:</p>
+  <ol class="list-decimal list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Review costs in AWS Cost Explorer:</strong> Which services drove the spike? EC2? Data transfer? CloudFront? Break it down by service and day.</li>
+    <li><strong class="text-text">Optimise scaling policies:</strong> Were 8 instances necessary? Maybe the scale-out threshold was too aggressive. Maybe a step scaling policy (add 1 instance at a time) would have been more efficient than target tracking (maintain 70% CPU). Review and adjust.</li>
+    <li><strong class="text-text">Configure CloudFront caching:</strong> Increase TTL on product listings from 60 seconds to 5 minutes during the spike. This reduces backend hits by 5x. After the spike subsides, return to 60 seconds.</li>
+    <li><strong class="text-text">Set up AWS Budget alarms:</strong> Already done — but review the thresholds. Is $100/month still the right budget? With the TV feature traffic, maybe $150/month is the new normal.</li>
+    <li><strong class="text-text">Write a cost report for Emma:</strong> Explain what happened, why the bill spiked, what you did to optimise, and what the new expected cost is. Emma is a business owner — speak in business terms, not infrastructure jargon.</li>
+  </ol>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>The cost report is a real deliverable.</strong> Emma doesn't care about ASG policies or CloudFront TTL. She cares about: "The system handled the spike, nobody lost an order, but the bill went from $80 to $150 this month. Here's why and here's what I've done to bring it back down." Write it as a short email — plain language, no jargon, specific numbers.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">CloudFront monitoring</h2>
+  <p class="text-text-secondary mb-4">CloudFront has its own set of metrics, separate from the backend. Monitor these in Grafana or the CloudWatch console:</p>
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Metric</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">What it means</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Target</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Cache hit ratio</td>
+          <td class="px-4 py-3 text-text-secondary">% of requests served from cache vs origin</td>
+          <td class="px-4 py-3 text-text-secondary">Above 80% for static assets</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Origin requests</td>
+          <td class="px-4 py-3 text-text-secondary">Requests that hit your ALB (cache misses)</td>
+          <td class="px-4 py-3 text-text-secondary">Should be a fraction of total requests</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Error rate by edge location</td>
+          <td class="px-4 py-3 text-text-secondary">4xx/5xx errors at specific edge locations</td>
+          <td class="px-4 py-3 text-text-secondary">Under 1%. Spikes indicate origin issues.</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Data transfer</td>
+          <td class="px-4 py-3 text-text-secondary">Total bytes served from CloudFront</td>
+          <td class="px-4 py-3 text-text-secondary">Monitor for cost — free tier is 1TB/month</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="text-text-secondary mb-4">A dropping cache hit ratio means something changed — either caching headers are wrong, the TTL is too short, or traffic patterns shifted. During the TV feature spike, the cache hit ratio should increase (more users requesting the same content) and origin requests should stay flat.</p>
+
+  <h2 class="mb-4 mt-10">Weekly cost review</h2>
+  <p class="text-text-secondary mb-4">Every Monday, spend 10 minutes in AWS Cost Explorer. Check:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Total spend vs budget:</strong> Are you on track to stay under $100/month?</li>
+    <li><strong class="text-text">Cost by service:</strong> Which service is the biggest cost? EC2? RDS? Data transfer?</li>
+    <li><strong class="text-text">Anomalies:</strong> Did any service spike unexpectedly? A sudden jump in data transfer might mean a misconfigured cache, not a traffic increase.</li>
+    <li><strong class="text-text">Projected monthly spend:</strong> Cost Explorer shows a forecast. If it's trending above budget, investigate now, not at the end of the month.</li>
+  </ul>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: cost optimisation</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">Auto-scaling handles load, but cost optimisation handles the bill. Here's how teams reduce AWS costs without sacrificing performance.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Reserved Instances</strong> — <span class="text-text-secondary">Commit to 1 or 3 years of EC2 usage for 30-60% discount. Best for baseline capacity — your minimum 2 instances run 24/7 regardless. Reserve those, pay on-demand for the auto-scaled extras.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Spot Instances</strong> — <span class="text-text-secondary">Use AWS's spare EC2 capacity at up to 90% discount. Can be terminated with 2 minutes notice. Perfect for ASG scale-out instances — if a spot instance is reclaimed, the ASG launches a replacement. Not for baseline (minimum 2) instances.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Savings Plans</strong> — <span class="text-text-secondary">More flexible than Reserved Instances. Commit to a spend amount per hour (e.g., $0.05/hour) for 1 or 3 years. Applies across instance families and regions. The modern replacement for Reserved Instances.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Rightsizing</strong> — <span class="text-text-secondary">Analyse actual resource usage and resize instances. If your t3.small instances average 15% CPU, a t3.micro might work. AWS Compute Optimizer provides rightsizing recommendations based on CloudWatch data.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">S3 lifecycle policies</strong> — <span class="text-text-secondary">Already configured in the architecture. Move old data to cheaper storage tiers automatically. S3 Intelligent-Tiering does this automatically based on access patterns — no manual rules needed.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">For FreshBox: reserve the baseline 2 instances (Savings Plan). Use spot instances for ASG scale-out capacity. Rightsize after 30 days of CloudWatch data. These three actions could reduce Emma's monthly bill by 40-50% with no performance impact.</p>
+    </div>
+  </details>
+
+  <h2 class="mb-4 mt-10">The loop</h2>
+  <p class="text-text-secondary mb-6">You've completed the full 8-step cycle again — this time with auto-scaling, CDN, cost management, and minimal guidance:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">1</span>
+      <div>
+        <p class="font-semibold text-sm">Requirements</p>
+        <p class="text-sm text-text-secondary">You wrote a PRD with capacity planning — growth projections, concurrency requirements, stock consistency constraints.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">2</span>
+      <div>
+        <p class="font-semibold text-sm">Design</p>
+        <p class="text-sm text-text-secondary">You designed from scratch — no mockups provided. A simple ordering flow for busy parents with real-time stock visibility.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">3</span>
+      <div>
+        <p class="font-semibold text-sm">Architecture</p>
+        <p class="text-sm text-text-secondary">You designed an auto-scaling system with CDN caching, Terraform modules, cost estimation, and formal ADRs.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">4</span>
+      <div>
+        <p class="font-semibold text-sm">Implement</p>
+        <p class="text-sm text-text-secondary">You built infrastructure module by module, solved the race condition for stock consistency, and built the full ordering platform.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">5</span>
+      <div>
+        <p class="font-semibold text-sm">Test</p>
+        <p class="text-sm text-text-secondary">You load tested with k6, proved the ASG scales, proved stock consistency under concurrent access, and ran E2E tests.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">6</span>
+      <div>
+        <p class="font-semibold text-sm">Deploy</p>
+        <p class="text-sm text-text-secondary">You deployed with blue/green via ASG rolling update, verified zero downtime under load, and reviewed costs against your estimate.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">7</span>
+      <div>
+        <p class="font-semibold text-sm">UAT</p>
+        <p class="text-sm text-text-secondary">Emma tested and caught a metrics gap, a missing admin feature, and an image quality issue. You fixed, redeployed, got sign-off.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">8</span>
+      <div>
+        <p class="font-semibold text-sm">Monitor</p>
+        <p class="text-sm text-text-secondary">You built Grafana dashboards for business, system, and cost metrics. You handled the TV feature spike — scaling, cost management, and a client cost report.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Reflect</h2>
+  <p class="text-text-secondary mb-4">This project added a dimension that doesn't exist in smaller systems. Ask yourself:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li><strong class="text-text">Auto-scaling:</strong> What did it feel like to watch the ASG scale out during a load test? Was it faster or slower than you expected? Did the scaling policies trigger at the right thresholds?</li>
+    <li><strong class="text-text">Cost as a design constraint:</strong> Did you think about cost during the architecture phase? How did the cost estimate compare to the actual bill? Was the TV feature spike a surprise or something the architecture anticipated?</li>
+    <li><strong class="text-text">The race condition:</strong> Was the stock consistency problem harder or easier than expected? Which locking approach did you choose and why? Would you choose differently next time?</li>
+    <li><strong class="text-text">Terraform modules:</strong> Did the modular structure help or feel like overhead? When you needed to change the CDN configuration, could you do it without touching the database module?</li>
+    <li><strong class="text-text">ADRs:</strong> Were the ADRs useful during implementation? When you had to justify a decision to Emma (the cost report), did the ADR help frame the explanation?</li>
+    <li><strong class="text-text">"It works" vs "it works efficiently":</strong> The system worked before the TV feature. It still worked during the TV feature. But the cost spiked. What's the difference between a system that handles load and a system that handles load efficiently? Where does cost optimisation fit in the development process?</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">The "show someone" moment</h2>
+  <p class="text-text-secondary mb-4">Open two browser windows side by side. In one, your Grafana dashboard showing ASG instance count and request rate. In the other, the k6 terminal running a load test. Watch the metrics respond in real time:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>k6 ramps up to 100 users — request rate climbs on the dashboard</li>
+    <li>CPU crosses 70% — ASG instance count increases from 2 to 4</li>
+    <li>All requests succeed — no errors, no overselling</li>
+    <li>k6 ramps down — request rate drops, CPU drops, ASG scales back to 2</li>
+  </ul>
+  <p class="text-text-secondary mb-4">"The system scales automatically under load and recovers when load drops. No manual intervention. No overselling. And I know what it costs."</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Key insight:</strong> Scaling isn't just a technical problem — it's a business problem. Emma's system needs to handle 10x traffic spikes without losing orders. But it also needs to not cost 10x permanently. Auto-scaling solves the first problem. Cost monitoring and scaling policy optimisation solve the second. The architecture serves both the user experience and the business economics.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">What's next</h2>
+  <p class="text-text-secondary mb-4">Complete the <a href="/web-dev/checkpoints/after-p9">Checkpoint: After Project 9</a>. Then: <a href="/web-dev/projects/10">Project 10</a>.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>What you've added:</strong> Auto Scaling Groups, CloudFront CDN, Terraform modules, cost monitoring (AWS Budgets, Cost Explorer), Architecture Decision Records, load testing with k6, race condition handling for inventory, capacity planning from growth projections. You can now build systems that scale automatically, recover from failure, and you can explain the cost tradeoffs to a non-technical client.</p>
+  </Callout>
+</DocsLayout>

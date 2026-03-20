@@ -1,0 +1,172 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import Checklist from '../../../../components/Checklist.astro';
+---
+
+<DocsLayout title="Deployment" description="Deployment IS the Terraform workflow — terraform plan is the PR, terraform apply is the deploy, and CI/CD automates it.">
+  <h1 class="mb-6">Deployment</h1>
+  <p class="text-text-secondary mb-4">This is the deployment project. Everything you've been building — Terraform configuration, Docker containers, Nginx setup — culminates here. But unlike previous projects where deployment was "push to Netlify" or "deploy to Railway," deployment for P6 is the Terraform workflow itself. <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform plan</code> is the PR. <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform apply</code> is the deploy.</p>
+
+  <h2 class="mb-4 mt-10">The Terraform deployment workflow</h2>
+  <p class="text-text-secondary mb-4">The deployment process mirrors the PR process you already know:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2"><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform plan</code> = the PR</h3>
+      <p class="text-sm text-text-secondary">Shows what will change. You review the plan like you review a diff. "This will create 1 EC2 instance and 1 security group." You read it, verify it matches your intent, and either approve or revise.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2"><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform apply</code> = the deploy</h3>
+      <p class="text-sm text-text-secondary">Executes the plan. Creates, updates, or destroys resources in AWS. Once applied, the infrastructure exists. This is the "merge" moment — the change is live.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Infrastructure deployment</h2>
+  <p class="text-text-secondary mb-4">If you haven't already applied your Terraform configuration during the building phase, now is the time. From the <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/infra</code> directory:</p>
+
+  <CodeBlock terminal copy>{`$ cd infra
+$ terraform plan
+# Review the plan — what's being created? Any surprises?
+
+$ terraform apply
+# Type "yes" when prompted — this creates real AWS resources`}</CodeBlock>
+
+  <p class="text-text-secondary mt-4 mb-4">After apply completes, Terraform outputs the EC2 public IP, S3 bucket name, and any other configured outputs. Note these — you'll need them for the next steps.</p>
+
+  <h2 class="mb-4 mt-10">Application deployment</h2>
+  <p class="text-text-secondary mb-4">With the EC2 instance running, deploy the application containers:</p>
+
+  <CodeBlock terminal copy>{`# SSH into the EC2 instance
+$ ssh -i ~/.ssh/your-key.pem ec2-user@<ec2-public-ip>
+
+# Pull the latest code
+$ cd ~/tidal-brewing
+$ git pull origin main
+
+# Start the containers
+$ docker compose up -d --build
+
+# Verify containers are running
+$ docker ps
+# Should show: frontend, backend, database, nginx
+
+# Run database migrations
+$ docker compose exec backend alembic upgrade head
+
+# Seed the database with initial data
+$ docker compose exec backend python seed.py
+
+# Verify from the outside (on your local machine)
+$ curl http://<ec2-public-ip>
+# Should return the Tidal Brewing homepage`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">SSL setup</h2>
+  <p class="text-text-secondary mb-4">HTTPS is not optional for a site that takes orders — even without payment processing, the form collects names and phone numbers. Set up Let's Encrypt via certbot on the EC2 instance:</p>
+
+  <CodeBlock terminal copy>{`# On the EC2 instance
+$ sudo yum install -y certbot python3-certbot-nginx
+$ sudo certbot --nginx -d your-domain.com
+
+# Verify auto-renewal
+$ sudo certbot renew --dry-run`}</CodeBlock>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>You need a domain name for SSL.</strong> Let's Encrypt issues certificates to domain names, not IP addresses. Register a domain (or use a free subdomain service) and point it to your EC2 public IP. Without a domain, you can run on HTTP for testing — but HTTPS is required before Jake uses it.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Secrets in production</h2>
+  <Callout variant="warning">
+    <p class="text-sm"><strong>No .env files on the server.</strong> Production secrets live in AWS Secrets Manager:</p>
+    <ul class="text-sm space-y-1 mt-2">
+      <li><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">DATABASE_URL</code> — PostgreSQL connection string</li>
+      <li><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">ADMIN_PASSWORD</code> — Jake's admin password (hashed in the database, but the initial seed needs it)</li>
+      <li>Any API keys added later</li>
+    </ul>
+    <p class="text-sm mt-2">The application retrieves secrets from AWS Secrets Manager at startup. This is configured in the Docker entrypoint or application startup script.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">CI/CD for infrastructure</h2>
+  <p class="text-text-secondary mb-4">Automate the Terraform workflow with GitHub Actions. The same CI/CD concepts from previous projects, applied to infrastructure:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">On pull request: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform plan</code></h3>
+      <p class="text-sm text-text-secondary">When a PR changes <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.tf</code> files, GitHub Actions runs <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform plan</code> and posts the output as a PR comment. You review the plan alongside the code diff. This is the infrastructure equivalent of running tests on a PR.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">On merge to main: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform apply</code></h3>
+      <p class="text-sm text-text-secondary">When a PR is merged to main, GitHub Actions runs <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform apply</code> with auto-approve. The infrastructure is updated automatically. This is the infrastructure equivalent of auto-deploying on merge.</p>
+    </div>
+  </div>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Auto-apply is powerful and dangerous.</strong> Once you set up <code>terraform apply</code> on merge, every merged PR that changes .tf files will modify your live infrastructure. This is why the plan review on the PR is critical — it's your last chance to catch mistakes before they're applied to production.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Deployment verification</h2>
+  <Checklist items={[
+    "The live URL loads the Tidal Brewing homepage",
+    "The tap list displays current beers on tap",
+    "The events page shows upcoming events",
+    "The pickup order form submits successfully",
+    "Jake can log into the admin interface",
+    "Jake can add, update, and remove beers from the tap list",
+    "Jake can create and edit events",
+    "Jake can view pickup orders and mark them as packed/picked up",
+    "HTTPS is active — browser shows the lock icon",
+    "Beer images load from S3",
+  ]} />
+
+  <details class="mb-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-4 py-3 cursor-pointer font-semibold text-sm bg-bg-muted">Troubleshooting: "terraform apply succeeded but the site doesn't load"</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary mb-2">Common causes:</p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Docker containers aren't running — SSH in and check <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">docker ps</code></li>
+        <li>Nginx isn't configured or isn't running — check <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">systemctl status nginx</code> or <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">docker logs nginx</code></li>
+        <li>Security group doesn't allow port 80/443 — check in AWS console</li>
+        <li>Application crashed on startup — check <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">docker logs &lt;container-name&gt;</code></li>
+        <li>Secrets Manager not accessible — check IAM role on the EC2 instance</li>
+      </ul>
+      <p class="text-sm text-text-secondary mt-2">SSH into the instance and debug from the inside out. Start with <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">docker ps</code> — if containers aren't running, nothing else matters.</p>
+    </div>
+  </details>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: CI/CD for infrastructure</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use GitHub Actions running <code>terraform plan</code> and <code>terraform apply</code>. Here's what else exists for infrastructure CI/CD.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">GitHub Actions + Terraform</strong> — <span class="text-text-secondary">What we use. Runs plan on PR, apply on merge. Simple to set up with the hashicorp/setup-terraform action. Works well for small teams.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Atlantis</strong> — <span class="text-text-secondary">Open-source Terraform automation. Runs as a server, listens for PR webhooks, runs plan automatically, posts the output as a PR comment. Apply via PR comment (<code>atlantis apply</code>). Popular in teams that want Terraform CI/CD without writing their own GitHub Actions workflows.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Spacelift</strong> — <span class="text-text-secondary">SaaS platform for Terraform CI/CD. Managed plan/apply, drift detection, policy enforcement, approval workflows. More features than DIY GitHub Actions, but adds a vendor dependency and cost.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Terraform Cloud</strong> — <span class="text-text-secondary">HashiCorp's own CI/CD for Terraform. Remote state management, plan/apply workflows, team collaboration. Free tier covers small teams. Natural choice if you're already invested in HashiCorp tools.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">env0</strong> — <span class="text-text-secondary">SaaS platform for infrastructure automation. Supports Terraform, Pulumi, and others. Cost estimation, policy enforcement, self-service environments. Similar to Spacelift with additional cost management features.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">GitHub Actions is the simplest starting point — you're already using it for application CI/CD. Atlantis is the common next step when the team grows. Terraform Cloud or Spacelift for larger organisations that need governance and approval workflows.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: UAT</h2>
+    <p class="text-text-secondary mb-4">Deployed and verified. Time to show Jake.</p>
+    <a
+      href="/web-dev/projects/6/uat"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      UAT →
+    </a>
+  </div>
+</DocsLayout>

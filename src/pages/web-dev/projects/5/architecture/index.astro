@@ -1,0 +1,231 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Architecture" description="Architecture decisions for DeskHub, focusing on JWT authentication, role-based middleware, and data isolation.">
+  <h1 class="mb-6">Architecture</h1>
+  <p class="text-text-secondary mb-4">Same process — prompt, template, review. The architecture decisions that matter most here are about authentication and authorization. This is where most multi-user apps get it right or get it dangerously wrong.</p>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <CodeBlock copy>{`Here is the PRD and design spec for DeskHub, a co-working space management system:
+
+[Paste your PRD here]
+[Paste your design spec here]
+
+Using the following architecture template, create a complete technical architecture document. The system has three roles (Member, Admin, Owner) with different permissions.
+
+Tech stack: React frontend, FastAPI backend, PostgreSQL, JWT authentication, Docker, GitHub Actions CI, Gemini reviewer.
+
+Key architecture decisions to address:
+1. JWT authentication — signing algorithm, token expiry, refresh strategy
+2. Password hashing — bcrypt or argon2, never plain text
+3. Where authorization is checked — middleware pattern for every protected endpoint
+4. How roles are stored and verified (database + JWT payload)
+5. Data isolation — how member queries are scoped to the current user
+6. Token storage — HttpOnly cookies vs localStorage
+7. What happens when a token expires mid-session
+
+[Paste architecture template here]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Authentication architecture</h2>
+  <p class="text-text-secondary mb-4">This is the critical new section. When you review the generated architecture, this is where you spend the most time.</p>
+
+  <h3 class="mb-3 mt-6">JWT tokens</h3>
+  <p class="text-text-secondary mb-4">JWT (JSON Web Token) is an encoded token that contains the user's ID and role. The backend creates it on login and the frontend sends it with every request. The backend checks the token before doing anything — if it's missing, expired, or tampered with, the request is rejected.</p>
+  <p class="text-text-secondary mb-4">The architecture should specify: signing algorithm (HS256 or RS256), token expiry time, and whether there's a refresh token mechanism.</p>
+
+  <h3 class="mb-3 mt-6">Token storage</h3>
+  <p class="text-text-secondary mb-4">Where does the frontend store the JWT? Two options:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">HttpOnly cookies:</strong> The browser sends the cookie automatically. JavaScript can't access it, which protects against XSS attacks. More secure.</li>
+    <li><strong class="text-text">localStorage:</strong> Easier to implement. JavaScript reads the token and adds it to request headers manually. Vulnerable to XSS — if an attacker injects script, they can steal the token.</li>
+  </ul>
+  <p class="text-text-secondary mb-4">The architecture should specify which approach and justify it. Either works for this project — what matters is consistency.</p>
+
+  <h3 class="mb-3 mt-6">Password hashing</h3>
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Never store passwords in plain text.</strong> The architecture must specify a hashing algorithm — bcrypt or argon2. When a user logs in, the backend hashes the submitted password and compares it to the stored hash. The actual password is never stored anywhere.</p>
+  </Callout>
+
+  <h3 class="mb-3 mt-6">Middleware pattern</h3>
+  <p class="text-text-secondary mb-4">Every protected endpoint checks the token. Role-based middleware checks the role. The architecture should specify this pattern explicitly:</p>
+  <ol class="list-decimal list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Request arrives at a protected endpoint</li>
+    <li>Auth middleware extracts and verifies the JWT (is it valid? is it expired?)</li>
+    <li>Role middleware checks the user's role against the endpoint's requirements</li>
+    <li>If both pass, the request proceeds. If either fails, return 401 or 403.</li>
+  </ol>
+
+  <h2 class="mb-4 mt-10">Auth approach: session-based vs JWT</h2>
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Approach</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">How it works</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Tradeoff</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-medium">Session-based</td>
+          <td class="px-4 py-3 text-text-secondary">Server stores session data. Client gets a session ID cookie.</td>
+          <td class="px-4 py-3 text-text-secondary">Easy to revoke (delete the session). Requires server-side storage.</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-medium">JWT</td>
+          <td class="px-4 py-3 text-text-secondary">Token contains user data. Server verifies the signature, no lookup needed.</td>
+          <td class="px-4 py-3 text-text-secondary">Stateless, simpler backend. Harder to revoke before expiry.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="text-text-secondary mb-4">JWT is the recommended approach for this project — stateless, simpler backend, and standard for React + FastAPI projects. The architecture should explain why.</p>
+
+  <h2 class="mb-4 mt-10">Database schema</h2>
+  <p class="text-text-secondary mb-4">The architecture should include the key tables. At minimum:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">users</strong> — id, email, password_hash, role (member/admin/owner), name, created_at</li>
+    <li><strong class="text-text">desks</strong> — id, label, status</li>
+    <li><strong class="text-text">meeting_rooms</strong> — id, name, capacity</li>
+    <li><strong class="text-text">bookings</strong> — id, user_id, resource_type (desk/room), resource_id, date, created_at</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">API endpoint structure</h2>
+  <p class="text-text-secondary mb-4">The architecture should list key endpoints and which role can access each one:</p>
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Endpoint</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Access</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-sm">POST /api/auth/login</td>
+          <td class="px-4 py-3 text-text-secondary">Public</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono text-sm">GET /api/bookings/me</td>
+          <td class="px-4 py-3 text-text-secondary">Member+</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-sm">POST /api/bookings</td>
+          <td class="px-4 py-3 text-text-secondary">Member+</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono text-sm">GET /api/bookings</td>
+          <td class="px-4 py-3 text-text-secondary">Admin+</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-sm">POST /api/members</td>
+          <td class="px-4 py-3 text-text-secondary">Admin+</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono text-sm">GET /api/revenue</td>
+          <td class="px-4 py-3 text-text-secondary">Owner only</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-sm">GET /api/occupancy</td>
+          <td class="px-4 py-3 text-text-secondary">Owner only</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="mb-4 mt-10">Structured logging</h2>
+  <p class="text-text-secondary mb-4">Every API request should log: timestamp, request ID, user ID, role, endpoint, status code, duration. JSON format, not plain text. This makes logs searchable and parseable.</p>
+
+  <div class="space-y-4 mb-6">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Unstructured (hard to search)</h3>
+      <CodeBlock lang="text">{`2024-03-15 14:23:01 - User admin@test.com accessed /api/bookings - 200 OK - 45ms`}</CodeBlock>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Structured JSON (searchable)</h3>
+      <CodeBlock lang="json">{`{
+  "timestamp": "2024-03-15T14:23:01Z",
+  "request_id": "req_abc123",
+  "user_id": 42,
+  "role": "admin",
+  "endpoint": "GET /api/bookings",
+  "status": 200,
+  "duration_ms": 45
+}`}</CodeBlock>
+    </div>
+  </div>
+
+  <p class="text-text-secondary mb-4">With structured logs, you can filter by role, find slow endpoints, count error rates, and trace a single request through the system. The architecture should specify that all API endpoints emit structured JSON logs.</p>
+
+  <h2 class="mb-4 mt-10">Database migrations</h2>
+  <p class="text-text-secondary mb-4">As the schema evolves (adding tables, changing columns), you need a migration tool. Alembic (Python) tracks schema changes in versioned files. Each migration can be applied forward or rolled back.</p>
+  <p class="text-text-secondary mb-4">The architecture should specify that database changes are made through migration files, not by editing the database directly. This means every schema change is versioned, reviewable, and reproducible across environments (local, staging, production).</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Why this matters now:</strong> DeskHub's schema (users, desks, rooms, bookings) will evolve during development. Alembic generates migration files from your SQLAlchemy models. Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">alembic upgrade head</code> to apply, <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">alembic downgrade -1</code> to roll back. We'll go deeper on migrations in Project 7, but the concept starts here.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">CLAUDE.md instruction</h2>
+  <Callout variant="info">
+    <p class="text-sm"><strong>Add this to your CLAUDE.md:</strong> "Every API endpoint must check authentication. Every admin/owner endpoint must verify role. No endpoint should be accessible without the correct token and role." This ensures Claude Code applies auth consistently to every endpoint it creates, not just the ones you remember to ask about.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Review guidance</h2>
+  <p class="text-text-secondary mb-4">When you review the generated architecture:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Is password hashing specified? (Not "store passwords" — store <em>hashes</em>.)</li>
+    <li>Is the JWT signing approach specified? (Algorithm, secret key management, expiry time)</li>
+    <li>Is there a middleware pattern for auth checks? (Not "check permissions" — where and how?)</li>
+    <li>Does every endpoint have a role requirement? Check it against your permissions matrix.</li>
+    <li>Is data isolation addressed? (Member queries filtered by user_id from the token, not from request params)</li>
+  </ul>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>The #1 architecture mistake in multi-user apps:</strong> checking permissions only in the frontend. Hiding a menu item doesn't protect the API endpoint. A member could use the browser console or curl to hit admin endpoints directly. The architecture MUST specify backend authorization middleware that checks roles on every protected endpoint.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: authentication</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We build JWT from scratch to understand it. Here's what else exists and when teams reach for each approach.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">JWT (JSON Web Tokens)</strong> — <span class="text-text-secondary">What we build. Stateless tokens containing user data. The backend verifies the signature without a database lookup. Standard for React + API architectures.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Auth0</strong> — <span class="text-text-secondary">Managed authentication service. Handles login, registration, social auth, MFA, and compliance. Less code, fewer security bugs. Paid at scale.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Clerk</strong> — <span class="text-text-secondary">Developer-friendly managed auth with prebuilt UI components. Popular in the React ecosystem. Handles user management and session handling.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">NextAuth / Auth.js</strong> — <span class="text-text-secondary">Open-source auth library for Next.js (and other frameworks). Supports multiple providers (Google, GitHub, email). You host it yourself.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Firebase Auth</strong> — <span class="text-text-secondary">Google's managed auth. Integrates with Firebase ecosystem. Supports email/password, social providers, phone auth. Free tier is generous.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Supabase Auth</strong> — <span class="text-text-secondary">Open-source alternative to Firebase Auth. Built on PostgreSQL. Row-level security integrates auth directly with database permissions.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Keycloak</strong> — <span class="text-text-secondary">Open-source identity and access management. Self-hosted. Enterprise-grade features: SSO, LDAP integration, fine-grained permissions. Complex to set up.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">We build JWT from scratch to understand it. In production, consider managed auth (Auth0, Clerk) — less code, fewer security bugs, compliance certifications. The tradeoff is cost and vendor dependency.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: implementation</h2>
+    <p class="text-text-secondary mb-4">Architecture reviewed. Time to create the backlog and start building.</p>
+    <a
+      href="/web-dev/projects/5/implementation"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Implementation →
+    </a>
+  </div>
+</DocsLayout>

@@ -1,0 +1,149 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Design" description="Design a telehealth platform that feels trustworthy, meets WCAG 2.1 AA accessibility standards, and works for anxious patients on slow internet.">
+  <h1 class="mb-6">Design</h1>
+  <p class="text-text-secondary mb-4">Same process — client preferences, prompt, template, review. Aisha has a clear direction:</p>
+
+  <Callout variant="client">
+    <p>"Clean, professional, trustworthy. Patients are often anxious about seeing a specialist — they've been waiting months, they're nervous about the diagnosis. The design should feel reassuring, not clinical. And accessibility is critical — some patients are elderly or have disabilities."</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <CodeBlock copy>{`Here is the PRD for Harbour Health, a telehealth consultation platform:
+
+[Paste your PRD here]
+
+Using the following design spec template, create a complete design specification.
+
+Key requirements:
+- Clean, professional, trustworthy — reassuring, not clinical
+- Patients are anxious — the design should reduce anxiety, not add to it
+- WCAG 2.1 AA accessibility throughout:
+  - Colour contrast: minimum 4.5:1 for normal text, 3:1 for large text
+  - All interactive elements keyboard-accessible with visible focus indicators
+  - Screen reader compatible — semantic HTML, ARIA labels, meaningful alt text
+  - Form inputs with associated labels, error messages announced to assistive tech
+- Three distinct views: patient (browse, book, consult), specialist (schedule, consult, notes), admin (oversight, prescription queue)
+- Video consultation UI: simple join button, camera/mic controls, specialist sees notes alongside video
+- Mobile-responsive — regional patients often use phones
+- Works on slow connections — lightweight, minimal JavaScript, progressive loading
+
+[Paste design spec template here]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">The key design challenge</h2>
+  <p class="text-text-secondary mb-4">Trust. Patients are sharing medical information with a screen. The design must earn that trust through clarity, professionalism, and predictability. No surprises, no ambiguity about what's happening with their data or their appointment.</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Patient view</h3>
+      <p class="text-sm text-text-secondary">Browse specialists by specialty and availability. Book an appointment. Join a video consultation with one click. View consultation notes and prescription status. The experience should feel as simple as booking a table at a restaurant — even though what's happening underneath is complex.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Specialist view</h3>
+      <p class="text-sm text-text-secondary">See upcoming consultations. Join the video call. Write consultation notes during or after the call. Flag prescription requests. The video UI must let the specialist see the patient and their notes side by side — they're writing while talking.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Admin view</h3>
+      <p class="text-sm text-text-secondary">Overview of consultations (scheduled, completed, no-shows). Prescription request queue — review, approve, send to GP. Specialist management. System health at a glance. Aisha is the admin initially, doing this between seeing her own patients.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Video consultation UI</h2>
+  <p class="text-text-secondary mb-4">The video consultation is the core interaction. It has three phases, each with different UI needs:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Pre-call check</h3>
+      <p class="text-sm text-text-secondary">Before joining the consultation, both patient and specialist run a pre-call check: camera preview, microphone test, and bandwidth test. If the patient's connection is poor, show a clear warning with advice ("Your connection is slow. Audio will work but video quality will be reduced."). This prevents the patient from discovering problems mid-consultation.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">In-call</h3>
+      <p class="text-sm text-text-secondary">The consultation view differs by role. The patient sees the specialist's video, call controls (mute, camera, end call), and a consultation timer. The specialist sees the patient's video, call controls, a timer, and a notes panel alongside the video — they write notes during the conversation. On desktop, video and notes sit side by side. On mobile, they stack.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Post-call</h3>
+      <p class="text-sm text-text-secondary">After the call ends, the specialist sees a summary screen: finalise consultation notes, and optionally submit a prescription request form. The patient sees a confirmation that the consultation is complete, with a note that their specialist will share any notes or next steps.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Designing for regional users</h2>
+  <p class="text-text-secondary mb-4">Aisha's patients are in Wagga Wagga, Dubbo, Bendigo. Internet quality is variable. The design must account for this:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Lightweight pages:</strong> Minimal JavaScript, progressive loading, no unnecessary animations. A patient on a slow connection should see the specialist directory quickly, not wait for a heavy bundle to download.</li>
+    <li><strong class="text-text">Graceful degradation:</strong> When video quality drops, the UI should indicate it ("Connection quality: low") and prioritise audio. The patient should never see a blank screen with no explanation.</li>
+    <li><strong class="text-text">Offline-aware states:</strong> If the connection drops briefly, show a "Reconnecting..." indicator rather than an error page. The video room should attempt to reconnect automatically.</li>
+    <li><strong class="text-text">Mobile-first:</strong> Many regional patients use phones for internet access. The booking flow and video consultation must work well on small screens.</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Accessibility-first design</h2>
+  <p class="text-text-secondary mb-4">This is not a retrofit. Accessibility is a design constraint from the first wireframe, not a checklist applied at the end. For Harbour Health, it's not just best practice — the users are people who may be elderly, have low vision, have motor disabilities, or be using assistive technology.</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Colour contrast</h3>
+      <p class="text-sm text-text-secondary">WCAG AA requires 4.5:1 contrast ratio for normal text and 3:1 for large text. When reviewing the generated design spec, check every colour combination. Light grey text on a white background fails. Subtle placeholder text in forms fails. Use a contrast checker (built into browser DevTools) to verify.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Keyboard navigation</h3>
+      <p class="text-sm text-text-secondary">Every interactive element — buttons, links, form inputs, the video join button, the mute/unmute controls — must be reachable with Tab and activatable with Enter or Space. The design spec should define the tab order for key pages.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Focus indicators</h3>
+      <p class="text-sm text-text-secondary">When a user tabs to a button, they must see where they are. The default browser focus ring is often removed by CSS resets. The design spec must specify visible focus styles — a ring, a colour change, an outline — that are consistent across the entire application.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Screen readers</h3>
+      <p class="text-sm text-text-secondary">The design spec should note where ARIA labels are needed: icon-only buttons (mute, unmute, end call), status indicators (appointment confirmed, prescription pending), and dynamic content (video connection status, consultation timer).</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Review guidance</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Does it feel trustworthy?</strong> Professional, calm, clear. Not flashy, not clinical. A patient should feel safe entering their health information.</li>
+    <li><strong class="text-text">Is the video join flow simple?</strong> One prominent button. Not buried in a menu. Not ambiguous.</li>
+    <li><strong class="text-text">Are all colour combinations accessible?</strong> Check against WCAG AA contrast ratios.</li>
+    <li><strong class="text-text">Is keyboard navigation specified?</strong> Tab order, focus indicators, skip links.</li>
+    <li><strong class="text-text">Does it work on mobile?</strong> Regional patients use phones. The booking flow and video consultation must work on small screens.</li>
+    <li><strong class="text-text">Is the specialist note-taking UI practical?</strong> Video and notes side by side on desktop, stacked on mobile. The specialist writes while talking.</li>
+  </ul>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: accessibility tools</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">Accessibility testing requires a mix of automated tools and manual testing. No single tool catches everything.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">axe DevTools</strong> — <span class="text-text-secondary">Browser extension that scans a page for accessibility issues. Catches contrast failures, missing labels, ARIA problems. The most widely used automated accessibility checker. Free.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">WAVE</strong> — <span class="text-text-secondary">Web Accessibility Evaluation Tool. Browser extension that overlays accessibility information on the page — errors, warnings, structural elements. Good for visual review.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">pa11y</strong> — <span class="text-text-secondary">Command-line accessibility testing tool. Runs against URLs and outputs issues. Can be integrated into CI pipelines to catch regressions.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Lighthouse accessibility audit</strong> — <span class="text-text-secondary">Built into Chrome DevTools. Runs an accessibility audit alongside performance, SEO, and best practices. Good for quick checks, but less thorough than axe.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Screen readers (VoiceOver, NVDA, JAWS)</strong> — <span class="text-text-secondary">The real test. VoiceOver is built into macOS. NVDA is free for Windows. JAWS is the enterprise standard. Manual testing with a screen reader catches issues no automated tool finds — confusing reading order, missing context, non-descriptive links.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">Automated tools catch maybe 30-40% of accessibility issues. The rest require manual testing — keyboard navigation, screen reader testing, and real user feedback. Plan for both.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: architecture</h2>
+    <p class="text-text-secondary mb-4">Design spec is done. Now make the critical architecture decisions — video platform, data isolation, infrastructure, and security.</p>
+    <a
+      href="/web-dev/projects/10/architecture"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Architecture →
+    </a>
+  </div>
+</DocsLayout>

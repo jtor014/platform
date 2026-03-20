@@ -1,0 +1,86 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="The Client Brief: Tidal Brewing Co" description="Meet Jake and understand what Tidal Brewing needs — tap list, events, pickup ordering, and infrastructure questions.">
+  <h1 class="mb-6">The Client Brief: Tidal Brewing Co</h1>
+  <p class="text-text-secondary mb-4"><strong class="text-text">Jake</strong> runs Tidal Brewing, a craft brewery and taproom in Brunswick, Melbourne. He brews beer and runs the taproom — a warehouse space with long tables, industrial lighting, and a rotating lineup of beers on tap. Right now the brewery's online presence is an Instagram page. It works for photos, but customers keep asking the same questions: "What's on tap today?" "When's the next trivia night?" "Can I order a case for pickup?"</p>
+  <p class="text-text-secondary mb-4">You meet Jake at the taproom after the lunch rush. A chalkboard behind the bar lists twelve taps. He's wiping one of them down and explaining that they just kicked a keg of their hazy pale ale and need to swap in the red IPA.</p>
+
+  <Callout variant="client">
+    <p>"I run Tidal Brewing — we brew beer and run a taproom. Right now our website is just an Instagram page. I need a proper site where people can see what's on tap right now, check our upcoming events, and order beer for pickup. I want to update the tap list myself when we rotate kegs — that changes every few days. Events are weekly — trivia on Wednesdays, live music on Saturdays. For pickup orders, people choose their beers, we pack them, they come grab them. No delivery. I don't need anything fancy — just something that works and looks like a brewery, not a tech startup."</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">What to pay attention to</h2>
+  <p class="text-text-secondary mb-4">The application itself is straightforward — a public-facing site with an admin interface. The complexity is in the infrastructure. For the first time, the PRD needs to capture requirements that determine how the infrastructure is provisioned.</p>
+
+  <h3 class="mb-3 mt-6">What he asked for</h3>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Tap list:</strong> What's currently on tap, updated by Jake when kegs rotate (every few days)</li>
+    <li><strong class="text-text">Events:</strong> Upcoming events — trivia, live music, tap takeovers. Weekly schedule.</li>
+    <li><strong class="text-text">Pickup ordering:</strong> Customers choose beers, the brewery packs them, customers come grab them. No delivery.</li>
+    <li><strong class="text-text">Self-service updates:</strong> Jake wants to update the tap list himself without calling a developer</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">What he implied</h3>
+  <p class="text-text-secondary mb-4">Read between the lines:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Real-time inventory:</strong> The tap list reflects what's actually on tap right now. When a keg kicks, Jake updates it and the site reflects the change immediately.</li>
+    <li><strong class="text-text">Admin interface:</strong> Jake needs a way to manage the tap list, events, and orders without touching code. A simple admin panel.</li>
+    <li><strong class="text-text">Cellar inventory:</strong> "What's in the cellar" means he tracks beer that's brewed but not yet on tap. This is inventory management beyond just the current tap list.</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">What he didn't ask for</h3>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">No delivery</strong> — pickup only, no delivery logistics or shipping</li>
+    <li><strong class="text-text">No payment at order time</strong> — Jake invoices regulars and takes payment at pickup. No Stripe, no card processing in the app.</li>
+    <li><strong class="text-text">No user accounts for customers</strong> — the tap list and events are public. Ordering might need a name and phone number, but not a login system.</li>
+    <li><strong class="text-text">No e-commerce</strong> — this isn't an online store with a cart and checkout. It's "tell us what you want, we'll pack it, come get it."</li>
+    <li><strong class="text-text">No table reservations</strong> — the taproom is walk-in only</li>
+    <li><strong class="text-text">No loyalty program or rewards</strong></li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Infrastructure requirements</h2>
+  <p class="text-text-secondary mb-4">This is new. For the first time, you need to ask the client questions that aren't about features — they're about scale, reliability, and data. These answers directly shape the infrastructure you provision.</p>
+
+  <Callout variant="client">
+    <p>"Honestly, maybe 50-100 people a day check the tap list. Fridays get busy — could be 200. If it goes down for an hour it's not the end of the world, but I'd rather it didn't. The beer inventory data is important — I need to know what's in the cellar."</p>
+  </Callout>
+
+  <p class="text-text-secondary mb-4">Translate Jake's answers into infrastructure decisions:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Traffic:</strong> 50-100 daily, 200 peak. A t2.micro EC2 instance handles this comfortably. No need for auto-scaling or load balancing yet.</li>
+    <li><strong class="text-text">Uptime:</strong> "I'd rather it didn't go down" but an hour isn't catastrophic. This means single-instance is acceptable, but we want monitoring to catch issues quickly. No need for multi-AZ redundancy.</li>
+    <li><strong class="text-text">Data sensitivity:</strong> Beer inventory data matters to Jake — he runs his business from it. This means regular database backups. Not sensitive in the compliance sense (no PII, no payment data), but operationally important.</li>
+    <li><strong class="text-text">Budget:</strong> Small brewery. AWS free tier covers the first year. After that, a t2.micro with S3 storage costs under $20/month. Jake needs to know this upfront.</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Anti-scope</h2>
+  <Callout variant="warning">
+    <p class="text-sm"><strong>These are out of scope.</strong> When you generate the PRD, make sure none of these sneak in:</p>
+    <ul class="text-sm space-y-1 mt-2">
+      <li><strong>No delivery</strong> — pickup only, no shipping or delivery logistics</li>
+      <li><strong>No payment processing</strong> — no Stripe, no card collection, no online payments</li>
+      <li><strong>No customer accounts</strong> — no login for customers, no profiles, no order history</li>
+      <li><strong>No e-commerce</strong> — no cart, no checkout flow, no product catalogue beyond the tap list</li>
+      <li><strong>No table reservations</strong> — walk-in only</li>
+      <li><strong>No loyalty programs</strong> — no points, no rewards, no membership</li>
+      <li><strong>No multi-location support</strong> — one brewery, one taproom</li>
+      <li><strong>No mobile app</strong> — web only</li>
+    </ul>
+  </Callout>
+
+  <p class="text-text-secondary mb-4">Brewery and hospitality apps are well-represented in AI training data. When you generate the PRD, AI will try to add a full e-commerce checkout, delivery tracking, table reservations, loyalty points, and a mobile app. Jake wants none of that. He wants a website with a tap list, an events page, and a way for people to say "I want a six-pack of the pale ale, I'll pick it up at 5."</p>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: write the PRD</h2>
+    <p class="text-text-secondary mb-4">You have the brief. Now turn it into a requirements document — this time with infrastructure requirements.</p>
+    <a
+      href="/web-dev/projects/6/requirements/writing-the-prd"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Writing the PRD →
+    </a>
+  </div>
+</DocsLayout>

@@ -1,0 +1,293 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Monitoring & Iteration" description="CloudWatch monitoring, diagnosing a production incident, and reflecting on your first cloud deployment.">
+  <h1 class="mb-6">Monitoring & Iteration</h1>
+  <p class="text-text-secondary mb-8">Jake signed off. UAT issues are fixed and deployed. Tidal Brewing is live. For the first time, you're responsible for the infrastructure it runs on — not just the application.</p>
+
+  <h2 class="mb-4">CloudWatch metrics</h2>
+  <p class="text-text-secondary mb-4">CloudWatch is AWS's built-in monitoring service. For an EC2-based deployment, these are the metrics that matter:</p>
+
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Metric</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Normal range</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">What it tells you</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">CPU utilisation</td>
+          <td class="px-4 py-3 text-text-secondary">Under 10%</td>
+          <td class="px-4 py-3 text-text-secondary">How hard the instance is working. t2.micro has limited CPU credits — sustained high CPU means burst capacity is depleted.</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Memory usage</td>
+          <td class="px-4 py-3 text-text-secondary">Under 70%</td>
+          <td class="px-4 py-3 text-text-secondary">Requires CloudWatch agent (not available by default). t2.micro has 1 GB — Docker containers compete for memory. If PostgreSQL and the app are fighting, things get slow.</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Disk usage</td>
+          <td class="px-4 py-3 text-text-secondary">Under 60%</td>
+          <td class="px-4 py-3 text-text-secondary">Also via CloudWatch agent. Docker images, database files, and logs accumulate. A full disk crashes everything silently.</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Network in/out</td>
+          <td class="px-4 py-3 text-text-secondary">Variable</td>
+          <td class="px-4 py-3 text-text-secondary">Traffic volume. Useful for spotting traffic spikes — a sudden jump in network in means more requests hitting the server.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="mb-4 mt-10">CloudWatch alarms</h2>
+  <p class="text-text-secondary mb-4">Set alarms that notify you before things break. These are your early warning system:</p>
+
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Alarm</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Threshold</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">CPU > 80% for 5 minutes</td>
+          <td class="px-4 py-3 text-text-secondary">Sustained high CPU</td>
+          <td class="px-4 py-3 text-text-secondary">Investigate immediately. Check for runaway processes or unexpected traffic.</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Memory > 85%</td>
+          <td class="px-4 py-3 text-text-secondary">Running out of memory</td>
+          <td class="px-4 py-3 text-text-secondary">Containers may start crashing. Check <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">docker stats</code> for memory hogs.</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Disk > 80%</td>
+          <td class="px-4 py-3 text-text-secondary">Running out of disk</td>
+          <td class="px-4 py-3 text-text-secondary">Clean up Docker images, rotate logs, or resize the volume.</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Status check failed</td>
+          <td class="px-4 py-3 text-text-secondary">Instance unreachable</td>
+          <td class="px-4 py-3 text-text-secondary">The instance is down. AWS sends this automatically. SSH in to diagnose or reboot.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Configure alarm notifications via SNS.</strong> Create an SNS topic, subscribe your email address, and point the CloudWatch alarm at the topic. When CPU spikes or the instance goes down, you get an email. Without notifications, alarms fire silently — you'd only notice when Jake calls.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">CloudWatch Logs</h2>
+  <p class="text-text-secondary mb-4">Ship application logs from Docker containers to CloudWatch Logs. Instead of SSHing into the instance and tailing log files every time something goes wrong, view them in the CloudWatch console.</p>
+  <p class="text-text-secondary mb-4">Configure the CloudWatch agent to stream Docker container logs. The FastAPI backend produces the most useful logs — request logs, error logs, order events. Having these in CloudWatch means you can search and filter without SSH access.</p>
+
+  <CodeBlock terminal copy>{`# On the EC2 instance: install and configure CloudWatch agent
+$ sudo yum install -y amazon-cloudwatch-agent
+$ sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+    -a fetch-config -m ec2 -s
+
+# Verify logs are flowing
+# Go to CloudWatch > Log groups in the AWS console
+# You should see log streams from your Docker containers`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Extension scenario: "Jake calls — the site is slow"</h2>
+  <Callout variant="client">
+    <p>"Hey, I've had three people today tell me the site is slow. One bloke said the tap list took ages to load on his phone. Can you take a look?"</p>
+  </Callout>
+
+  <p class="text-text-secondary mb-4">This is the scenario where monitoring pays off. Jake doesn't know what's wrong — he just knows customers are complaining. Your job is to diagnose using the tools you've set up.</p>
+
+  <h3 class="mb-3 mt-6">Step 1: Check CloudWatch metrics</h3>
+  <p class="text-text-secondary mb-4">Open the CloudWatch console. Look at the EC2 metrics for the last 24 hours:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">CPU:</strong> Is it sustained above 80%? If so, the instance is at capacity.</li>
+    <li><strong class="text-text">Memory:</strong> Is memory maxed out? Docker containers may be swapping to disk, which is extremely slow on a t2.micro.</li>
+    <li><strong class="text-text">Disk:</strong> Is the disk full? A full disk causes everything to slow down or crash.</li>
+    <li><strong class="text-text">Network:</strong> Is there a traffic spike? More requests than usual?</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Step 2: Check application logs</h3>
+  <p class="text-text-secondary mb-4">In CloudWatch Logs, look for:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Slow query warnings:</strong> Is a database query taking seconds instead of milliseconds?</li>
+    <li><strong class="text-text">Error spikes:</strong> Are there more 500 errors than usual?</li>
+    <li><strong class="text-text">Connection pool exhaustion:</strong> "Too many connections" errors mean the database can't handle the load.</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Step 3: SSH in and check directly</h3>
+  <CodeBlock terminal copy>{`# SSH into the instance
+$ ssh -i ~/.ssh/your-key.pem ec2-user@<ec2-public-ip>
+
+# Check container resource usage
+$ docker stats --no-stream
+# Shows CPU and memory for each container
+
+# Check container logs for errors
+$ docker logs tidal-backend --tail 50
+$ docker logs tidal-db --tail 50
+
+# Check disk space
+$ df -h
+# If / is above 80%, that's a problem`}</CodeBlock>
+
+  <h3 class="mb-3 mt-6">Step 4: Identify and resolve</h3>
+  <p class="text-text-secondary mb-4">Common root causes for a slow brewery site:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Docker logs filling disk:</strong> Containers produce logs. Without log rotation, they fill the disk. Add <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">--log-opt max-size=10m --log-opt max-file=3</code> to your Docker Compose config.</li>
+    <li><strong class="text-text">Memory pressure:</strong> PostgreSQL + FastAPI + React + Nginx on 1 GB RAM is tight. If memory is consistently above 85%, resize to t2.small (2 GB).</li>
+    <li><strong class="text-text">Unoptimised images:</strong> Beer images served directly from the API instead of S3. Large images slow everything down. Serve them from S3 with proper caching headers.</li>
+    <li><strong class="text-text">Missing database indexes:</strong> The tap list query is doing a full table scan. Add an index on the status column.</li>
+  </ul>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Fix the root cause, not the symptom.</strong> Resizing the instance is easy — change the Terraform config and apply. But if the root cause is unrotated logs filling the disk, a bigger instance just delays the problem. Diagnose first, then fix the right thing.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Production verification</h2>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-8">
+    <li>Tap list loads in under 2 seconds on mobile</li>
+    <li>Events page shows upcoming events in date order</li>
+    <li>Pickup ordering works end-to-end</li>
+    <li>Admin interface is responsive and updates are instant</li>
+    <li>CloudWatch alarms are configured and tested (trigger a test alarm)</li>
+    <li>CloudWatch Logs show application logs from all containers</li>
+    <li>HTTPS is active with auto-renewing certificate</li>
+    <li>Beer images load from S3, not from the EC2 instance</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">The loop</h2>
+  <p class="text-text-secondary mb-6">You've completed the full 8-step cycle — this time with infrastructure as code and cloud deployment:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">1</span>
+      <div>
+        <p class="font-semibold text-sm">Requirements</p>
+        <p class="text-sm text-text-secondary">You wrote a PRD with infrastructure requirements for the first time — traffic estimates, uptime expectations, data sensitivity, budget.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">2</span>
+      <div>
+        <p class="font-semibold text-sm">Design</p>
+        <p class="text-sm text-text-secondary">You designed a craft brewery site — tap-list-first, industrial aesthetic, simple admin interface for a brewery owner.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">3</span>
+      <div>
+        <p class="font-semibold text-sm">Architecture</p>
+        <p class="text-sm text-text-secondary">You reviewed Terraform, VPC, security groups, EC2, S3, Nginx, and AWS Secrets Manager. Infrastructure decisions alongside application architecture.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">4</span>
+      <div>
+        <p class="font-semibold text-sm">Implement</p>
+        <p class="text-sm text-text-secondary">You built with two types of tickets — Terraform for infrastructure, code for the application. Infrastructure first, then features.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">5</span>
+      <div>
+        <p class="font-semibold text-sm">Test</p>
+        <p class="text-sm text-text-secondary">You tested both layers — application tests (pytest, Playwright) and infrastructure verification (terraform validate, smoke tests, security group checks).</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">6</span>
+      <div>
+        <p class="font-semibold text-sm">Deploy</p>
+        <p class="text-sm text-text-secondary">You deployed Docker containers to EC2, configured Nginx, set up SSL, stored secrets in AWS Secrets Manager, and automated the workflow with CI/CD.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">7</span>
+      <div>
+        <p class="font-semibold text-sm">UAT</p>
+        <p class="text-sm text-text-secondary">Jake tested the live site and caught a sorting bug, missing business logic on the order form, and requested a "coming soon" beer status.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">8</span>
+      <div>
+        <p class="font-semibold text-sm">Monitor</p>
+        <p class="text-sm text-text-secondary">You set up CloudWatch monitoring, diagnosed a real performance issue from Jake's call, and learned to investigate infrastructure problems systematically.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Reflect</h2>
+  <p class="text-text-secondary mb-4">This was your first cloud deploy. Your first Terraform. Your first time managing your own infrastructure. That's a significant shift. Ask yourself:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li><strong class="text-text">PaaS vs IaaS:</strong> What did you gain by managing your own infrastructure? What did you lose? When would you choose Netlify/Railway over EC2/Terraform?</li>
+    <li><strong class="text-text">Terraform plan review:</strong> How did reviewing <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform plan</code> compare to reviewing a code PR? What did you catch in the plan that would have been a problem?</li>
+    <li><strong class="text-text">Infrastructure awareness:</strong> Before this project, you deployed to a platform and didn't think about the server. Now you know the instance size, the security group rules, the ports, the disk space. How does that change how you think about deployment?</li>
+    <li><strong class="text-text">The monitoring question:</strong> When Jake called about the slow site, how did CloudWatch help you diagnose it? What would you have done without monitoring?</li>
+    <li><strong class="text-text">Cost awareness:</strong> Did you stay within the free tier? Did the billing alert fire? How does infrastructure cost factor into architecture decisions?</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">The "show someone" moment</h2>
+  <p class="text-text-secondary mb-4">Open the Tidal Brewing website on your phone. Show someone:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>The tap list — live, fast, looks like a real Brunswick brewery's website</li>
+    <li>The events page — upcoming trivia and live music at the taproom</li>
+    <li>The pickup order form — simple, functional, only shows what's on tap</li>
+    <li>Then open the AWS console — show the EC2 instance, the CloudWatch dashboard, the Terraform state</li>
+  </ul>
+  <p class="text-text-secondary mb-4">"I built the app and I built the infrastructure it runs on. Everything is defined in code — the server, the firewall rules, the monitoring. I can tear it down and rebuild it from a single command."</p>
+  <p class="text-text-secondary mb-4">That last part — showing the Terraform configuration and saying "this creates everything" — is the proof that you understand infrastructure, not just applications.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Key insight:</strong> The shift from PaaS to IaaS isn't just a deployment change — it's a responsibility change. You're now accountable for uptime, security, cost, and performance at the infrastructure level. Terraform makes that manageable by treating infrastructure like code: version controlled, reviewable, reproducible.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: cloud monitoring</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use CloudWatch because we're on AWS. Here's what else exists for cloud monitoring.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">CloudWatch</strong> — <span class="text-text-secondary">What we use. AWS-native monitoring. Metrics, logs, alarms, dashboards. Free tier includes basic EC2 metrics. Tight integration with all AWS services. Vendor lock-in — only works with AWS.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Datadog</strong> — <span class="text-text-secondary">SaaS monitoring platform. Infrastructure metrics, application performance monitoring (APM), log management, and alerting in one tool. Works with any cloud provider. Expensive at scale but feature-rich. Popular in startups and mid-size companies.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">New Relic</strong> — <span class="text-text-secondary">Full-stack observability platform. APM, infrastructure monitoring, log management, browser monitoring. Strong application-level visibility. Free tier is generous for small teams. Competes directly with Datadog.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Grafana Cloud</strong> — <span class="text-text-secondary">Hosted Grafana with Prometheus (metrics), Loki (logs), and Tempo (traces). Open-source foundations with a managed service layer. Popular with teams that want flexibility without vendor lock-in. Free tier available.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Prometheus + Grafana (self-hosted)</strong> — <span class="text-text-secondary">The open-source monitoring stack. Prometheus scrapes metrics, Grafana visualises them. No vendor lock-in, no per-host pricing. Operational overhead — you run and maintain the monitoring infrastructure yourself.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">CloudWatch is the natural starting point on AWS — zero setup, basic metrics for free. When you need cross-cloud monitoring, deeper APM, or better dashboards, Datadog, New Relic, or Grafana Cloud are the common next steps.</p>
+    </div>
+  </details>
+
+  <h2 class="mb-4 mt-10">What's next</h2>
+  <p class="text-text-secondary mb-4">You've deployed to the cloud. You've managed your own infrastructure. You've monitored a live system and diagnosed a real issue. Next project adds managed databases and zero-downtime deployment.</p>
+  <p class="text-text-secondary mb-4">Complete the <a href="/web-dev/checkpoints/after-project-6">Checkpoint: After Project 6</a> to consolidate what you've learned.</p>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">You've deployed to the cloud</h2>
+    <p class="text-text-secondary mb-4">Next project adds managed databases and zero-downtime deployment.</p>
+    <a
+      href="/web-dev/checkpoints/after-project-6"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Checkpoint: After Project 6 →
+    </a>
+  </div>
+</DocsLayout>

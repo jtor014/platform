@@ -21,6 +21,68 @@ import Callout from '../../../../components/Callout.astro';
     <li>Mobile: card displays correctly on a real phone</li>
   </ul>
 
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: CI/CD tools</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">GitHub Actions is one of many CI/CD tools. Here's what else exists and where each fits.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">GitHub Actions</strong> — <span class="text-text-secondary">What we use. Built into GitHub, YAML-based workflows triggered by git events. Free for public repos, generous free tier for private.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">GitLab CI</strong> — <span class="text-text-secondary">GitLab's built-in CI/CD. Similar concept to GitHub Actions, different syntax. Common in companies that use GitLab for version control.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Jenkins</strong> — <span class="text-text-secondary">The oldest major CI/CD tool. Self-hosted, extremely configurable, plugin-based. Common in enterprise. More setup than cloud-native alternatives.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">CircleCI</strong> — <span class="text-text-secondary">Cloud-native CI/CD. Fast, good Docker support. Popular with startups and mid-size companies.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">ArgoCD</strong> — <span class="text-text-secondary">GitOps-based continuous delivery for Kubernetes. The git repo IS the deployment state. We'll survey this in Project 8.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Travis CI</strong> — <span class="text-text-secondary">One of the original cloud CI services. Less popular now but still in use.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">CI/CD tools all solve the same problem: run tests and deploy code automatically when you push changes. The YAML config looks different in each tool, but the pipeline concept is identical: trigger → build → test → deploy. If you can configure GitHub Actions, you can read any CI/CD config.</p>
+    </div>
+  </details>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: monitoring tools</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">Container logs are the simplest form of monitoring. Here's what else exists as systems grow more complex.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Container logs</strong> — <span class="text-text-secondary">What we use here. <code class="bg-bg-muted px-1 py-0.5 rounded text-xs font-mono">docker logs</code> shows stdout/stderr from your containers. The simplest form of monitoring.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Sentry</strong> — <span class="text-text-secondary">Error tracking as a service. Catches exceptions, groups them, shows stack traces. We'll introduce this in Project 4.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Grafana + Prometheus</strong> — <span class="text-text-secondary">Metrics collection and dashboarding. Prometheus scrapes metrics from your app, Grafana visualises them. We'll go deep on this from Project 7.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Datadog</strong> — <span class="text-text-secondary">Full observability platform: metrics, logs, traces, APM, security. Enterprise pricing, comprehensive features.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">New Relic</strong> — <span class="text-text-secondary">Application performance monitoring. Deep code-level insights. Good free tier.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">CloudWatch</strong> — <span class="text-text-secondary">AWS's built-in monitoring for all AWS services. Logs, metrics, alarms. We'll use this from Project 6.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">ELK Stack (Elasticsearch, Logstash, Kibana)</strong> — <span class="text-text-secondary">Self-hosted log aggregation and search. Powerful but complex to operate.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">LogRocket / FullStory</strong> — <span class="text-text-secondary">Session replay tools. Record what users actually do in the browser. Useful for debugging UX issues.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">Right now you check container logs manually. By Project 10, you'll have Grafana dashboards showing request rates, Sentry catching errors automatically, CloudWatch monitoring your infrastructure, and PagerDuty sending you alerts at 2am. Each tool solves a different visibility problem.</p>
+    </div>
+  </details>
+
   <h2 class="mb-4 mt-10">The Loop</h2>
   <p class="text-text-secondary mb-6">You've completed the full cycle again — with a more complex system:</p>
 

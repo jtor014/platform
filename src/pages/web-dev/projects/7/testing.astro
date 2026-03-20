@@ -1,0 +1,167 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import Checklist from '../../../../components/Checklist.astro';
+---
+
+<DocsLayout title="Testing" description="Application tests, Terraform plan review, and migration rollback tests — three layers of verification.">
+  <h1 class="mb-6">Testing</h1>
+  <p class="text-text-secondary mb-4">Three layers of testing for three types of work. Application tests verify the features work and access controls hold. Terraform plan review verifies infrastructure changes are safe. Migration rollback tests verify that every schema change can be reversed.</p>
+
+  <h2 class="mb-4 mt-10">Application test prompt</h2>
+  <CodeBlock copy>{`Here is the Coastal Physio codebase with authentication, role-based access control, and multi-location booking.
+
+Write a comprehensive test suite that covers:
+
+1. Authentication tests (same as P5):
+   - Login with valid credentials returns a JWT
+   - Login with invalid credentials returns 401
+   - Accessing protected endpoints without a token returns 401
+   - Accessing protected endpoints with an expired token returns 401
+
+2. Authorization tests (for EACH role, for EACH protected endpoint):
+   - Patient can book appointments and view own data (200)
+   - Patient cannot access practitioner or admin endpoints (403)
+   - Practitioner can view own schedule and write notes (200)
+   - Practitioner cannot see other practitioners' patients (403 or empty result)
+   - Admin can manage all bookings and practitioners across all locations (200)
+
+3. Data isolation tests:
+   - Patient A cannot see Patient B's appointments or clinical notes
+   - Practitioner A cannot see Practitioner B's patients
+   - Clinical notes are only visible to the writing practitioner, the patient, and admin
+   - Changing the appointment ID in the URL doesn't bypass isolation
+
+4. Multi-location tests:
+   - Appointments are tied to the correct location
+   - Practitioner availability is per-location, per-day
+   - Admin can filter by location or view all locations
+   - A practitioner only sees appointments at locations they work at
+
+5. Booking logic tests:
+   - Double booking the same practitioner at the same time is rejected
+   - Booking outside practitioner availability is rejected
+   - Cancellation frees the slot for rebooking`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Terraform plan review</h2>
+  <p class="text-text-secondary mb-4">Before every <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform apply</code>, review the plan. This is the infrastructure equivalent of code review.</p>
+  <Checklist items={[
+    "terraform plan shows only the expected changes — no unintended resource creation or deletion",
+    "RDS configuration matches spec: instance class, storage, backup retention, maintenance window",
+    "Security groups are restrictive — no 0.0.0.0/0 rules except on the ALB for port 443",
+    "ALB health check is configured with the correct path and interval",
+    "No sensitive values (passwords, secrets) appear in plain text in the plan output",
+  ]} />
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Treat <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform plan</code> like a PR diff.</strong> Read every line. A missing security group rule or an incorrect instance type in the plan means the same thing in production. The plan is your last chance to catch configuration mistakes before they're live.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Migration rollback tests</h2>
+  <p class="text-text-secondary mb-4">This is new and critical. Every migration must be tested in both directions — apply and rollback.</p>
+
+  <div class="bg-bg-muted rounded-lg p-6 mb-6 font-mono text-xs text-text-secondary">
+    <p class="mb-2 text-text font-semibold font-sans text-sm">Migration rollback test procedure</p>
+    <p>1. Start with a clean database at the previous migration</p>
+    <p class="mt-1">2. Apply the migration: <span class="text-primary">alembic upgrade head</span></p>
+    <p class="mt-1">3. Verify: new tables/columns exist, constraints are correct</p>
+    <p class="mt-1">4. Insert test data into the new tables</p>
+    <p class="mt-1">5. Roll back: <span class="text-primary">alembic downgrade -1</span></p>
+    <p class="mt-1">6. Verify: new tables/columns are gone, existing data is intact</p>
+    <p class="mt-1">7. If rollback fails → <span class="text-red-600">the migration needs fixing before it ships</span></p>
+  </div>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>If rollback fails, the migration needs fixing.</strong> A migration that can't be rolled back is a one-way door. If you deploy it and something goes wrong, your only option is to write a new forward migration to undo the change — under pressure, in production. Fix the rollback in dev where it's safe.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Point-in-time recovery drill</h2>
+  <p class="text-text-secondary mb-4">This is the most important test in the project. RDS automated backups are worthless if you've never actually restored from one.</p>
+
+  <div class="bg-bg-muted rounded-lg p-6 mb-6">
+    <p class="mb-2 text-text font-semibold text-sm">The drill</p>
+    <ol class="text-sm text-text-secondary list-decimal list-inside space-y-2">
+      <li>Note the current time (e.g., 2:00pm AEST)</li>
+      <li>Create a test appointment in the system at 2:01pm</li>
+      <li>Verify the appointment exists in the database</li>
+      <li>Restore RDS to 2:00pm — before the appointment was created</li>
+      <li>RDS creates a new instance from the backup (this takes 15-30 minutes)</li>
+      <li>Connect to the restored instance and verify the test appointment does NOT exist</li>
+      <li>This proves point-in-time recovery works — you can recover to any second</li>
+    </ol>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>RDS point-in-time recovery creates a new instance.</strong> It doesn't overwrite the existing database. You restore to a new RDS instance, verify the data, then update your application to point at the new instance. This means recovery doesn't destroy your current (possibly corrupted) database — you can compare both.</p>
+  </Callout>
+
+  <p class="text-text-secondary mb-4">Document the recovery time. How long did the restore take from start to finish? This is your real Recovery Time Objective (RTO) — not the theoretical number from the PRD, but the actual measured time. For Megan's practice, this number determines how long the system would be down after a data incident.</p>
+
+  <h2 class="mb-4 mt-10">ALB health check testing</h2>
+  <p class="text-text-secondary mb-4">The ALB decides which instances are healthy based on a health check endpoint. If the health check is wrong, the ALB routes traffic to broken instances — or stops routing traffic to healthy ones.</p>
+
+  <h3 class="mb-3 mt-6">Verify the health endpoint</h3>
+  <p class="text-text-secondary mb-4">The health endpoint should return 200 when the application can connect to the database and serve requests. Not just "the process is running" — the application must be functional. The health check should verify database connectivity.</p>
+
+  <h3 class="mb-3 mt-6">Simulate an unhealthy instance</h3>
+  <ol class="list-decimal list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Stop the application on the EC2 instance (stop the Docker container)</li>
+    <li>Wait for the ALB health check interval (typically 30 seconds)</li>
+    <li>Check the ALB target group in the AWS console — the instance should show as "unhealthy"</li>
+    <li>Restart the application</li>
+    <li>Wait for the health check to pass — the instance should return to "healthy"</li>
+  </ol>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Don't skip this test.</strong> An ALB health check that always returns 200 (even when the database is down) will route traffic to a broken application. An ALB health check that's too strict will mark healthy instances as unhealthy and take the system offline. The health check is the foundation of blue/green deployment — get it right.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Backup verification</h2>
+  <p class="text-text-secondary mb-4">Beyond point-in-time recovery, verify the automated backup configuration:</p>
+  <Checklist items={[
+    "RDS backup retention is configured for 7 days in the AWS console",
+    "Backup window falls within the maintenance window (10pm-6am AEST)",
+    "At least one automated snapshot exists in the RDS console",
+    "RDS storage encryption is enabled",
+  ]} />
+
+  <h2 class="mb-4 mt-10">Lighthouse audit</h2>
+  <p class="text-text-secondary mb-8">Run a Lighthouse audit on the main views. Accessibility is especially important — Megan's patients include retirees. Check contrast ratios, font sizes, and keyboard navigation on the booking flow.</p>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: database testing</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We test migrations manually and verify with queries. Here's what else exists for database-level testing.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">pgTAP</strong> — <span class="text-text-secondary">Unit testing framework for PostgreSQL. Write tests in SQL that verify table structure, constraints, functions, and triggers. Run tests inside the database itself. The closest thing to pytest for PostgreSQL.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">testcontainers</strong> — <span class="text-text-secondary">Spin up a real PostgreSQL instance in a Docker container for each test run. Tests run against an actual database, not mocks. Tear down after tests complete. Available for Python, Java, Node.js, and more.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Great Expectations</strong> — <span class="text-text-secondary">Data quality testing framework. Define expectations about your data (row counts, value ranges, uniqueness) and validate them automatically. More common in data engineering than web development, but useful for verifying data integrity after migrations.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">dbt tests</strong> — <span class="text-text-secondary">Part of the dbt (data build tool) ecosystem. Test data transformations with assertions about uniqueness, referential integrity, and accepted values. Popular for analytics databases and data pipelines.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Factory Boy + Faker</strong> — <span class="text-text-secondary">Python test fixture library paired with fake data generation. Define factories for your models that generate realistic test data — names, emails, phone numbers — without using actual patient information. Cleaner than manual INSERT statements.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">For a web application with Alembic, manual migration testing plus testcontainers for integration tests is a solid approach. pgTAP is worth knowing for complex schema validation. Great Expectations and dbt are more relevant when you're managing data pipelines.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: deployment</h2>
+    <p class="text-text-secondary mb-4">Tests pass. Time to deploy with blue/green — zero downtime.</p>
+    <a
+      href="/web-dev/projects/7/deployment"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Deployment →
+    </a>
+  </div>
+</DocsLayout>

@@ -1,0 +1,134 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Building" description="Direct, verify, review, merge — working from your own backlog.">
+  <h1 class="mb-6">Building</h1>
+  <p class="text-text-secondary mb-4">You know the loop from Projects 1 and 2: direct, verify, review, merge. The difference now is that you're working from your own backlog, not one we provided.</p>
+  <p class="text-text-secondary mb-8">The rhythm is the same. What's different is what you're verifying against — your PRD, your design spec, your architecture, your acceptance criteria. If something is vague or missing, that's on you. Now you understand why P1 and P2 had such specific criteria.</p>
+
+  <h2 class="mb-4">The ticket loop</h2>
+  <p class="text-text-secondary mb-2">For each ticket, move it from <strong class="text-text">To Do</strong> to <strong class="text-text">In Progress</strong> on your GitHub Projects board, then:</p>
+  <div class="space-y-3 mb-8">
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">1</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Direct:</strong> <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">Start Ticket N.</code></p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">2</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Verify:</strong> Check every acceptance criterion against the PRD. For forms: test every edge case. For email: check the actual inbox. For API: check the response in the Network tab.</p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">3</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Review:</strong> Read Claude's self-review and Gemini's review on the PR. Move the ticket to <strong class="text-text">In Review</strong> on the board.</p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">4</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Decide:</strong> Merge or tell Claude exactly what to fix. When merged, move the ticket to <strong class="text-text">Done</strong>.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">You own the acceptance criteria</h2>
+  <p class="text-text-secondary mb-4">In Projects 1 and 2, the backlog was handed to you with precise acceptance criteria. You could verify against them without ambiguity. Now you wrote the criteria yourself.</p>
+  <p class="text-text-secondary mb-4">When you hit a criterion that says "the form should validate properly" — that's too vague. What does "properly" mean? Which fields? What error messages? What edge cases? If you can't verify a criterion with a pass/fail check, it's not specific enough.</p>
+  <p class="text-text-secondary mb-8">This is the lesson: writing good acceptance criteria is hard, and vague criteria slow down implementation. When you find a vague criterion, fix it in the backlog before continuing. Update the ticket with specific, testable criteria. This is planning work that happens during implementation — and it's normal.</p>
+
+  <h2 class="mb-4 mt-10">Verification: check against your own docs</h2>
+  <p class="text-text-secondary mb-4">Every ticket should be verified against three documents you created:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">PRD:</strong> Does the feature match the requirement? Is it in scope?</li>
+    <li><strong class="text-text">Design spec:</strong> Does it look right? Correct colours, fonts, spacing, layout?</li>
+    <li><strong class="text-text">Architecture:</strong> Does it follow the technical structure? Correct API endpoints, database schema, service boundaries?</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Form validation</h2>
+  <p class="text-text-secondary mb-4">Form validation is the key new technical skill in this project. When Claude builds the signup form, verify both client-side and server-side validation. Don't just submit a valid form and call it done. Try breaking it:</p>
+
+  <h3 class="mb-3 mt-6">Client-side validation</h3>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Submit with empty fields — does it show error messages before hitting the server?</li>
+    <li>Enter an invalid email format — does validation catch it immediately?</li>
+    <li>Are error messages specific? "Please enter a valid email" not just "Invalid input"</li>
+    <li>Do errors clear when the user corrects the field?</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Server-side validation</h3>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Disable JavaScript in your browser and submit the form — does the server still validate?</li>
+    <li>Try a 10,000-character name — does the server reject it?</li>
+    <li>Try SQL injection strings in form fields — does the backend handle them safely?</li>
+    <li>Submit for a full class — does it reject with a clear message?</li>
+    <li>Submit the same email twice for the same class — how does it handle duplicates?</li>
+  </ul>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Client-side validation is for user experience. Server-side validation is for security.</strong> Never rely on client-side validation alone — anyone can bypass it. The server must validate everything independently.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Email integration</h2>
+  <p class="text-text-secondary mb-4">Test that emails actually send. This is a common "works in theory" situation. Verify:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Use your email service's test mode (SendGrid, Mailgun, or Resend all have one) — check the dashboard to confirm the email was sent</li>
+    <li>Check your actual inbox — did you receive the confirmation email?</li>
+    <li>Check spam — emails from new senders often land there</li>
+    <li>Check the email content — does it include the class name, date, and time?</li>
+    <li>Does Sarah get a notification email when someone signs up?</li>
+    <li>Check formatting — does the email look right on mobile? Is the text readable?</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Scope creep watch</h2>
+  <p class="text-text-secondary mb-4">AI will try to add features not in your PRD. You wrote this PRD — you know exactly what's in scope. Common AI additions to watch for:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>User accounts or authentication</li>
+    <li>Payment integration</li>
+    <li>Admin dashboard beyond what the PRD specifies</li>
+    <li>Waitlist management (unless your PRD includes it)</li>
+    <li>Calendar integration</li>
+    <li>Social sharing buttons</li>
+  </ul>
+  <p class="text-text-secondary mb-4">If Claude adds any of these, tell it to remove them. "This isn't in the PRD. Remove it."</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>If a ticket feels too big (&gt;300 lines), tell Claude to split it.</strong> If the architecture doesn't cover something you need, update the architecture first — don't let implementation drift from the plan. The plan is your source of truth. If the plan is wrong, fix the plan, then fix the code.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Troubleshooting</h2>
+
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>Form submits but nothing happens</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Open DevTools, go to the Network tab, and submit the form. Check whether the request is being sent. If it is, check the response status code and body. If it's not, the form's submit handler isn't wired up correctly. Tell Claude: "The form submits but no request appears in the Network tab. The submit handler isn't firing. Fix it."</p>
+    </div>
+  </details>
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>Email doesn't arrive</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Check three things in order: (1) Is the email API key set in the environment variables? (2) Check the email service dashboard — does it show the email was sent? If yes, check spam. If no, the API call is failing — check the backend logs for the error. Tell Claude the specific error.</p>
+    </div>
+  </details>
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>Database connection fails</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Check that Docker is running and the database container is up. Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">docker ps</code> to see running containers. If the database container isn't listed, run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">docker compose up -d</code>. If it is running but the app can't connect, check the DATABASE_URL in the .env file matches the container's configuration.</p>
+    </div>
+  </details>
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>CORS errors in the browser console</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">The frontend is making requests to a different origin than the backend allows. Check the CORS configuration in the FastAPI backend — the allowed origins must include the frontend's URL. Tell Claude: "I'm getting CORS errors in the browser console when the frontend calls the API. The frontend is at [URL] and the backend is at [URL]. Fix the CORS configuration."</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: Testing</h2>
+    <p class="text-text-secondary mb-4">All tickets done. Time to test the full system.</p>
+    <a
+      href="/web-dev/projects/3/testing"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Testing →
+    </a>
+  </div>
+</DocsLayout>

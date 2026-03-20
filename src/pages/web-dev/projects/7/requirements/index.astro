@@ -1,0 +1,21 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Card from '../../../../../components/Card.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Requirements" description="Meet the client, understand the brief, and write the PRD with data classification and SLA targets.">
+  <h1 class="mb-6">Requirements</h1>
+  <p class="text-text-secondary mb-4">You know the process. Client brief, prompt plus template, review. The new wrinkles: a data classification table (what's PII, what's medical information), an SLA section (uptime targets and maintenance windows), and a permissions matrix with location-based scoping.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>New tool: Linear.</strong> This project uses Linear instead of GitHub Projects for project management. Same kanban concepts — backlog, in progress, done. Different interface. We switch to show that the skill transfers across tools. If you can manage a project in GitHub Projects, you can manage it in Linear. The underlying workflow is the same.</p>
+  </Callout>
+
+  <p class="text-text-secondary mb-8">Work through these in order:</p>
+
+  <div class="grid gap-4">
+    <Card title="1. The client brief" subtitle="Meet Dr. Megan Chen and understand what Coastal Physio needs" href="/web-dev/projects/7/requirements/client-brief" />
+    <Card title="2. Writing the PRD" subtitle="Create the requirements document with data classification and SLA targets" href="/web-dev/projects/7/requirements/writing-the-prd" />
+  </div>
+</DocsLayout>

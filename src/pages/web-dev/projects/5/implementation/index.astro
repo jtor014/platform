@@ -1,0 +1,22 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Card from '../../../../../components/Card.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Implementation" description="Create the backlog, set up the project, and build DeskHub with adversarial testing at every step.">
+  <h1 class="mb-6">Implementation</h1>
+  <p class="text-text-secondary mb-4">You know the loop. The new dimension: adversarial testing during implementation, not just at the end. Every feature that involves permissions gets tested from the wrong role before you move on.</p>
+
+  <p class="text-text-secondary mb-8">Work through these in order:</p>
+
+  <div class="grid gap-4">
+    <Card title="1. Creating the backlog" subtitle="Generate and order the tickets — auth infrastructure first" href="/web-dev/projects/5/implementation/creating-the-backlog" />
+    <Card title="2. Setup" subtitle="Project folder, seed data, test users for each role" href="/web-dev/projects/5/implementation/setup" />
+    <Card title="3. Building" subtitle="The build loop with adversarial testing at every step" href="/web-dev/projects/5/implementation/building" />
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Key ordering note:</strong> Auth infrastructure goes first. Before any feature work, the auth system must exist — user model, login, JWT, role middleware. Then member features, then admin features, then owner features. You can't test role boundaries without roles.</p>
+  </Callout>
+</DocsLayout>

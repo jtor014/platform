@@ -1,0 +1,105 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="UAT (User Acceptance Testing)" description="Show Megan the staging site, collect feedback on practitioner visibility, cancellation tracking, and backup confidence.">
+  <h1 class="mb-6">UAT (User Acceptance Testing)</h1>
+  <p class="text-text-secondary mb-4">Show Megan the deployed system. Give her three accounts — patient, practitioner, admin — so she can test the workflows her staff will use daily. She gives each account to someone appropriate: the patient account to a friend who's a real patient, a practitioner account to one of her physios, and uses the admin account herself as the practice manager.</p>
+  <p class="text-text-secondary mb-4">Three user types test different things:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Patient:</strong> Books an appointment at Rosebud, views upcoming appointments, checks clinical notes from a past session</li>
+    <li><strong class="text-text">Practitioner:</strong> Checks the day's schedule at Mornington, opens a patient record, writes clinical notes after a session</li>
+    <li><strong class="text-text">Admin:</strong> Views all appointments across all three locations, reschedules a booking from Dromana to Mornington, creates a new patient account</li>
+  </ul>
+  <p class="text-text-secondary mb-8">After a week of testing, Megan comes back with notes:</p>
+
+  <Callout variant="client">
+    <p>"This is really good — I can actually see what's happening across all three clinics now. Three things:</p>
+    <ol class="list-decimal list-inside space-y-2 mt-2">
+      <li>When my physio writes clinical notes after a session, she can't see the patient's previous notes on the same screen. She has to navigate away and come back. Can the note-writing view show the patient's history alongside the new note form?</li>
+      <li>The admin schedule view shows all three locations at once, which is great, but it's overwhelming on busy days. Can I filter to just one location? The Rosebud receptionist doesn't need to see Mornington and Dromana appointments cluttering her view.</li>
+      <li>When a patient books an appointment, there's no confirmation — it just refreshes the page. They're calling the clinic to ask if their booking went through. Can it show a clear 'Appointment confirmed' message with the details?</li>
+    </ol>
+    <p class="mt-2">Otherwise, this is exactly what we needed."</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Analyse the feedback</h2>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">UAT-1</span>
+        <h3 class="text-base font-semibold">Show patient history alongside clinical notes form</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Type:</strong> UX improvement. The data exists — previous clinical notes are in the database linked to the patient. The practitioner view just doesn't show them on the note-writing screen. This is a frontend layout change: add a panel showing the patient's previous notes alongside the new note form.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>When writing a clinical note, the practitioner sees the patient's previous notes in a side panel</li>
+        <li>Previous notes show date, practitioner name, and note content</li>
+        <li>Previous notes are read-only — the practitioner can only edit the current note</li>
+        <li>On smaller screens (tablet), previous notes collapse to an expandable section</li>
+      </ul>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">UAT-2</span>
+        <h3 class="text-base font-semibold">Add location filter to admin schedule view</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Type:</strong> Missing filter. The design spec likely specified a location selector — check if it was in the design and missed in implementation, or if the design didn't specify this level of filtering. Either way, it's a practical need: receptionists work at one location and need to focus on that location's schedule.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Admin schedule view has a location filter (All / Mornington / Rosebud / Dromana)</li>
+        <li>Default view shows all locations (for the admin who oversees everything)</li>
+        <li>Filtering to one location hides appointments at other locations</li>
+        <li>Filter selection persists during the session — doesn't reset on page refresh</li>
+      </ul>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">UAT-3</span>
+        <h3 class="text-base font-semibold">Add booking confirmation message</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Type:</strong> Missing feedback. A classic UX gap — the action succeeds but the user doesn't know. The booking is created in the database, but the frontend doesn't acknowledge it clearly. Patients call the clinic because the interface gave them no confidence the booking worked.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>After successful booking, a confirmation message appears with appointment details (date, time, location, practitioner)</li>
+        <li>Confirmation includes a clear "Appointment confirmed" heading</li>
+        <li>The booked slot is immediately reflected in the calendar (no page refresh needed)</li>
+        <li>If the booking fails (slot taken), a clear error message appears instead</li>
+      </ul>
+    </div>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Notice the pattern:</strong> UAT-1 is a layout issue — the data exists but isn't shown where the user needs it during the clinical notes workflow. UAT-2 is a missing filter for multi-location scheduling. UAT-3 is a feedback gap that makes patients unsure if their action worked. All three are about the user experience of existing functionality, not new features. The system works — it just doesn't communicate well.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Fix and redeploy</h2>
+  <p class="text-text-secondary mb-4">Create tickets in Linear for each UAT item. Fix them. This time, the redeploy is zero-downtime — Megan doesn't need to schedule a maintenance window for you to push the fixes.</p>
+
+  <CodeBlock copy>{`Fix the three UAT feedback items:
+
+UAT-1: Add a patient history panel to the clinical notes writing view. Show previous notes (date, practitioner, content) in a side panel. Read-only. Collapse to expandable section on tablet.
+
+UAT-2: Add a location filter to the admin schedule view. Options: All, Mornington, Rosebud, Dromana. Default to All. Persist selection in session storage.
+
+UAT-3: Add a booking confirmation message after successful appointment creation. Show date, time, location, practitioner. Show error message if slot is already taken.`}</CodeBlock>
+
+  <p class="text-text-secondary mt-4 mb-4">After fixing, verify each change works on staging. Then deploy via the blue/green pipeline. The fixes go live without Megan's staff noticing any downtime.</p>
+  <p class="text-text-secondary mb-4">Send Megan the updated staging URL. She confirms: notes history visible, location filter works, booking confirmation clear. Sign-off.</p>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: monitoring</h2>
+    <p class="text-text-secondary mb-4">Feedback resolved. Time to go live, build Grafana dashboards, and run the recovery drill.</p>
+    <a
+      href="/web-dev/projects/7/monitoring"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Monitoring & Iteration →
+    </a>
+  </div>
+</DocsLayout>

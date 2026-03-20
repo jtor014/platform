@@ -1,0 +1,81 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Creating the Backlog" description="Generate an ordered backlog with infrastructure tickets separate from application tickets.">
+  <h1 class="mb-6">Creating the Backlog</h1>
+  <p class="text-text-secondary mb-4">Same process. Architecture in, ordered tickets out. The critical difference: this backlog has two types of tickets — <strong class="text-text">infrastructure tickets</strong> (Terraform) and <strong class="text-text">application tickets</strong> (code). They're ordered so infrastructure comes first, because the application needs somewhere to run.</p>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <CodeBlock copy>{`Here is the PRD, design spec, and architecture for Tidal Brewing:
+
+[Paste your PRD here]
+[Paste your design spec here]
+[Paste your architecture here]
+
+Create a BACKLOG.md with ordered tickets. Each ticket should have a title, description, and acceptance criteria checklist.
+
+The backlog has two sections:
+
+INFRASTRUCTURE TICKETS (Terraform):
+1. Terraform setup — provider configuration, state backend, variables
+2. VPC and networking — VPC, public subnet, internet gateway, route table
+3. Security groups — ports 80, 443, 22 (SSH restricted to my IP)
+4. EC2 instance — t2.micro, Amazon Linux, key pair for SSH
+5. S3 bucket — for static assets (beer images, event photos)
+6. AWS Secrets Manager — store database password and any API keys
+7. CloudWatch basics — EC2 monitoring, CPU alarm
+
+APPLICATION TICKETS:
+8. Docker setup on EC2 — install Docker, docker-compose, deploy containers
+9. Nginx configuration — reverse proxy, SSL with certbot
+10. Database setup — PostgreSQL container, initial schema, seed data
+11. Beer/tap list management — admin CRUD, public tap list view
+12. Event listings — admin CRUD, public events page
+13. Pickup ordering — order form, admin order management
+14. Admin dashboard — overview page for Jake
+15. Static assets to S3 — image upload, S3 integration
+
+Keep infrastructure and application tickets in separate sections of the backlog. Infrastructure tickets are completed with Terraform. Application tickets are completed with code.`}</CodeBlock>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Why infrastructure first:</strong> Application tickets depend on infrastructure existing. You can't deploy Docker containers to an EC2 instance that hasn't been created yet. You can't store secrets in AWS Secrets Manager if the secret hasn't been provisioned. Infrastructure tickets create the foundation; application tickets build on it.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Two sections on the kanban board</h2>
+  <p class="text-text-secondary mb-4">When you track these tickets, keep infrastructure and application tickets visually separate. They have different workflows, different verification methods, and different tools. Mixing them together makes it hard to see where you are in the overall build.</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Infrastructure tickets</h3>
+      <p class="text-sm text-text-secondary">Verified by: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform plan</code> shows expected resources, <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform apply</code> succeeds, resource exists in AWS console.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Application tickets</h3>
+      <p class="text-sm text-text-secondary">Verified by: feature works in the browser, tests pass, PR reviewed and merged. Same as previous projects.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Review the backlog</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Infrastructure tickets come first</strong> — before any application deployment</li>
+    <li><strong class="text-text">Infrastructure tickets are separate</strong> — not bundled with application features</li>
+    <li><strong class="text-text">Each infrastructure ticket has clear acceptance criteria</strong> — "EC2 instance exists" not "set up AWS"</li>
+    <li><strong class="text-text">Security group rules are explicit</strong> — which ports, open to whom</li>
+    <li><strong class="text-text">Application tickets match the PRD features</strong> — tap list, events, ordering, admin</li>
+    <li><strong class="text-text">No ticket is too large</strong> — "set up all AWS infrastructure" is too big. Break it down.</li>
+  </ul>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: setup</h2>
+    <p class="text-text-secondary mb-4">Backlog reviewed. Set up AWS, Terraform, and the project folder.</p>
+    <a
+      href="/web-dev/projects/6/implementation/setup"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Setup →
+    </a>
+  </div>
+</DocsLayout>

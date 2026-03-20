@@ -12,7 +12,14 @@
       "Bash(gh pr:*)",
       "Bash(find /home/jtor014/dev/platform/src/pages/web-dev/projects/2 -type f -name *.astro)",
       "Bash(grep:*)",
-      "Bash(make build:*)"
+      "Bash(make build:*)",
+      "Bash(find /home/jtor014/dev/platform/src -name checkpoint* -o -name after-project*)",
+      "Bash(find /home/jtor014/dev/platform/src/pages -name *checkpoint* -o -name *after*)",
+      "Bash(for p:*)",
+      "Bash(do echo:*)",
+      "Read(//home/jtor014/dev/platform/src/pages/web-dev/projects/**)",
+      "Bash(done)",
+      "Bash(npx astro:*)"
     ]
   }
 }

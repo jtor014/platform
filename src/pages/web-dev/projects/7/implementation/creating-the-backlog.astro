@@ -1,0 +1,75 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+import StepList from '../../../../../components/StepList.astro';
+---
+
+<DocsLayout title="Creating the Backlog" description="Set up Linear and generate an ordered backlog for Coastal Physio — infrastructure first, then migrations, then features.">
+  <h1 class="mb-6">Creating the Backlog</h1>
+  <p class="text-text-secondary mb-4">Same process — architecture in, ordered tickets out. The critical difference: you create the backlog in Linear, not GitHub Projects. And the ordering has a new layer — infrastructure and migration tickets come before feature tickets.</p>
+
+  <h2 class="mb-4 mt-10">Setting up Linear</h2>
+  <p class="text-text-secondary mb-4">Linear is a project management tool used by many software teams. Free tier is sufficient for this project.</p>
+
+  <StepList steps={[
+    { title: "Create a Linear account", content: "Go to linear.app and sign up with your GitHub account." },
+    { title: "Create a workspace", content: "Name it 'Coastal Physio' or similar. This is your project space." },
+    { title: "Create a project", content: "Within the workspace, create a project for this build. Linear calls them 'Projects' — they're containers for related tickets." },
+    { title: "Understand the workflow", content: "Linear uses statuses: Backlog, Todo, In Progress, Done. Same as GitHub Projects' columns. Drag tickets between statuses as you work." },
+  ]} />
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Linear vs GitHub Projects:</strong> The underlying concept is identical — a list of tickets, ordered by priority, moving through workflow stages. Linear has a faster interface, keyboard shortcuts, and cycle tracking. GitHub Projects has tighter git integration. Neither is objectively better — they're different interfaces for the same workflow. The skill is managing a backlog, not operating a specific tool.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <CodeBlock copy>{`Here is the PRD, design spec, and architecture for Coastal Physio:
+
+[Paste your PRD here]
+[Paste your design spec here]
+[Paste your architecture here]
+
+Create a BACKLOG.md with ordered tickets. Each ticket should have a title, description, and acceptance criteria checklist.
+
+Critical ordering:
+1. Infrastructure: RDS + ALB in Terraform (provision the database and load balancer first)
+2. Alembic setup + initial migration (create the database schema)
+3. Auth infrastructure (similar to P5 — user model, login, JWT, role middleware for patient/practitioner/admin)
+4. Core features: patient registration, appointment booking, practitioner schedule
+5. Clinical notes (depends on appointments and practitioner-patient relationships)
+6. Admin features: manage bookings across locations, manage practitioners
+7. Grafana setup and dashboards
+8. Blue/green deployment pipeline
+
+Infrastructure tickets MUST come before feature tickets — you can't build features without the database and load balancer.
+Migration tickets come before the feature tickets that use those tables.
+Each feature ticket should specify which Alembic migration it depends on.
+
+Keep infrastructure, migration, and feature tickets separate. "Provision RDS" is NOT bundled with "Build appointment booking."
+Keep auth tickets separate from feature tickets, as in P5.`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Review the backlog</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Infrastructure tickets come first</strong> — Terraform provisions RDS and ALB before any application work</li>
+    <li><strong class="text-text">Alembic setup is its own ticket</strong> — configure Alembic, create the initial migration with core tables</li>
+    <li><strong class="text-text">Auth before features</strong> — same principle as P5</li>
+    <li><strong class="text-text">Migration dependencies are clear</strong> — each feature ticket notes which migration must be applied first</li>
+    <li><strong class="text-text">Clinical notes come after appointments</strong> — notes are attached to appointments, so the appointment system must exist first</li>
+    <li><strong class="text-text">Grafana and blue/green are near the end</strong> — monitoring and deployment pipeline after the application works</li>
+    <li><strong class="text-text">No ticket is too large</strong> — "Build appointment system" is too big. Break it into booking, viewing, cancelling, rescheduling.</li>
+  </ul>
+
+  <p class="text-text-secondary mb-4">Once reviewed, create the tickets in Linear. Copy each ticket's title, description, and acceptance criteria. Set the priority order. This is your single source of truth for the build.</p>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: setup</h2>
+    <p class="text-text-secondary mb-4">Backlog reviewed and in Linear. Set up the project.</p>
+    <a
+      href="/web-dev/projects/7/implementation/setup"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Setup →
+    </a>
+  </div>
+</DocsLayout>

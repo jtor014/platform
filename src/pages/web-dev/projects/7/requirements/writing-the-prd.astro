@@ -1,0 +1,154 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Writing the PRD" description="Generate the PRD for Coastal Physio with a permissions matrix, data classification table, and SLA section.">
+  <h1 class="mb-6">Writing the PRD</h1>
+  <p class="text-text-secondary mb-4">Same flow — prompt plus template plus client brief, generate with Claude (the chat interface), review, iterate. You've done this several times. The guidance here is briefer.</p>
+  <p class="text-text-secondary mb-8">Three new sections in this PRD: a <strong class="text-text">permissions matrix with location scoping</strong>, a <strong class="text-text">data classification table</strong>, and an <strong class="text-text">SLA section</strong> with uptime targets and maintenance windows.</p>
+
+  <h2 class="mb-4">The prompt</h2>
+  <CodeBlock copy>{`Here is a client brief for a patient appointment booking and clinical notes system called Coastal Physio:
+
+[Paste Megan's brief here]
+
+The system has three user types: Patient, Practitioner, and Admin/Reception.
+Three clinic locations: Mornington, Rosebud, Dromana.
+
+Using the following PRD template, generate a complete Product Requirements Document. Include:
+1. A permissions matrix showing every feature and which user types can access it, with location-based scoping where relevant
+2. A data classification table: what's public, what's PII, what's medical/health information
+3. An SLA section: uptime target of 99.5% during business hours (8am-6pm AEST), acceptable maintenance window of 10pm-6am AEST
+4. Specific acceptance criteria for every requirement — each one must be verifiable
+5. An anti-scope section listing things that should NOT be built
+6. How appointments relate to locations and practitioners (multi-location booking logic)
+
+Important constraints:
+- No payment processing — patients pay at reception
+- No medical imaging or file uploads — clinical notes are text only
+- No video consultations or telehealth
+- No SMS/email reminders
+- Admin creates patient and practitioner accounts — there is no public self-registration
+- Clinical notes are sensitive health information under the Australian Privacy Act
+
+[Paste PRD template here]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">The permissions matrix</h2>
+  <p class="text-text-secondary mb-4">Like P5, but with an extra dimension: location scoping. Some actions are location-specific. A practitioner sees patients at the locations they work at. Admin sees everything across all locations.</p>
+
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Feature</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Patient</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Practitioner</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Admin</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Book an appointment</td>
+          <td class="px-4 py-3 text-text-secondary">Yes (own, any location)</td>
+          <td class="px-4 py-3 text-text-secondary">No</td>
+          <td class="px-4 py-3 text-text-secondary">Yes (any patient, any location)</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">View own appointments</td>
+          <td class="px-4 py-3 text-text-secondary">Yes</td>
+          <td class="px-4 py-3 text-text-secondary">Yes (own schedule)</td>
+          <td class="px-4 py-3 text-text-secondary">Yes</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">View all appointments</td>
+          <td class="px-4 py-3 text-text-secondary">No</td>
+          <td class="px-4 py-3 text-text-secondary">No</td>
+          <td class="px-4 py-3 text-text-secondary">Yes (all locations)</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Write clinical notes</td>
+          <td class="px-4 py-3 text-text-secondary">No</td>
+          <td class="px-4 py-3 text-text-secondary">Yes (own patients only)</td>
+          <td class="px-4 py-3 text-text-secondary">No</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">View clinical notes</td>
+          <td class="px-4 py-3 text-text-secondary">Yes (own notes only)</td>
+          <td class="px-4 py-3 text-text-secondary">Yes (own patients only)</td>
+          <td class="px-4 py-3 text-text-secondary">Yes (all patients)</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Manage practitioners</td>
+          <td class="px-4 py-3 text-text-secondary">No</td>
+          <td class="px-4 py-3 text-text-secondary">No</td>
+          <td class="px-4 py-3 text-text-secondary">Yes</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Manage patient accounts</td>
+          <td class="px-4 py-3 text-text-secondary">No</td>
+          <td class="px-4 py-3 text-text-secondary">No</td>
+          <td class="px-4 py-3 text-text-secondary">Yes</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Cancel any appointment</td>
+          <td class="px-4 py-3 text-text-secondary">No (own only)</td>
+          <td class="px-4 py-3 text-text-secondary">No</td>
+          <td class="px-4 py-3 text-text-secondary">Yes</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">View practitioner schedules</td>
+          <td class="px-4 py-3 text-text-secondary">Availability only</td>
+          <td class="px-4 py-3 text-text-secondary">Own schedule</td>
+          <td class="px-4 py-3 text-text-secondary">All schedules</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="text-text-secondary mb-4">Notice the location scoping: practitioners only see patients at the locations they work at. Patients see availability across all locations (they choose where to book). Admin sees everything. Review the generated matrix carefully — AI often misses the practitioner scoping.</p>
+
+  <h2 class="mb-4 mt-10">The data classification table</h2>
+  <p class="text-text-secondary mb-4">New for this PRD. Every piece of data in the system should be classified. This drives access control, backup requirements, and how you handle the data in logs and error messages.</p>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Never log medical data.</strong> Structured logs should include request IDs, user IDs, endpoints, and status codes — not patient names, clinical notes, or appointment details. If a clinical notes endpoint returns a 500, the log should say "GET /api/notes/123 returned 500" — not dump the note content into the log.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">The SLA section</h2>
+  <p class="text-text-secondary mb-4">New section. Megan gave you the requirements — now formalise them:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Uptime target:</strong> 99.5% during business hours (8am-6pm AEST, Monday-Saturday). That's roughly 30 minutes of allowed downtime per month during business hours.</li>
+    <li><strong class="text-text">Maintenance window:</strong> 10pm-6am AEST. RDS maintenance, migrations, and infrastructure changes happen here.</li>
+    <li><strong class="text-text">Recovery Point Objective (RPO):</strong> How much data can you afford to lose? With RDS automated backups and point-in-time recovery, the RPO is effectively the last 5 minutes of transactions.</li>
+    <li><strong class="text-text">Recovery Time Objective (RTO):</strong> How fast can you restore the system? With RDS point-in-time recovery, a restore takes 15-30 minutes. Megan's brief suggests an hour is acceptable overnight.</li>
+  </ul>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>SLAs drive infrastructure choices.</strong> A 99.5% uptime target during business hours is achievable with single-AZ RDS and proper maintenance windows. If Megan needed 99.99%, you'd need multi-AZ RDS, which we'll add in the extension scenario. The SLA determines the infrastructure, not the other way around.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Other review checks</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Multi-location logic:</strong> Is every appointment tied to a location? Can a practitioner have availability at different locations on different days?</li>
+    <li><strong class="text-text">Practitioner-patient scoping:</strong> Practitioners only see their own patients. Not all patients at the same location — their assigned patients specifically.</li>
+    <li><strong class="text-text">Clinical notes ownership:</strong> Only the writing practitioner can edit their notes. Admin can view but not edit. Patients can view their own notes but not edit.</li>
+    <li><strong class="text-text">Anti-scope:</strong> No payment processing, no telehealth, no medical imaging, no SMS reminders, no self-registration, no insurance billing</li>
+  </ul>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Watch for AI adding self-registration.</strong> Megan said admin creates accounts. No public signup. Healthcare systems don't let patients create their own accounts — reception verifies identity and creates the account. AI will almost certainly add a patient registration page. Remove it.</p>
+  </Callout>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: design</h2>
+    <p class="text-text-secondary mb-4">PRD is done. Now design three dashboard views and an appointment calendar.</p>
+    <a
+      href="/web-dev/projects/7/design"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Design →
+    </a>
+  </div>
+</DocsLayout>

@@ -1,0 +1,58 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="The Client Brief: Vinyl Vault Records" description="Marcus runs a record shop in Fitzroy. He wants his own online store.">
+  <h1 class="mb-6">The Client Brief: Vinyl Vault Records</h1>
+
+  <p class="text-text-secondary mb-4"><strong class="text-text">Marcus</strong> runs Vinyl Vault, a small record shop in Fitzroy, Melbourne. He's been selling online via Discogs marketplace but wants his own store — more control, better margins, and a proper brand. You meet him at the shop, surrounded by crates of vinyl. He flips through a stack of new arrivals while he talks:</p>
+
+  <Callout variant="client">
+    <p>"I sell vinyl records — new releases, reissues, secondhand rarities. Right now I list everything on Discogs but they take a cut and I can't control the experience. I want my own online store. People need to browse records, search by artist or genre, add things to a cart, and pay with a card. I also want a map showing where the physical shop is — people come from all over Melbourne for the good stuff. I don't need anything complicated — no subscriptions, no auctions, no user reviews. Just a clean store where people can find records and buy them."</p>
+  </Callout>
+
+  <p class="text-text-secondary mb-4">You ask about payments. Marcus pulls out his phone and shows you a Stripe receipt from another shop he bought from recently:</p>
+
+  <Callout variant="client">
+    <p>"I want people to pay with a card, but I don't want to handle card numbers myself. I've heard of Stripe — a couple of the other shop owners use it. As long as it works and the money lands in my account, I'm happy."</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">What to pay attention to</h2>
+  <p class="text-text-secondary mb-4">Marcus is clear about what he wants and — importantly — what he doesn't. Read his brief carefully:</p>
+
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-8">
+    <li><strong class="text-text">Browse and search:</strong> By artist or genre. This is the core experience — finding records.</li>
+    <li><strong class="text-text">Cart and checkout:</strong> Add items, pay with a card via Stripe. Standard e-commerce flow.</li>
+    <li><strong class="text-text">Store location:</strong> A map showing the physical shop. People visit from across Melbourne.</li>
+    <li><strong class="text-text">No Discogs integration:</strong> This is a standalone store. Marcus will manage inventory separately.</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Anti-scope</h2>
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Marcus explicitly ruled these out.</strong> When you generate the PRD, make sure none of these sneak in:</p>
+    <ul class="text-sm space-y-1 mt-2">
+      <li><strong>No subscriptions</strong> — no monthly record boxes, no membership tiers</li>
+      <li><strong>No auctions</strong> — fixed prices only</li>
+      <li><strong>No user reviews or ratings</strong> — Marcus curates the catalog himself</li>
+      <li><strong>No wishlists or saved items</strong> — not requested</li>
+      <li><strong>No user accounts</strong> — guest checkout only</li>
+      <li><strong>No Discogs sync</strong> — separate inventory</li>
+      <li><strong>No blog or news section</strong></li>
+      <li><strong>No live chat</strong></li>
+    </ul>
+  </Callout>
+
+  <p class="text-text-secondary mb-4">Online stores are one of the most common patterns in AI training data. When you generate the PRD, AI will try to add every e-commerce feature it has ever seen — wishlists, saved cards, product recommendations, discount codes, loyalty points, abandoned cart emails. None of that is in Marcus's brief. Your job is to catch it and cut it.</p>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: write the PRD</h2>
+    <p class="text-text-secondary mb-4">You have the brief. Now turn it into a structured requirements document.</p>
+    <a
+      href="/web-dev/projects/4/requirements/writing-the-prd"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Writing the PRD →
+    </a>
+  </div>
+</DocsLayout>

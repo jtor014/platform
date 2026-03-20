@@ -1,0 +1,65 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="The Client Brief: Clay & Co Pottery Studio" description="Meet Sarah and understand what Clay & Co needs from a class booking system.">
+  <h1 class="mb-6">The Client Brief: Clay & Co Pottery Studio</h1>
+  <p class="text-text-secondary mb-4">Your agency has been approached by <strong class="text-text">Sarah</strong>, the owner of Clay & Co — a small pottery studio in Brunswick, Melbourne. She runs weekly classes: wheel throwing (beginners and advanced), hand-building, and glazing workshops. About 8-12 people per class. She's been running the studio for four years and has a loyal following on Instagram.</p>
+  <p class="text-text-secondary mb-4">You meet Sarah at the studio. Exposed brick walls, plants on every shelf, finished pieces drying on racks. She makes you a coffee in a handmade mug and explains the situation:</p>
+
+  <Callout variant="client">
+    <p>"I run pottery classes — wheel throwing, hand-building, glazing workshops. About 8-12 people per class. Right now I take bookings through Instagram DMs and a paper list at the studio. It's a mess. Last Saturday someone showed up thinking they had a spot but they didn't — I'd lost their DM. I want a website where people can see what classes are coming up, how many spots are left, and sign up. I need to know when someone signs up — an email or something. And they should get a confirmation so they know it worked. Nothing fancy. I don't want to manage stock or sell products. Just classes."</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">What to pay attention to</h2>
+  <p class="text-text-secondary mb-4">Before you turn this into a PRD, break down what Sarah actually said. This is the judgment step — the thing AI can't do for you.</p>
+
+  <h3 class="mb-3 mt-6">What she asked for explicitly</h3>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>A website where people can see available classes</li>
+    <li>Class listings showing dates, times, and spots remaining</li>
+    <li>A way for people to sign up for a class</li>
+    <li>Confirmation to the person who signed up</li>
+    <li>Notification to Sarah when someone signs up</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">What she implied but didn't say</h3>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>"8-12 people per class" — there's a maximum capacity. What happens when a class is full?</li>
+    <li>"Lost their DM" — reliability matters. The system needs to be more dependable than Instagram</li>
+    <li>"See what classes are coming up" — classes have dates in the future. Past classes shouldn't show</li>
+    <li>"How many spots are left" — the count needs to update when someone signs up</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">What she explicitly didn't ask for</h3>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>"Nothing fancy" — keep it simple</li>
+    <li>"I don't want to manage stock or sell products" — no e-commerce, no product catalogue</li>
+    <li>No mention of payment — this is a signup system, not a booking/payment system</li>
+    <li>No mention of user accounts or login</li>
+    <li>No mention of a blog, gallery, or content management</li>
+  </ul>
+
+  <div class="border border-border rounded-lg p-6 my-8 bg-bg-subtle">
+    <h3 class="text-base font-semibold mb-3">What to bring to the next step</h3>
+    <p class="text-sm text-text-secondary mb-3">You'll use this brief to generate a PRD. Before you do, think about:</p>
+    <ul class="text-sm text-text-secondary list-disc list-inside space-y-2">
+      <li>What did Sarah ask for explicitly?</li>
+      <li>What did she imply but not say?</li>
+      <li>What should you explicitly exclude?</li>
+    </ul>
+    <p class="text-sm text-text-secondary mt-3">The better you understand the brief before generating the PRD, the faster you'll spot problems in what AI produces.</p>
+  </div>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Write the PRD</h2>
+    <p class="text-text-secondary mb-4">You have the brief. Now turn it into a structured requirements document.</p>
+    <a
+      href="/web-dev/projects/3/requirements/writing-the-prd"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Write the PRD →
+    </a>
+  </div>
+</DocsLayout>

@@ -1,0 +1,16 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Card from '../../../../../components/Card.astro';
+---
+
+<DocsLayout title="Implementation" description="Create the backlog, set up the project, and build Vinyl Vault.">
+  <h1 class="mb-6">Implementation</h1>
+  <p class="text-text-secondary mb-4">Same process as P3. The backlog is yours. The new dimension is API integration tickets — and the verification that goes with them.</p>
+  <p class="text-text-secondary mb-8">Work through these in order:</p>
+
+  <div class="grid gap-4">
+    <Card title="1. Creating the backlog" subtitle="Break the architecture into ordered tickets — with API tickets isolated" href="/web-dev/projects/4/implementation/creating-the-backlog" />
+    <Card title="2. Setup" subtitle="Stripe test account, Google Maps API key, project scaffold" href="/web-dev/projects/4/implementation/setup" />
+    <Card title="3. Building" subtitle="The build loop — with hallucination detection for every API call" href="/web-dev/projects/4/implementation/building" />
+  </div>
+</DocsLayout>

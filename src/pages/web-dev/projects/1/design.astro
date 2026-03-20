@@ -210,4 +210,32 @@ const designRaw = fs.readFileSync('content/projects/project-1/design-spec-greens
     <li><strong class="text-text">Sticky header:</strong> Scroll down → header stays at top</li>
     <li><strong class="text-text">Navigation:</strong> Click each nav link → scrolls to correct section</li>
   </ol>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: design tools</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">Design specs can come from many tools. These are the ones you'll encounter in professional workflows.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Figma</strong> — <span class="text-text-secondary">Dominant design tool. Browser-based, real-time collaboration. From Project 4 onwards, you'll reference Figma files for design handoff.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Sketch</strong> — <span class="text-text-secondary">Mac-only, was the industry standard before Figma. Still used in some agencies.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Adobe XD</strong> — <span class="text-text-secondary">Adobe's design tool. Integrated with Photoshop/Illustrator. Being phased out in favor of Figma.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Zeplin</strong> — <span class="text-text-secondary">Design-to-developer handoff tool. Extracts spacing, colours, assets from design files.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Figma Dev Mode</strong> — <span class="text-text-secondary">Figma's built-in handoff feature. Increasingly replacing standalone tools like Zeplin.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Storybook</strong> — <span class="text-text-secondary">Component library documentation. Developers build and test UI components in isolation. We'll use this in later projects.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">In this project, the design spec is a document. In a professional workflow, it's a Figma file with interactive prototypes. The verification skill is the same: compare what was built to what was designed.</p>
+    </div>
+  </details>
 </DocsLayout>

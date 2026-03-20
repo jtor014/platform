@@ -1,0 +1,81 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Creating the Backlog" description="Break the architecture into ordered implementation tickets.">
+  <h1 class="mb-6">Creating the Backlog</h1>
+  <p class="text-text-secondary mb-4">The backlog breaks the architecture into ordered tickets. Each ticket should be small enough to implement in one PR — under 300 lines — with clear acceptance criteria and explicit dependencies.</p>
+  <p class="text-text-secondary mb-8">In Projects 1 and 2, the backlog was handed to you. You read it, verified it matched the architecture, and started building. Now you generate it and review it yourself.</p>
+
+  <h2 class="mb-4">The prompt</h2>
+  <p class="text-text-secondary mb-4">Open <a href="https://claude.ai">claude.ai</a> and paste this prompt:</p>
+  <CodeBlock copy>{`Here is the architecture for a pottery studio class booking system:
+
+[Paste your architecture]
+
+Using the following backlog template, break this architecture into ordered implementation tickets. Each ticket should: be implementable in one PR (under 300 lines), have clear acceptance criteria, list dependencies on other tickets, and be ordered so dependencies are resolved first.
+
+[Paste backlog template from /templates]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Review guidance</h2>
+  <p class="text-text-secondary mb-4">The backlog determines the order you build things. If the order is wrong, you'll hit blockers. If tickets are too big, PRs become unmanageable. Check carefully.</p>
+
+  <h3 class="mb-3 mt-6">Ordering</h3>
+  <p class="text-text-secondary mb-4">Infrastructure before features. Backend before frontend. The general order should be:</p>
+  <ol class="list-decimal list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Project setup (repo, Docker, CI, Makefile)</li>
+    <li>Database schema and migrations</li>
+    <li>API endpoints (backend logic)</li>
+    <li>Email integration</li>
+    <li>Frontend — class listings</li>
+    <li>Frontend — signup form with validation</li>
+    <li>Integration (frontend calls backend, emails send)</li>
+    <li>Testing</li>
+    <li>Deployment</li>
+  </ol>
+  <p class="text-text-secondary mb-6">If Claude put frontend tickets before the API exists, reorder. If the email ticket depends on something that isn't built yet, flag it.</p>
+
+  <h3 class="mb-3 mt-6">Ticket size</h3>
+  <p class="text-text-secondary mb-4">Each ticket should be under 300 lines of code changes. If a ticket feels too big — "Build the entire frontend" is too big — tell Claude to split it. "Split the frontend into separate tickets: one for class listings, one for the signup form, one for form validation."</p>
+
+  <h3 class="mb-3 mt-6">Acceptance criteria</h3>
+  <p class="text-text-secondary mb-4">Every ticket needs acceptance criteria that are specific and testable. Not "the API should work" but "GET /api/classes returns a JSON array of classes with fields: id, name, date, time, capacity, spots_remaining. Returns 200. Returns empty array when no classes exist."</p>
+
+  <h3 class="mb-3 mt-6">Scope check</h3>
+  <p class="text-text-secondary mb-4">Did Claude create tickets for things not in the PRD? Compare the backlog to the PRD feature list. Every ticket should trace back to a requirement. If there's a ticket for "user authentication" and your PRD doesn't include user accounts, remove it.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Save the backlog as BACKLOG.md.</strong> This goes into the project root alongside CLAUDE.md. When you hand these to Claude Code, it knows the full project — what to build, how to build it, and in what order.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Move the backlog to GitHub Projects</h2>
+  <p class="text-text-secondary mb-4">A markdown file works for generating and reviewing the backlog. But once you start building, you need a board to track what's in progress, what's done, and what's next. GitHub Projects gives you a kanban board tied directly to your repo.</p>
+
+  <h3 class="mb-3 mt-6">Set up the board</h3>
+  <ol class="list-decimal list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Go to your GitHub repo, click the <strong class="text-text">Projects</strong> tab, and create a new project</li>
+    <li>Choose the <strong class="text-text">Board</strong> layout (kanban view)</li>
+    <li>Create four columns: <strong class="text-text">To Do</strong>, <strong class="text-text">In Progress</strong>, <strong class="text-text">In Review</strong>, <strong class="text-text">Done</strong></li>
+  </ol>
+
+  <h3 class="mb-3 mt-6">Add tickets as issues</h3>
+  <p class="text-text-secondary mb-4">For each ticket in your BACKLOG.md, create a GitHub Issue. Include the ticket title, description, and acceptance criteria in the issue body. Then add each issue to your project board in the <strong class="text-text">To Do</strong> column.</p>
+  <p class="text-text-secondary mb-4">Order matters. Drag the issues in your To Do column so they match the dependency order from the backlog — infrastructure first, then backend, then frontend.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Keep BACKLOG.md as the reference.</strong> The GitHub Projects board is your working view — where you track progress. The markdown file is the original plan. If something changes during implementation, update both.</p>
+  </Callout>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: Setup</h2>
+    <p class="text-text-secondary mb-4">You have the backlog. Now set up the project and start building.</p>
+    <a
+      href="/web-dev/projects/3/implementation/setup"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Setup →
+    </a>
+  </div>
+</DocsLayout>

@@ -1,0 +1,96 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Setup" description="Set up the SurfCoast Events project with Unleash, Prometheus, Grafana, PagerDuty, and k6.">
+  <h1 class="mb-6">Setup</h1>
+  <p class="text-text-secondary mb-4">Eighth time. You know the project setup. The difference: this project has more operational tooling to configure than any previous project. The application setup is familiar. The operational setup is new.</p>
+
+  <h2 class="mb-3">Create the project</h2>
+  <CodeBlock terminal copy>{`$ mkdir -p ~/dev && cd ~/dev
+$ mkdir surfcoast-events && cd surfcoast-events
+$ code .`}</CodeBlock>
+
+  <h2 class="mb-3 mt-8">Launch Claude Code and hand over the files</h2>
+  <p class="text-text-secondary mb-4">Open the terminal in VS Code, run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">claude</code>, and give it everything:</p>
+  <CodeBlock copy>{`Here's the CLAUDE.md for the project:
+
+[Paste CLAUDE.md here]
+
+And here's the BACKLOG.md:
+
+[Paste BACKLOG.md here]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Operational tooling setup</h2>
+  <p class="text-text-secondary mb-4">Beyond the standard project setup (Docker, database, CI), this project requires additional services. Each runs as a container alongside the application.</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Unleash server (feature flags)</h3>
+      <p class="text-sm text-text-secondary mb-2">A Docker container running the Unleash server. The application connects to it via the Unleash SDK. Alternatively, create a LaunchDarkly free tier account — no container needed, just an API key.</p>
+      <p class="text-sm text-text-secondary">If self-hosting Unleash: add it to your <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">docker-compose.yml</code> alongside the app, database, and other services. It needs its own PostgreSQL database (or a separate schema in your existing database).</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Prometheus</h3>
+      <p class="text-sm text-text-secondary mb-2">A Docker container running Prometheus. Configure it with a <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">prometheus.yml</code> file that tells it where to scrape metrics from (your application's <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/metrics</code> endpoint).</p>
+      <p class="text-sm text-text-secondary">The configuration file specifies: scrape interval (how often to collect metrics), scrape targets (which endpoints to hit), and any relabelling rules.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Grafana</h3>
+      <p class="text-sm text-text-secondary mb-2">A Docker container running Grafana. After it starts, configure a Prometheus datasource — this tells Grafana where to query metrics from. Then build dashboards.</p>
+      <p class="text-sm text-text-secondary">Grafana also handles alerting — you define alert rules on metrics (e.g., error rate > 5%) and configure a notification channel (PagerDuty).</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">PagerDuty</h3>
+      <p class="text-sm text-text-secondary mb-2">Create a free PagerDuty account. Set up a service for SurfCoast Events. Get the integration key. Configure Grafana's PagerDuty notification channel with this key.</p>
+      <p class="text-sm text-text-secondary">PagerDuty routes alerts to you via email, SMS, or push notification. The free tier supports one on-call schedule — enough for this project.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">k6 (load testing)</h3>
+      <p class="text-sm text-text-secondary">Install k6 locally. It's a CLI tool — you write load test scripts in JavaScript and run them from the command line. No Docker container needed for k6 itself; it runs on your machine and sends traffic to your staging environment.</p>
+    </div>
+  </div>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>External accounts needed:</strong> PagerDuty free account, and optionally LaunchDarkly free tier if you don't want to self-host Unleash. Stripe keys carry forward from P4. Bureau of Meteorology API is free and doesn't require an account for basic weather data.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Terraform additions</h2>
+  <p class="text-text-secondary mb-4">If you used Terraform in P7, extend it. If you're starting fresh, the Terraform configuration needs to provision the infrastructure for both the application and the monitoring stack. The new resources beyond what P7 had:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Prometheus and Grafana</strong> — If running on EC2, these are Docker containers on the same instance (or a separate monitoring instance). Terraform provisions the instance and security groups. Port 3000 (Grafana) and 9090 (Prometheus) should only be accessible from your IP or via VPN — not public.</li>
+    <li><strong class="text-text">Unleash</strong> — If self-hosting, another Docker container. Needs its own PostgreSQL database (or a separate schema). If using LaunchDarkly, no Terraform changes needed.</li>
+    <li><strong class="text-text">Security groups</strong> — Update to allow Prometheus scraping between containers and Grafana access from your IP.</li>
+  </ul>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Reuse your P7 Terraform.</strong> If you provisioned infrastructure in P7, extend that configuration. Don't start from scratch. Add the new containers to the existing Docker Compose file and update security groups as needed. The goal is incremental infrastructure changes — the same approach you'd use on a real team.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Docker Compose overview</h2>
+  <p class="text-text-secondary mb-4">Your <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">docker-compose.yml</code> will have more services than any previous project:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">app</strong> — FastAPI application</li>
+    <li><strong class="text-text">frontend</strong> — React application (or served via Nginx)</li>
+    <li><strong class="text-text">db</strong> — PostgreSQL</li>
+    <li><strong class="text-text">prometheus</strong> — Metrics collection</li>
+    <li><strong class="text-text">grafana</strong> — Dashboards and alerting</li>
+    <li><strong class="text-text">unleash</strong> — Feature flags (if self-hosting)</li>
+  </ul>
+  <p class="text-text-secondary mb-4">All on the same Docker network so they can communicate. Prometheus scrapes the app's <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/metrics</code> endpoint by container name. Grafana queries Prometheus by container name.</p>
+
+  <p class="text-text-secondary mt-6 mb-4">Start Ticket 1. You know what to do.</p>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: building</h2>
+    <p class="text-text-secondary mb-4">Project and tooling set up. Time to build — with feature flags and trunk-based development.</p>
+    <a
+      href="/web-dev/projects/8/implementation/building"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Building →
+    </a>
+  </div>
+</DocsLayout>

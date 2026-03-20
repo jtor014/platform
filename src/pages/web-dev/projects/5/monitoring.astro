@@ -1,0 +1,164 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Monitoring & Iteration" description="Go live, monitor security events, reflect on adversarial testing, and demonstrate role-based access.">
+  <h1 class="mb-6">Monitoring & Iteration</h1>
+  <p class="text-text-secondary mb-8">Priya signed off. UAT issues are fixed and deployed. DeskHub is ready for production.</p>
+
+  <h2 class="mb-4">Production verification</h2>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-8">
+    <li>Login works for all three roles</li>
+    <li>Member dashboard shows only the member's own bookings</li>
+    <li>Member cannot access admin or owner pages (via URL or API)</li>
+    <li>Admin can manage bookings and members but cannot see revenue data</li>
+    <li>Owner can access everything including revenue reports</li>
+    <li>Booking data isolation holds — member A can't see member B's bookings</li>
+    <li>Members can cancel their own bookings (the UAT-2 fix)</li>
+    <li>Both owners have full access (the UAT-3 fix)</li>
+    <li>Expired tokens redirect to login, not a broken page</li>
+    <li>HTTPS is active — check the browser bar</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Security monitoring</h2>
+  <p class="text-text-secondary mb-4">With auth in production, there are new things to watch in the logs:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li><strong class="text-text">Failed login attempts:</strong> A spike in failed logins could be someone trying to guess passwords. Not a problem at DeskHub's scale, but worth knowing about.</li>
+    <li><strong class="text-text">403 errors:</strong> Someone hitting endpoints they don't have permission for. Could be a misconfigured frontend, or someone probing. Check the logs.</li>
+    <li><strong class="text-text">Token expiry:</strong> Are tokens expiring correctly? Are users being redirected to login when they should be?</li>
+    <li><strong class="text-text">Unusual access patterns:</strong> A member making hundreds of API calls per minute, or accessing endpoints they normally don't — worth investigating.</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Log analysis with structured logs</h2>
+  <p class="text-text-secondary mb-4">With structured JSON logs, you can answer questions like:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li><strong class="text-text">"How many 403 errors in the last hour?"</strong> — Filter logs where <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">status: 403</code>. A spike could mean a misconfigured frontend or someone probing endpoints.</li>
+    <li><strong class="text-text">"Which endpoints are slowest?"</strong> — Sort by <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">duration_ms</code>. Find the bottlenecks before users complain.</li>
+    <li><strong class="text-text">"Is one user generating unusual traffic?"</strong> — Group by <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">user_id</code>. A member making hundreds of requests per minute is worth investigating.</li>
+    <li><strong class="text-text">"Are tokens expiring correctly?"</strong> — Filter for 401 errors and check if they correlate with expected token expiry times.</li>
+  </ul>
+  <p class="text-text-secondary mb-4">This is the foundation of observability. Plain text logs require manual reading. Structured logs let you query, aggregate, and alert — turning raw data into actionable information.</p>
+
+  <h2 class="mb-4 mt-10">The loop</h2>
+  <p class="text-text-secondary mb-6">You've completed the full 8-step cycle again — this time with authentication and access controls:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">1</span>
+      <div>
+        <p class="font-semibold text-sm">Requirements</p>
+        <p class="text-sm text-text-secondary">You wrote a PRD with a permissions matrix specifying access for every feature.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">2</span>
+      <div>
+        <p class="font-semibold text-sm">Design</p>
+        <p class="text-sm text-text-secondary">You designed three distinct dashboard views — showing what each role sees and doesn't see.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">3</span>
+      <div>
+        <p class="font-semibold text-sm">Architecture</p>
+        <p class="text-sm text-text-secondary">You reviewed JWT authentication, role-based middleware, password hashing, and data isolation.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">4</span>
+      <div>
+        <p class="font-semibold text-sm">Implement</p>
+        <p class="text-sm text-text-secondary">You built with adversarial testing at every step — trying to break access controls during implementation, not after.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">5</span>
+      <div>
+        <p class="font-semibold text-sm">Test</p>
+        <p class="text-sm text-text-secondary">You automated adversarial tests — token tampering, IDOR, endpoint probing — and built a security verification matrix.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">6</span>
+      <div>
+        <p class="font-semibold text-sm">Deploy</p>
+        <p class="text-sm text-text-secondary">You deployed with a strong JWT secret, HTTPS, and restricted CORS — then ran adversarial tests on the live site.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">7</span>
+      <div>
+        <p class="font-semibold text-sm">UAT</p>
+        <p class="text-sm text-text-secondary">Priya tested with three accounts and caught a missing feature, a display gap, and an architecture question about multiple owners.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">8</span>
+      <div>
+        <p class="font-semibold text-sm">Monitor</p>
+        <p class="text-sm text-text-secondary">You verified the live system, set up security monitoring, and reflected on the process.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Reflect</h2>
+  <p class="text-text-secondary mb-4">This project added a dimension that doesn't go away. Every app you build from here will have users. Ask yourself:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li><strong class="text-text">Auth architecture:</strong> Was JWT the right choice? What was harder than expected? Would session-based auth have been simpler or more complex?</li>
+    <li><strong class="text-text">Adversarial testing:</strong> Did you find any security holes during implementation? How did it feel to try to break your own system? Was it harder or easier than you expected?</li>
+    <li><strong class="text-text">The permissions matrix:</strong> Did it map cleanly to the implementation? Were there features in the code that weren't in the matrix, or vice versa?</li>
+    <li><strong class="text-text">Role boundaries:</strong> Were there any ambiguous cases the PRD didn't cover? Places where you had to make a judgment call about who should access what?</li>
+    <li><strong class="text-text">Frontend vs backend:</strong> Where were permissions actually checked — frontend, backend, or both? Which one matters for security?</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">The "show someone" moment</h2>
+  <p class="text-text-secondary mb-4">Log in as each role and demonstrate the different views. Show someone:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>The member dashboard — clean, focused, only their data</li>
+    <li>The admin dashboard — everything the member sees plus management tools</li>
+    <li>The owner dashboard — full visibility including revenue</li>
+    <li>Then log in as a member and try to access the admin URL — show the redirect or 403</li>
+  </ul>
+  <p class="text-text-secondary mb-4">"Different users, different views, same system — and I can't break the boundaries."</p>
+  <p class="text-text-secondary mb-4">That last demonstration — showing the access control actually working — is the proof that you built something secure, not just functional.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Key insight:</strong> Security isn't a feature you add at the end. It's a constraint that shapes every decision from requirements to deployment. The permissions matrix influenced the PRD, the design, the architecture, the ticket ordering, the verification process, and the deployment configuration. It touched every step.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: log management</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">Structured JSON logs are the foundation. Here's what teams use to make logs searchable across all services at scale.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Structured logging</strong> — <span class="text-text-secondary">What we do. JSON-formatted log entries with consistent fields. The starting point for any log management strategy.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">ELK Stack (Elasticsearch + Logstash + Kibana)</strong> — <span class="text-text-secondary">Open-source log management. Logstash ingests logs, Elasticsearch indexes them, Kibana visualises them. The original log management stack. Self-hosted, powerful, resource-heavy.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Loki + Grafana</strong> — <span class="text-text-secondary">Lightweight alternative to ELK. Loki stores logs without full-text indexing (cheaper). Grafana provides dashboards. Popular with teams already using Grafana for metrics.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">CloudWatch Logs</strong> — <span class="text-text-secondary">AWS-native log management. Automatic integration with AWS services. Good if you're already on AWS. Vendor lock-in.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Datadog Logs</strong> — <span class="text-text-secondary">SaaS log management with built-in alerting, dashboards, and APM integration. Expensive at scale but feature-rich. Popular in startups and mid-size companies.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Papertrail</strong> — <span class="text-text-secondary">Simple, hosted log management. Easy to set up, good for small teams. Less powerful than ELK or Datadog but lower operational burden.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">JSON logs are the foundation. Log management tools make them searchable across all your services. The progression: structured logs (what we do now) → centralised log management (from Project 7 onwards).</p>
+    </div>
+  </details>
+
+  <h2 class="mb-4 mt-10">What's next</h2>
+  <p class="text-text-secondary mb-4">Complete the <a href="/web-dev/checkpoints/after-p5">Checkpoint: After Project 5</a>. Then: <a href="/web-dev/projects/6">Project 6</a> — the capstone.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>What you've added:</strong> JWT authentication, role-based access control, adversarial testing, data isolation, secure deployment. You can now build systems where different users see different things — and you can prove that the boundaries hold. <strong>Next: the final project.</strong></p>
+  </Callout>
+</DocsLayout>

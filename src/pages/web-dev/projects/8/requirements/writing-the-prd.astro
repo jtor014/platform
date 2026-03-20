@@ -1,0 +1,127 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Writing the PRD" description="Generate the PRD for SurfCoast Events with non-functional requirements and a feature flag strategy.">
+  <h1 class="mb-6">Writing the PRD</h1>
+  <p class="text-text-secondary mb-4">Same flow — prompt plus template plus client brief, generate with Claude (the chat interface), review, iterate. You've done this many times. The guidance here is briefer.</p>
+  <p class="text-text-secondary mb-8">Two new sections in this PRD: a <strong class="text-text">non-functional requirements section</strong> with specific, measurable targets, and a <strong class="text-text">feature flag strategy</strong> that specifies which features ship behind flags.</p>
+
+  <h2 class="mb-4">The prompt</h2>
+  <CodeBlock copy>{`Here is a client brief for an event management and ticketing platform called SurfCoast Events:
+
+[Paste Liam's brief here]
+
+The system must handle 500 concurrent users during event-day check-in without degradation.
+
+Using the following PRD template, generate a complete Product Requirements Document. Include:
+1. Standard functional requirements with acceptance criteria
+2. A NON-FUNCTIONAL REQUIREMENTS section with specific, measurable targets:
+   - Performance: ticket purchase p95 under 3s, check-in scan p95 under 1s
+   - Concurrency: 500 simultaneous users during check-in
+   - Availability: 99.9% during event days
+   - Deployment: zero-downtime deploys via blue/green
+3. A FEATURE FLAG STRATEGY section specifying:
+   - Which features ship behind flags (new ticket purchase flow, event-day dashboard enhancements)
+   - Who sees flagged features first (staff → beta testers → public)
+   - What happens when the flag service is unavailable (graceful degradation)
+4. An anti-scope section
+
+Important: No social features, no refund processing in the app, no seat selection, no mobile app, no multi-currency. General admission only. Weather data from Bureau of Meteorology is informational, not transactional.
+
+[Paste PRD template here]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">The non-functional requirements section</h2>
+  <p class="text-text-secondary mb-4">This is the most important new section. Non-functional requirements are requirements that aren't about what the system does — they're about how well it does it. Performance, availability, scalability, latency.</p>
+  <p class="text-text-secondary mb-4">Every non-functional requirement must be <strong class="text-text">measurable</strong>. "The system should be fast" is not a requirement. "Ticket purchase p95 latency under 3 seconds with 500 concurrent users" is. If you can't write a test that verifies it, it's not a requirement — it's a wish.</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Good non-functional requirements</h3>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-2">
+        <li>"Check-in API responds within 1 second at p95 under 500 concurrent users"</li>
+        <li>"The system maintains 99.9% availability during event hours (6am-10pm AEST)"</li>
+        <li>"Ticket purchase completes end-to-end (including Stripe) in under 3 seconds at p95"</li>
+      </ul>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Bad non-functional requirements</h3>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-2">
+        <li>"The system should be fast" (how fast? measured how?)</li>
+        <li>"The system should handle lots of users" (how many? doing what?)</li>
+        <li>"The system should be highly available" (what percentage? during what hours?)</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">The feature flag strategy</h2>
+  <p class="text-text-secondary mb-4">The PRD should specify which features are candidates for flagged rollout. Not every feature needs a flag — but features that change the user experience significantly, or features you want to test with a subset of users first, should be behind flags.</p>
+
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Feature</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Flag?</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Reason</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Event listings</td>
+          <td class="px-4 py-3 text-text-secondary">No</td>
+          <td class="px-4 py-3 text-text-secondary">Core feature, ships to everyone</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">New ticket purchase flow</td>
+          <td class="px-4 py-3 text-text-secondary">Yes</td>
+          <td class="px-4 py-3 text-text-secondary">Test with staff before public launch</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">QR code check-in</td>
+          <td class="px-4 py-3 text-text-secondary">No</td>
+          <td class="px-4 py-3 text-text-secondary">Core feature, must work on event day</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Event-day dashboard v2</td>
+          <td class="px-4 py-3 text-text-secondary">Yes</td>
+          <td class="px-4 py-3 text-text-secondary">Iterating on dashboard, staff preview first</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Weather integration</td>
+          <td class="px-4 py-3 text-text-secondary">Yes</td>
+          <td class="px-4 py-3 text-text-secondary">External dependency, test reliability first</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Flags are not just for incomplete features.</strong> A feature can be complete and still behind a flag. The flag controls visibility, not completion. You might deploy a fully tested feature behind a flag so you can enable it at the right moment — like enabling the new ticket flow the morning before an event, after Liam's team has verified it on staging.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Other review checks</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Are the non-functional requirements measurable?</strong> Every target should have a number and a way to test it.</li>
+    <li><strong class="text-text">Does the feature flag section specify degradation?</strong> What happens when the flag service is down? The app should serve the default experience, not crash.</li>
+    <li><strong class="text-text">Is the weather integration scoped correctly?</strong> Display-only. Informational. If the BoM API is down, show "weather data unavailable" — don't block the page.</li>
+    <li><strong class="text-text">Anti-scope:</strong> No social features, no refund processing, no seat selection, no mobile app, no multi-currency, no competitor registration, no video streaming</li>
+  </ul>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Watch for AI adding a full event management suite.</strong> AI will try to add volunteer scheduling, sponsor management portals, email marketing, promo codes, waitlists, and referral tracking. Liam wants event listings, ticket sales, QR check-in, and a live dashboard. The operational tooling (flags, metrics, alerting, load testing) is the project's complexity — not more features.</p>
+  </Callout>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: design</h2>
+    <p class="text-text-secondary mb-4">PRD is done. Now design the event platform and event-day dashboard.</p>
+    <a
+      href="/web-dev/projects/8/design"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Design →
+    </a>
+  </div>
+</DocsLayout>

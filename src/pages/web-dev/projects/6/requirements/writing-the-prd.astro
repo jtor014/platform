@@ -1,0 +1,98 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Writing the PRD" description="Generate the PRD for Tidal Brewing with infrastructure requirements that inform architecture decisions.">
+  <h1 class="mb-6">Writing the PRD</h1>
+  <p class="text-text-secondary mb-4">Same flow — prompt plus template plus client brief, generate with Claude (the chat interface), review, iterate. You've done this four times. The guidance here is briefer.</p>
+  <p class="text-text-secondary mb-8">The new emphasis: the PRD must include an <strong class="text-text">infrastructure requirements section</strong>. Expected traffic, uptime expectations, data sensitivity, budget. These aren't features — they're constraints that determine what you provision in Terraform.</p>
+
+  <h2 class="mb-4">The prompt</h2>
+  <CodeBlock copy>{`Here is a client brief for a brewery and taproom management system called Tidal Brewing:
+
+[Paste Jake's brief here]
+
+Using the following PRD template, generate a complete Product Requirements Document. Include:
+1. Core features: tap list management, event listings, pickup ordering, admin interface
+2. An infrastructure requirements section covering:
+   - Expected traffic (50-100 daily, 200 peak on Fridays)
+   - Uptime expectations (occasional brief downtime acceptable, not ideal)
+   - Data sensitivity (inventory data is operationally important, no PII or payment data)
+   - Budget constraints (AWS free tier, under $20/month after free tier expires)
+3. Specific acceptance criteria for every requirement — each one must be verifiable
+4. An anti-scope section listing things that should NOT be built
+5. Admin interface requirements — Jake updates the tap list himself
+
+Important: No delivery, no payment processing, no customer accounts, no e-commerce checkout. Pickup orders are a simple form — name, phone, beers wanted, pickup time. Jake handles payment at pickup.
+
+[Paste PRD template here]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Infrastructure requirements section</h2>
+  <p class="text-text-secondary mb-4">This is the new artifact in the PRD. A section that captures non-functional requirements which directly inform architecture and infrastructure decisions.</p>
+
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Requirement</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Client input</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Infrastructure implication</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Expected traffic</td>
+          <td class="px-4 py-3 text-text-secondary">50-100 daily, 200 peak</td>
+          <td class="px-4 py-3 text-text-secondary">t2.micro sufficient. No auto-scaling needed.</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Uptime</td>
+          <td class="px-4 py-3 text-text-secondary">Brief downtime OK, not ideal</td>
+          <td class="px-4 py-3 text-text-secondary">Single instance acceptable. Monitoring + alerts for quick recovery.</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Data sensitivity</td>
+          <td class="px-4 py-3 text-text-secondary">Inventory data is important</td>
+          <td class="px-4 py-3 text-text-secondary">Regular database backups. No compliance requirements.</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Budget</td>
+          <td class="px-4 py-3 text-text-secondary">Small brewery</td>
+          <td class="px-4 py-3 text-text-secondary">AWS free tier. Under $20/month post-free-tier.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="text-text-secondary mb-4">These requirements drive real decisions. If Jake had said "200,000 users a day, zero downtime is critical, and we process payments," the infrastructure would look completely different — load balancers, auto-scaling groups, multi-AZ deployments, PCI compliance. The infrastructure requirements section prevents over-engineering and under-engineering.</p>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Watch for AI over-engineering the infrastructure.</strong> AI knows about load balancers, auto-scaling, multi-region deployments, and Kubernetes. None of that is appropriate for a brewery website with 200 peak users. If the generated PRD includes requirements that imply complex infrastructure, cut them. Match the infrastructure to the actual traffic and budget.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Other review checks</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Admin interface:</strong> Does the PRD specify how Jake updates the tap list? It should be a simple admin panel, not a full CMS.</li>
+    <li><strong class="text-text">Pickup ordering:</strong> Is it a simple form (name, phone, beers, pickup time) or has AI turned it into an e-commerce checkout?</li>
+    <li><strong class="text-text">Events:</strong> Are they simple listings (title, date, description) or has AI added ticketing, RSVPs, capacity management?</li>
+    <li><strong class="text-text">Anti-scope:</strong> No delivery, no payment processing, no customer accounts, no loyalty programs, no table reservations</li>
+    <li><strong class="text-text">Infrastructure section:</strong> Does it exist? Does it match Jake's actual answers about traffic, uptime, and data?</li>
+  </ul>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Save your PRD.</strong> The infrastructure requirements section will directly inform the architecture and Terraform configuration. When you decide on instance size, backup strategy, and monitoring, you'll reference these numbers.</p>
+  </Callout>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: design</h2>
+    <p class="text-text-secondary mb-4">PRD is done. Now design the brewery's digital presence.</p>
+    <a
+      href="/web-dev/projects/6/design"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Design →
+    </a>
+  </div>
+</DocsLayout>

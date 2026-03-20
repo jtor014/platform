@@ -1,0 +1,23 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Card from '../../../../../components/Card.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Implementation" description="Create the backlog, set up the project, and build FreshBox with Terraform modules and incremental infrastructure provisioning.">
+  <h1 class="mb-6">Implementation</h1>
+  <p class="text-text-secondary mb-4">You know the loop. The new dimension: infrastructure changes are incremental. Module by module, verify each one. Don't try to provision everything at once.</p>
+  <p class="text-text-secondary mb-4">This is the most infrastructure-heavy project yet. The build order: Terraform modules, then ASG configuration, then CloudFront, then the application (with concurrency handling), then load testing, then cost monitoring. Budget time for Terraform module refactoring — organising infrastructure from previous projects into reusable modules is a significant task.</p>
+
+  <p class="text-text-secondary mb-8">Work through these in order:</p>
+
+  <div class="grid gap-4">
+    <Card title="1. Creating the backlog" subtitle="Generate and order the tickets — infrastructure modules first" href="/web-dev/projects/9/implementation/creating-the-backlog" />
+    <Card title="2. Setup" subtitle="Project folder, Terraform modules directory structure, k6 installed" href="/web-dev/projects/9/implementation/setup" />
+    <Card title="3. Building" subtitle="Module by module, verify each one, then application features" href="/web-dev/projects/9/implementation/building" />
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Key ordering note:</strong> Infrastructure modules go first. VPC module, then compute module (ASG + ALB), then database module (RDS), then CDN module (CloudFront). Each module is planned and applied independently. Only after the infrastructure is stable do you start on application features.</p>
+  </Callout>
+</DocsLayout>

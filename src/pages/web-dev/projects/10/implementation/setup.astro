@@ -1,0 +1,68 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Setup" description="Set up the Harbour Health project — video API account, PagerDuty, Grafana, and the development environment.">
+  <h1 class="mb-6">Setup</h1>
+  <p class="text-text-secondary mb-4">Tenth time. You've set up 9 projects. No hand-holding — you know what to do. Setup is routine now.</p>
+
+  <h2 class="mb-3">Create the project</h2>
+  <CodeBlock terminal copy>{`$ mkdir -p ~/dev && cd ~/dev
+$ mkdir harbour-health && cd harbour-health
+$ code .`}</CodeBlock>
+
+  <h2 class="mb-3 mt-8">External accounts</h2>
+  <p class="text-text-secondary mb-4">You need these configured before starting Ticket 1:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Video API account</h3>
+      <p class="text-sm text-text-secondary">Set up your chosen video platform (Daily.co free tier recommended). Get the API key. Verify you can create a room and generate a join link via the API. This is the same verification process you used with Stripe in P4 — confirm the API works before writing integration code.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">PagerDuty</h3>
+      <p class="text-sm text-text-secondary">Carried over from P9. Verify your on-call schedule is configured. You'll need it for the incident simulation later.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Grafana</h3>
+      <p class="text-sm text-text-secondary">Carried over from P9. You'll build new dashboards for Harbour Health — consultations, system health, security events. The Prometheus + Grafana stack should be ready.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">AWS + Terraform</h3>
+      <p class="text-sm text-text-secondary">Carried over from P6-P9. Reuse Terraform modules from P9 — networking, compute, database, monitoring. Adapt them for Harbour Health's requirements (RDS encryption enabled, Multi-AZ, adjusted ASG parameters). Verify your AWS credentials and Terraform state backend are configured.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Accessibility tooling</h3>
+      <p class="text-sm text-text-secondary">Set up axe-core for automated accessibility testing in your test suite. Add pa11y-ci to the CI pipeline so every PR is checked for accessibility regressions. Install the axe DevTools browser extension for manual checks during development. This tooling should be in place before you write the first UI component.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-3 mt-8">Launch Claude Code and hand over the files</h2>
+  <p class="text-text-secondary mb-4">Open the terminal in VS Code, run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">claude</code>, and give it everything:</p>
+  <CodeBlock copy>{`Here's the CLAUDE.md for the project:
+
+[Paste CLAUDE.md here]
+
+And here's the BACKLOG.md:
+
+[Paste BACKLOG.md here]`}</CodeBlock>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>CLAUDE.md should include:</strong> "Every API endpoint must check authentication. Every endpoint touching patient data must log the access to the audit table. Every UI component must be keyboard-accessible with visible focus indicators. Every colour combination must meet WCAG AA contrast ratios (4.5:1 for normal text, 3:1 for large text)."</p>
+  </Callout>
+
+  <p class="text-text-secondary mt-6 mb-4">Start Ticket 1. You know what to do.</p>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: building</h2>
+    <p class="text-text-secondary mb-4">Project set up. Time to build — with video integration, accessibility, and audit logging as continuous concerns.</p>
+    <a
+      href="/web-dev/projects/10/implementation/building"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Building →
+    </a>
+  </div>
+</DocsLayout>

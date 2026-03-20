@@ -1,0 +1,21 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Card from '../../../../../components/Card.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Requirements" description="Meet the client, understand the brief, and write the PRD yourself.">
+  <h1 class="mb-6">Requirements</h1>
+  <p class="text-text-secondary mb-4">In Projects 1 and 2, the PRD was written for you. Now you write it. You'll meet the client, understand what they need, and turn that into a structured requirements document that AI can implement and you can verify.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Templates are available at <a href="/templates">/templates</a>.</strong> You'll paste the client brief into Claude (the chat interface, not Claude Code) along with the PRD template and a prompt. Then you review what Claude generates — checking for scope creep, missing requirements, and vague acceptance criteria.</p>
+  </Callout>
+
+  <p class="text-text-secondary mb-8">Work through these in order:</p>
+
+  <div class="grid gap-4">
+    <Card title="1. The client brief" subtitle="Meet Sarah and understand what Clay & Co needs" href="/web-dev/projects/3/requirements/client-brief" />
+    <Card title="2. Writing the PRD" subtitle="Use the prompt and template to create your requirements document" href="/web-dev/projects/3/requirements/writing-the-prd" />
+  </div>
+</DocsLayout>

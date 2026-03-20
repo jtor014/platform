@@ -1,0 +1,135 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Testing" description="Application tests and infrastructure validation — pytest, Playwright, terraform validate, and smoke testing deployed infrastructure.">
+  <h1 class="mb-6">Testing</h1>
+  <p class="text-text-secondary mb-4">Testing now covers two layers: the application (same as before) and the infrastructure (new). Application tests verify features work. Infrastructure tests verify the cloud resources are configured correctly and the application is reachable on the live server.</p>
+
+  <h2 class="mb-4 mt-10">Infrastructure testing</h2>
+  <p class="text-text-secondary mb-4">Infrastructure testing starts before you deploy and continues after. Three layers:</p>
+
+  <h3 class="mb-3 mt-6"><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform validate</code></h3>
+  <p class="text-text-secondary mb-4">Syntax check for your .tf files. Run it before <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform plan</code>. It catches typos, missing required arguments, and invalid resource configurations. Fast, local, no AWS interaction needed.</p>
+  <CodeBlock terminal copy>{`$ cd infra
+$ terraform validate
+Success! The configuration is valid.`}</CodeBlock>
+
+  <h3 class="mb-3 mt-6"><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform plan</code> review</h3>
+  <p class="text-text-secondary mb-4">The plan is a test in itself. Review it for unexpected resources:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Any resources being <strong class="text-text">destroyed</strong> that shouldn't be?</li>
+    <li>Any resources being <strong class="text-text">replaced</strong> (destroy + create) when you expected an in-place update?</li>
+    <li>Is the instance type correct? (t2.micro, not something larger)</li>
+    <li>Are security group rules correct? (Ports 80, 443, 22 — SSH restricted to your IP)</li>
+    <li>Any unexpected resources? (AI may have added a load balancer or NAT gateway you didn't ask for)</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Security group verification</h3>
+  <p class="text-text-secondary mb-4">After <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform apply</code>, verify the security group in the AWS console. This is a manual check, but it matters:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Port 80 (HTTP):</strong> Source should be <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">0.0.0.0/0</code> — open to all</li>
+    <li><strong class="text-text">Port 443 (HTTPS):</strong> Source should be <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">0.0.0.0/0</code> — open to all</li>
+    <li><strong class="text-text">Port 22 (SSH):</strong> Source should be <strong>your IP address only</strong>, not <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">0.0.0.0/0</code></li>
+    <li><strong class="text-text">No other inbound rules</strong> — database port (5432) should not be exposed</li>
+  </ul>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>If SSH is open to <code>0.0.0.0/0</code>, fix it immediately.</strong> This means anyone on the internet can attempt to SSH into your server. Update the Terraform configuration to restrict SSH to your IP, run <code>terraform plan</code> to verify, and apply. This is a security issue, not a nice-to-have.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Smoke testing deployed infrastructure</h2>
+  <p class="text-text-secondary mb-4">After <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform apply</code> and deploying containers, smoke test the live infrastructure. These are quick checks that prove the system is reachable and running:</p>
+
+  <CodeBlock terminal copy>{`# 1. Can you reach the server?
+$ curl http://<ec2-public-ip>
+# Should return HTML — the React frontend
+
+# 2. Is Nginx serving?
+$ curl -I http://<ec2-public-ip>
+# Should return HTTP/1.1 200 OK with Nginx headers
+
+# 3. Does the API respond?
+$ curl http://<ec2-public-ip>/api/beers
+# Should return JSON — the beer list
+
+# 4. Can you SSH in?
+$ ssh -i ~/.ssh/your-key.pem ec2-user@<ec2-public-ip>
+
+# 5. On the server: are containers running?
+$ docker ps
+# Should show frontend, backend, database, and nginx containers
+
+# 6. On the server: check container health
+$ docker logs tidal-backend --tail 20
+# Should show successful startup, no crash loops`}</CodeBlock>
+
+  <p class="text-text-secondary mt-4 mb-4">If any of these fail, you have an infrastructure problem to fix before testing application features. Work from the outside in: if curl fails, it's the security group or Nginx. If the API returns errors, check the backend container logs. If Docker containers aren't running, check <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">docker compose logs</code> for startup errors.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Infrastructure smoke tests are often manual.</strong> Unlike application tests that run automatically in CI, infrastructure verification involves checking real cloud resources. You curl the public IP, SSH into the instance, check Docker containers. This is normal for infrastructure at this scale.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Application tests</h2>
+  <p class="text-text-secondary mb-4">Same as previous projects. The application features need tests:</p>
+
+  <CodeBlock copy>{`Here is the Tidal Brewing codebase.
+
+Write a comprehensive test suite covering:
+
+1. API tests (pytest):
+   - Tap list CRUD — add beer, update beer, remove beer, list beers on tap
+   - Event CRUD — create event, update event, list upcoming events
+   - Pickup ordering — create order, list orders, update order status
+   - Admin authentication — protected endpoints require auth
+   - Edge cases — order for a beer that's not on tap, event in the past
+
+2. E2E tests (Playwright):
+   - Public tap list page loads and shows current beers
+   - Events page shows upcoming events
+   - Pickup order form submits successfully
+   - Admin can log in and update the tap list
+   - Admin can view and manage pickup orders
+   - Mobile viewport — tap list is readable on phone-sized screen`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Lighthouse audit</h2>
+  <p class="text-text-secondary mb-8">Run a Lighthouse audit on the public pages. The tap list page is the most important — it's the page customers load when they want to know what's on tap. Performance, accessibility, and best practices. Check both desktop and mobile viewports.</p>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: infrastructure testing tools</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use <code>terraform validate</code> and manual verification. Here's what else exists for more rigorous infrastructure testing.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Terratest</strong> — <span class="text-text-secondary">Go library for writing automated tests for Terraform. Creates real infrastructure, runs tests against it, then destroys it. Thorough but slow and costly — it provisions real resources for every test run.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Checkov</strong> — <span class="text-text-secondary">Static analysis for Terraform. Scans .tf files for security misconfigurations — open security groups, unencrypted S3 buckets, missing logging. Fast, no AWS interaction. Good as a CI check.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">tfsec</strong> — <span class="text-text-secondary">Security-focused static analysis for Terraform. Similar to Checkov but more security-specific. Catches common AWS security misconfigurations. Now part of the Trivy scanner.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">AWS Config</strong> — <span class="text-text-secondary">AWS-native compliance monitoring. Continuously evaluates your AWS resources against rules you define — "all S3 buckets must be encrypted," "no security groups should allow SSH from 0.0.0.0/0." Catches drift between your Terraform configuration and the actual state of your infrastructure.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Infracost</strong> — <span class="text-text-secondary">Cost estimation for Terraform. Shows how much your infrastructure will cost before you apply. Useful for catching expensive mistakes — like accidentally provisioning an m5.4xlarge instead of a t2.micro.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">For this project, <code>terraform validate</code> + plan review + manual verification is appropriate. Checkov or tfsec are worth adding as CI checks for any team project.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: deployment</h2>
+    <p class="text-text-secondary mb-4">Tests pass. Time to deploy — and for this project, deployment IS the Terraform workflow.</p>
+    <a
+      href="/web-dev/projects/6/deployment"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Deployment →
+    </a>
+  </div>
+</DocsLayout>

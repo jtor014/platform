@@ -1,0 +1,21 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Card from '../../../../../components/Card.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Requirements" description="Meet the client, understand the brief, and write the PRD.">
+  <h1 class="mb-6">Requirements</h1>
+  <p class="text-text-secondary mb-4">Same process as Project 3 — client brief, prompt, template, review. You've done this before.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>What's different this time:</strong> The planning process is the same. The business scenario is different — an online store with payments and maps. Watch for AI adding every e-commerce feature it knows. Marcus wants a simple store, not Amazon.</p>
+  </Callout>
+
+  <p class="text-text-secondary mb-8">Work through these in order:</p>
+
+  <div class="grid gap-4">
+    <Card title="1. The client brief" subtitle="Meet Marcus and understand what Vinyl Vault needs" href="/web-dev/projects/4/requirements/client-brief" />
+    <Card title="2. Writing the PRD" subtitle="Use the prompt and template to create your requirements document" href="/web-dev/projects/4/requirements/writing-the-prd" />
+  </div>
+</DocsLayout>

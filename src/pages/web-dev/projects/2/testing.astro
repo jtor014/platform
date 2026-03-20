@@ -46,6 +46,40 @@ import Callout from '../../../../components/Callout.astro';
     <p class="text-sm"><strong>The AI-first shift:</strong> AI generates test cases and writes the test code. Your job is checking that the tests actually cover the acceptance criteria — not just that they pass. A test suite that only tests the happy path is worse than no tests, because it gives false confidence.</p>
   </Callout>
 
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: testing tools & strategies</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">pytest is one of many testing tools. Here's what else exists across languages and testing strategies.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">pytest</strong> — <span class="text-text-secondary">What we use. Python's dominant testing framework. Fixtures, parametrization, plugins. Covers unit, integration, and API testing.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Jest</strong> — <span class="text-text-secondary">JavaScript testing framework by Meta. The default for React projects. Snapshot testing, mocking, code coverage.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Vitest</strong> — <span class="text-text-secondary">Newer, faster alternative to Jest. Built for Vite projects. Compatible API, faster execution. Growing rapidly.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Playwright</strong> — <span class="text-text-secondary">Browser automation by Microsoft. Opens real browsers (Chrome, Firefox, Safari), automates clicks and form fills, takes screenshots. We'll introduce this in Project 4 for end-to-end testing.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Cypress</strong> — <span class="text-text-secondary">Alternative to Playwright. Excellent developer experience, time-travel debugging. Playwright handles more browsers and is more flexible; Cypress has a gentler learning curve.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Postman</strong> — <span class="text-text-secondary">API testing tool with a visual interface. Send requests, organize them into collections, share with your team. Good for exploring APIs during development.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">k6 / Locust</strong> — <span class="text-text-secondary">Load testing tools. Simulate thousands of users hitting your API simultaneously. We'll introduce load testing in Project 8.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Coverage reports (pytest-cov, istanbul)</strong> — <span class="text-text-secondary">Measure how much of your code is tested. We'll enforce coverage thresholds in CI from Project 3 onwards.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">Testing tools vary by language and framework, but the strategy is universal: unit tests for individual functions, integration tests for service interactions, end-to-end tests for user flows. The pyramid stays the same — only the tools change.</p>
+    </div>
+  </details>
+
   <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
     <h2 class="text-xl font-semibold mb-2">Next: deploy to staging</h2>
     <p class="text-text-secondary mb-4">Tests pass. Time to ship the full stack to a live URL.</p>

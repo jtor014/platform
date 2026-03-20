@@ -1,0 +1,181 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import Checklist from '../../../../components/Checklist.astro';
+---
+
+<DocsLayout title="Testing" description="Adversarial testing — automated security tests, token tampering, and a security verification matrix.">
+  <h1 class="mb-6">Testing</h1>
+  <p class="text-text-secondary mb-4">You've been testing adversarially during implementation. Now automate it. The test suite must prove that access controls hold — not just that features work.</p>
+
+  <h2 class="mb-4 mt-10">Automated test prompt</h2>
+  <CodeBlock copy>{`Here is the DeskHub codebase with authentication and role-based access control.
+
+Write a comprehensive test suite that covers:
+
+1. Authentication tests:
+   - Login with valid credentials returns a JWT
+   - Login with invalid credentials returns 401
+   - Login with non-existent account returns 401 (same error as wrong password — don't reveal which one)
+   - Accessing protected endpoints without a token returns 401
+   - Accessing protected endpoints with an expired token returns 401
+   - Accessing protected endpoints with a tampered token returns 401
+
+2. Authorization tests (for EACH role, for EACH protected endpoint):
+   - Member can access member endpoints (200)
+   - Member cannot access admin endpoints (403)
+   - Member cannot access owner endpoints (403)
+   - Admin can access member and admin endpoints (200)
+   - Admin cannot access owner endpoints (403)
+   - Owner can access all endpoints (200)
+
+3. Data isolation tests:
+   - Member A cannot see Member B's bookings
+   - Member A cannot cancel Member B's bookings
+   - Member A cannot access Member B's profile
+   - Changing the booking ID in the URL doesn't bypass isolation
+
+4. Edge cases:
+   - Expired token mid-session
+   - Token with modified role claim (should be rejected — signature mismatch)
+   - Request with missing required fields
+   - Concurrent booking of the same desk/room`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Adversarial testing</h2>
+  <p class="text-text-secondary mb-4">This is the headline for P5 testing. Beyond standard automated tests, you actively try to break your own security. These aren't tests you run once — they're techniques you apply to verify the system resists attack.</p>
+
+  <h3 class="mb-3 mt-6">Token tampering</h3>
+  <p class="text-text-secondary mb-4">Copy a member's JWT. Go to <a href="https://jwt.io">jwt.io</a> and paste it in. Decode it — you'll see the payload with the user ID and role. Change the role to "owner". Re-encode it. Send a request with the tampered token.</p>
+  <p class="text-text-secondary mb-4">Does the backend reject it? It should — the signature is wrong because you don't have the signing secret. If it accepts the tampered token, the JWT verification is broken.</p>
+
+  <h3 class="mb-3 mt-6">Direct URL access</h3>
+  <p class="text-text-secondary mb-4">Log in as a member. Copy the URL of the admin panel. Log out. Paste the URL into the browser. What happens? You should be redirected to login, not shown the admin page. Now log in as a member again and paste the admin URL. You should get a 403 or a redirect — not admin content.</p>
+
+  <h3 class="mb-3 mt-6">API endpoint probing</h3>
+  <p class="text-text-secondary mb-4">Use curl or Postman to hit admin endpoints with a member token. This bypasses the frontend entirely — no route guards, no hidden menus, just a direct HTTP request to the backend.</p>
+  <CodeBlock lang="bash" copy>{`# Get a member token
+curl -X POST http://localhost:8000/api/auth/login \\
+  -H "Content-Type: application/json" \\
+  -d '{"email": "member@test.com", "password": "testpass123"}'
+
+# Try to access admin endpoint with member token
+curl http://localhost:8000/api/bookings \\
+  -H "Authorization: Bearer <member_token_here>"
+
+# Should return 403, not booking data`}</CodeBlock>
+
+  <h3 class="mb-3 mt-6">Expired token</h3>
+  <p class="text-text-secondary mb-4">Set a short token expiry for testing (e.g., 30 seconds). Log in, wait for it to expire, then try to load a protected page. Does the app redirect to login? Or does it show a broken page?</p>
+
+  <h3 class="mb-3 mt-6">Missing token</h3>
+  <p class="text-text-secondary mb-4">Clear cookies or localStorage (wherever the token is stored) and try to load a protected page. You should be redirected to login immediately.</p>
+
+  <h3 class="mb-3 mt-6">IDOR (Insecure Direct Object Reference)</h3>
+  <p class="text-text-secondary mb-4">Log in as member A. Create a booking. Note the booking ID (e.g., 42). Log out. Log in as member B. Navigate to <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/bookings/42</code>. Can member B see member A's booking? They shouldn't. The backend should verify that the booking belongs to the requesting user.</p>
+
+  <h2 class="mb-4 mt-10">Security verification matrix</h2>
+  <p class="text-text-secondary mb-4">For each role, for each endpoint, what's the expected result? This is your sign-off checklist.</p>
+
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Endpoint</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">No token</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Member</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Admin</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Owner</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-xs">GET /api/bookings/me</td>
+          <td class="px-4 py-3 text-text-secondary">401</td>
+          <td class="px-4 py-3 text-text-secondary">200</td>
+          <td class="px-4 py-3 text-text-secondary">200</td>
+          <td class="px-4 py-3 text-text-secondary">200</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono text-xs">GET /api/bookings</td>
+          <td class="px-4 py-3 text-text-secondary">401</td>
+          <td class="px-4 py-3 text-text-secondary">403</td>
+          <td class="px-4 py-3 text-text-secondary">200</td>
+          <td class="px-4 py-3 text-text-secondary">200</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-xs">POST /api/members</td>
+          <td class="px-4 py-3 text-text-secondary">401</td>
+          <td class="px-4 py-3 text-text-secondary">403</td>
+          <td class="px-4 py-3 text-text-secondary">200</td>
+          <td class="px-4 py-3 text-text-secondary">200</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono text-xs">GET /api/revenue</td>
+          <td class="px-4 py-3 text-text-secondary">401</td>
+          <td class="px-4 py-3 text-text-secondary">403</td>
+          <td class="px-4 py-3 text-text-secondary">403</td>
+          <td class="px-4 py-3 text-text-secondary">200</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-xs">GET /api/bookings/:id</td>
+          <td class="px-4 py-3 text-text-secondary">401</td>
+          <td class="px-4 py-3 text-text-secondary">200 (own) / 404 (other)</td>
+          <td class="px-4 py-3 text-text-secondary">200</td>
+          <td class="px-4 py-3 text-text-secondary">200</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Count the authorization tests.</strong> If you have 10 protected endpoints and 3 roles plus unauthenticated, you should have at least 40 tests. If you have significantly fewer, something is missing.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Coverage threshold in CI</h2>
+  <p class="text-text-secondary mb-4">The CI pipeline now enforces a minimum coverage threshold. If coverage drops below 80%, the PR fails. This prevents shipping untested code.</p>
+  <p class="text-text-secondary mb-4">Auth code especially must be tested — untested auth is a security risk. A missing test for an admin endpoint means a potential access control bypass could ship without anyone noticing. The coverage threshold is a safety net: it forces you to write tests for every new endpoint, every role check, every token validation path.</p>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>80% is a floor, not a ceiling.</strong> For auth-related code (middleware, token validation, role checks), aim for close to 100%. The coverage threshold catches the obvious gaps — untested endpoints, untested error paths. But a passing threshold doesn't mean the security tests are thorough. The adversarial tests above go beyond what coverage alone can measure.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Lighthouse audit</h2>
+  <p class="text-text-secondary mb-8">Run a Lighthouse audit on the main views. Performance, accessibility, and best practices. Auth-related pages (login, dashboards) should meet the same standards as any other page.</p>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: security testing</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">Adversarial testing is manual. These tools automate parts of it.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">OWASP ZAP</strong> — <span class="text-text-secondary">Open-source web vulnerability scanner. Automatically crawls your app and tests for common vulnerabilities (XSS, SQL injection, CSRF). Free and widely used.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Snyk</strong> — <span class="text-text-secondary">Dependency vulnerability scanning. Checks your npm and pip packages for known security issues. Integrates with CI — fails the build if a critical vulnerability is found.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Burp Suite</strong> — <span class="text-text-secondary">Professional penetration testing tool. Intercepts HTTP traffic, modifies requests, finds vulnerabilities. The industry standard for manual security testing. Free community edition available.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">npm audit / pip-audit</strong> — <span class="text-text-secondary">Built-in dependency auditing. Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">npm audit</code> or <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">pip-audit</code> to check for known vulnerabilities in your dependencies. Free and easy to add to CI.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">GitHub Advanced Security</strong> — <span class="text-text-secondary">Code scanning (finds vulnerabilities in your code), secret scanning (catches accidentally committed API keys), and dependency review. Built into GitHub for public repos.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">Manual adversarial testing catches logic bugs (can a member access admin data?). Automated tools catch infrastructure bugs (vulnerable dependencies, misconfigured headers). Use both.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: deployment</h2>
+    <p class="text-text-secondary mb-4">Tests pass. Time to deploy — with auth-specific security concerns.</p>
+    <a
+      href="/web-dev/projects/5/deployment"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Deployment →
+    </a>
+  </div>
+</DocsLayout>

@@ -1,0 +1,16 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Card from '../../../../../components/Card.astro';
+---
+
+<DocsLayout title="Requirements" description="Meet the client, understand the brief, and write the PRD with capacity planning and growth projections.">
+  <h1 class="mb-6">Requirements</h1>
+  <p class="text-text-secondary mb-4">You know the process. Client brief, prompt plus template, review. The new emphasis: <strong class="text-text">capacity planning</strong>. The PRD must capture growth projections, concurrency requirements, and stock consistency constraints. These drive auto-scaling configuration, database locking strategy, and cost estimates.</p>
+
+  <p class="text-text-secondary mb-8">Work through these in order:</p>
+
+  <div class="grid gap-4">
+    <Card title="1. The client brief" subtitle="Meet Emma and understand what FreshBox needs" href="/web-dev/projects/9/requirements/client-brief" />
+    <Card title="2. Writing the PRD" subtitle="Create the requirements document with capacity planning and concurrency requirements" href="/web-dev/projects/9/requirements/writing-the-prd" />
+  </div>
+</DocsLayout>

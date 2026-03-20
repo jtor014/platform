@@ -244,4 +244,41 @@ Because the PRD anti-scope is clear:
     <li>No caching layer (Redis)</li>
     <li>No CDN or static asset optimisation</li>
   </ul>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: databases</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">PostgreSQL is one of many database options. Here's what else exists and when you'd choose each.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">PostgreSQL</strong> — <span class="text-text-secondary">What we use. Open-source relational database. Powerful, reliable, feature-rich. The default choice for most new projects.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">MySQL</strong> — <span class="text-text-secondary">The other major open-source relational database. Simpler than PostgreSQL, widely used in WordPress and PHP ecosystems.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">SQLite</strong> — <span class="text-text-secondary">File-based database. No server needed. Perfect for local development, small apps, and mobile. We'll mention this in later projects as a development convenience.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">MongoDB</strong> — <span class="text-text-secondary">Document database (NoSQL). Stores JSON-like documents instead of rows. Good for unstructured or rapidly changing data. Often misused where PostgreSQL would be simpler.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Redis</strong> — <span class="text-text-secondary">In-memory key-value store. Used for caching, sessions, rate limiting. Not a primary database — a companion to one. We'll introduce this in Project 8.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Supabase</strong> — <span class="text-text-secondary">Managed PostgreSQL with a Firebase-like developer experience. Real-time subscriptions, auth, storage built in. Popular with startups.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Firebase</strong> — <span class="text-text-secondary">Google's managed backend. Real-time database, auth, hosting. Good for rapid prototyping, less control than self-managed infrastructure.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">PlanetScale</strong> — <span class="text-text-secondary">Managed MySQL with branching (like git for your database). Popular for serverless deployments.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Prisma / Drizzle</strong> — <span class="text-text-secondary">ORMs (Object-Relational Mappers). Write database queries in TypeScript/JavaScript instead of raw SQL. We'll introduce an ORM in Project 7.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">We use PostgreSQL because it's the most capable open-source database and the industry default for new projects. The concepts — tables, relationships, queries, indexes, migrations — apply to every relational database. NoSQL (MongoDB, Firebase) is a different paradigm — useful in specific cases, but relational databases handle most web application needs.</p>
+    </div>
+  </details>
 </DocsLayout>

@@ -1,0 +1,22 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Card from '../../../../../components/Card.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Implementation" description="Create the backlog, set up the project with Terraform and AWS, and build Tidal Brewing.">
+  <h1 class="mb-6">Implementation</h1>
+  <p class="text-text-secondary mb-4">You know the loop. The new dimension: infrastructure tickets alongside application tickets. For the first time, some tickets create cloud resources instead of writing application code. The backlog has two distinct sections.</p>
+
+  <p class="text-text-secondary mb-8">Work through these in order:</p>
+
+  <div class="grid gap-4">
+    <Card title="1. Creating the backlog" subtitle="Generate and order the tickets — infrastructure first, then application" href="/web-dev/projects/6/implementation/creating-the-backlog" />
+    <Card title="2. Setup" subtitle="AWS account, Terraform CLI, AWS CLI, project folder with /infra directory" href="/web-dev/projects/6/implementation/setup" />
+    <Card title="3. Building" subtitle="The build loop with two types of tickets — Terraform and application" href="/web-dev/projects/6/implementation/building" />
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Key ordering note:</strong> Infrastructure goes first. Before any application code runs on EC2, the EC2 instance must exist. Terraform creates the VPC, security groups, and EC2 instance. Then Docker and the application are deployed onto it. You can't deploy to an instance that doesn't exist.</p>
+  </Callout>
+</DocsLayout>

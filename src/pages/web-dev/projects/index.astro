@@ -3,10 +3,10 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
 import Card from '../../../components/Card.astro';
 ---
 
-<DocsLayout title="Projects" description="Six projects that build toward agency-level work. The product gets harder, the process stays the same.">
+<DocsLayout title="Projects" description="Ten projects that build toward agency-level work. The product gets harder, the process stays the same.">
   <h1 class="mb-4">Projects</h1>
-  <p class="text-text-secondary mb-4">Six projects from a static website to a production system. Each follows the same <a href="/web-dev" class="text-primary hover:underline">8-step development process</a> — what changes is your role.</p>
-  <p class="text-text-secondary mb-8">Early on, the planning is done for you. By the end, you own every step.</p>
+  <p class="text-text-secondary mb-4">Ten projects from a static website to a production telehealth platform. Each follows the same <a href="/web-dev" class="text-primary hover:underline">8-step development process</a> — what changes is your role and the complexity of the tools.</p>
+  <p class="text-text-secondary mb-8">Early on, the planning is done for you. By the end, you own every step — infrastructure, monitoring, incident response, and handover.</p>
 
   <!-- How your role evolves -->
   <h2 class="mb-6 mt-10">How your role evolves</h2>
@@ -15,23 +15,30 @@ import Card from '../../../components/Card.astro';
     <div class="border border-border rounded-lg p-6">
       <div class="flex items-center gap-3 mb-3">
         <div class="text-xs font-semibold text-primary bg-primary-bg px-2.5 py-1 rounded-full">P1–P2</div>
-        <h3 class="text-base font-semibold">Early projects — learn the tools</h3>
+        <h3 class="text-base font-semibold">Learn the tools</h3>
       </div>
-      <p class="text-sm text-text-secondary">Requirements, design, and architecture are provided. You focus on learning the tools and the build loop — branch, direct, verify, merge. Like being a junior on a team: someone else did the planning, you execute and verify.</p>
+      <p class="text-sm text-text-secondary">Requirements, design, and architecture are provided. You focus on learning the build loop — branch, direct, verify, merge. Like being a junior on a team: someone else did the planning, you execute and verify.</p>
     </div>
     <div class="border border-border rounded-lg p-6">
       <div class="flex items-center gap-3 mb-3">
-        <div class="text-xs font-semibold text-primary bg-primary-bg px-2.5 py-1 rounded-full">P3–P4</div>
-        <h3 class="text-base font-semibold">Mid projects — own the thinking</h3>
+        <div class="text-xs font-semibold text-primary bg-primary-bg px-2.5 py-1 rounded-full">P3–P5</div>
+        <h3 class="text-base font-semibold">Own the thinking</h3>
       </div>
-      <p class="text-sm text-text-secondary">You write the requirements yourself from a client brief. You make architecture decisions. Like a mid-level dev: you own more of the thinking, not just the execution.</p>
+      <p class="text-sm text-text-secondary">You write requirements from a client brief. You make architecture decisions. You add auth, payments, and third-party integrations. Like a mid-level dev: you own the thinking, not just the execution.</p>
     </div>
     <div class="border border-border rounded-lg p-6">
       <div class="flex items-center gap-3 mb-3">
-        <div class="text-xs font-semibold text-primary bg-primary-bg px-2.5 py-1 rounded-full">P5–P6</div>
-        <h3 class="text-base font-semibold">Late projects — run the agency</h3>
+        <div class="text-xs font-semibold text-primary bg-primary-bg px-2.5 py-1 rounded-full">P6–P8</div>
+        <h3 class="text-base font-semibold">Own the infrastructure</h3>
       </div>
-      <p class="text-sm text-text-secondary">You own every step. Security, multi-user systems, production ops. Like running a small agency: the client gives you a problem, you deliver a production system.</p>
+      <p class="text-sm text-text-secondary">You deploy to your own cloud infrastructure with Terraform. Managed databases, load balancers, blue/green deployment, feature flags, monitoring, and incident response. Like a senior dev: you build it and you run it.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="text-xs font-semibold text-primary bg-primary-bg px-2.5 py-1 rounded-full">P9–P10</div>
+        <h3 class="text-base font-semibold">Run the agency</h3>
+      </div>
+      <p class="text-sm text-text-secondary">Auto-scaling, CDN, cost monitoring, incident simulation, handover documentation. The client gives you a problem, you deliver a production system that someone else can operate. Like running a small agency.</p>
     </div>
   </div>
 
@@ -40,9 +47,13 @@ import Card from '../../../components/Card.astro';
   <div class="grid gap-4 sm:grid-cols-2">
     <Card title="Project 1: The Static Site" subtitle="GreenScape Landscaping — a business website deployed to a real URL. 8 tickets." href="/web-dev/projects/1" />
     <Card title="Project 2: The Dynamic App" subtitle="FactFeed — database, API, Docker, CI, and automated testing. 11 tickets." href="/web-dev/projects/2" />
-    <Card title="Project 3: The Interactive App" subtitle="Forms, validation, email. You plan it yourself from a client brief." />
-    <Card title="Project 4: The Integrated App" subtitle="Third-party API integration (Stripe, Google Maps, or similar)." />
-    <Card title="Project 5: The Multi-User App" subtitle="Auth, roles, permissions. Different users see different things." />
-    <Card title="Project 6: The Live System" subtitle="Monitoring, backups, security, handover documentation." href="/web-dev/projects/6" />
+    <Card title="Project 3: The Interactive App" subtitle="Clay & Co Pottery Studio — forms, validation, email. You write the PRD yourself." href="/web-dev/projects/3" />
+    <Card title="Project 4: The Integrated App" subtitle="Vinyl Vault Records — Stripe payments, Google Maps. Catch AI hallucinating APIs." href="/web-dev/projects/4" />
+    <Card title="Project 5: The Multi-User App" subtitle="DeskHub Co-working — auth, roles, permissions. Break your own security." href="/web-dev/projects/5" />
+    <Card title="Project 6: The Cloud Deploy" subtitle="Tidal Brewing Co — Terraform, EC2, S3, Nginx. Your first cloud infrastructure." href="/web-dev/projects/6" />
+    <Card title="Project 7: The Managed Database" subtitle="Coastal Physio — RDS, ALB, Alembic, blue/green deployment, Grafana." href="/web-dev/projects/7" />
+    <Card title="Project 8: The Production Pipeline" subtitle="SurfCoast Events — feature flags, Prometheus, PagerDuty, k6 load testing." href="/web-dev/projects/8" />
+    <Card title="Project 9: The Scaled System" subtitle="FreshBox — Auto Scaling Group, CloudFront, Terraform modules, cost monitoring." href="/web-dev/projects/9" />
+    <Card title="Project 10: The Capstone" subtitle="Harbour Health — telehealth, video, accessibility, incident simulation, handover." href="/web-dev/projects/10" />
   </div>
 </DocsLayout>

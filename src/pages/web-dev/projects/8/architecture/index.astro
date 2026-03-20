@@ -1,0 +1,286 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Architecture" description="Architecture decisions for SurfCoast Events — CI/CD pipeline, feature flags, Prometheus metrics, and PagerDuty alerting.">
+  <h1 class="mb-6">Architecture</h1>
+  <p class="text-text-secondary mb-4">Same process — prompt, template, review. The architecture decisions that matter most here are operational: how code gets to production, how features are controlled, how the system is observed, and how you respond when something breaks.</p>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <CodeBlock copy>{`Here is the PRD and design spec for SurfCoast Events:
+
+[Paste your PRD here]
+[Paste your design spec here]
+
+Using the following architecture template, create a complete technical architecture document.
+
+Tech stack: React frontend, FastAPI backend, RDS PostgreSQL (multi-AZ), EC2 behind ALB, Terraform, GitHub Actions CI/CD.
+
+Key architecture decisions to address:
+1. CI/CD pipeline: source → build → test → staging (auto) → production (manual approval)
+2. Blue/green deployment via ALB target group switching
+3. Feature flag architecture: Unleash server (or LaunchDarkly), SDK integration, per-request flag evaluation, graceful degradation when flag service is unavailable
+4. Prometheus metrics collection: /metrics endpoint, scrape config, time-series storage
+5. Grafana dashboards: event-day dashboard, system dashboard, application dashboard
+6. PagerDuty integration: Grafana alerts → PagerDuty routing → on-call notification
+7. QR code generation and validation for ticket check-in
+8. Stripe integration for ticket purchases (carry forward from P4)
+9. Bureau of Meteorology API integration (display-only, graceful degradation)
+10. Non-functional requirements: how the architecture meets the 500 concurrent user target
+
+[Paste architecture template here]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">CI/CD pipeline architecture</h2>
+  <p class="text-text-secondary mb-4">The pipeline is the backbone. Every code change follows this path:</p>
+
+  <div class="bg-bg-muted rounded-lg p-6 mb-6 font-mono text-xs text-text-secondary">
+    <p class="mb-2 text-text font-semibold font-sans text-sm">Pipeline flow</p>
+    <p>push → <span class="text-primary">build</span> → <span class="text-primary">test</span> → <span class="text-primary">deploy to staging (auto)</span> → <span class="text-primary">smoke tests</span></p>
+    <p class="mt-1">→ <span class="text-text font-semibold">manual approval</span> → <span class="text-primary">deploy to production</span> → <span class="text-primary">smoke test production</span> → done</p>
+  </div>
+
+  <p class="text-text-secondary mb-4">The critical gate is the manual approval between staging and production. Staging deploys automatically on every push. Production requires a human to say "yes, this is ready." GitHub Actions environment approvals enforce this — the production environment requires manual approval before deployment jobs run.</p>
+
+  <h2 class="mb-4 mt-10">Feature flag architecture</h2>
+  <p class="text-text-secondary mb-4">Feature flags add a layer between deployment and release. The architecture should specify:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Flag service</h3>
+      <p class="text-sm text-text-secondary">Unleash (self-hosted in a Docker container alongside the app) or LaunchDarkly (hosted, free tier). The flag service stores flag definitions and their current state (on/off, percentage rollout, user targeting).</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">SDK integration</h3>
+      <p class="text-sm text-text-secondary">The application includes the Unleash (or LaunchDarkly) SDK. On each request, the SDK evaluates the relevant flags for the current user context (user ID, role, environment). Flag evaluation happens per-request — no caching that could serve stale flag state.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Graceful degradation</h3>
+      <p class="text-sm text-text-secondary">If the flag service is unreachable, the SDK falls back to default values. The architecture must specify the default for each flag — typically "off" for new features, meaning the app serves the existing experience. The app must never crash because the flag service is down.</p>
+    </div>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Deploy and enable are two separate actions.</strong> You deploy code to production with a feature turned off. The code is live but invisible. When ready, you flip the flag — first for staff, then for everyone. If something goes wrong, flip the flag back. No redeployment needed. This is fundamentally different from feature branches, where the feature ships when the code ships.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Prometheus + Grafana architecture</h2>
+  <p class="text-text-secondary mb-4">The observability stack has three layers:</p>
+  <ol class="list-decimal list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Instrumentation:</strong> The FastAPI application exposes a <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/metrics</code> endpoint that returns Prometheus-format metrics (request count, request duration, business metrics like tickets sold)</li>
+    <li><strong class="text-text">Collection:</strong> Prometheus scrapes the <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/metrics</code> endpoint at regular intervals (e.g., every 15 seconds) and stores the time-series data</li>
+    <li><strong class="text-text">Visualisation:</strong> Grafana queries Prometheus and displays the data on dashboards — graphs, gauges, tables</li>
+  </ol>
+
+  <h2 class="mb-4 mt-10">PagerDuty integration</h2>
+  <p class="text-text-secondary mb-4">Grafana fires alerts based on metric thresholds. When an alert fires, it routes to PagerDuty, which notifies the on-call person (you). The chain:</p>
+  <div class="bg-bg-muted rounded-lg p-6 mb-6 font-mono text-xs text-text-secondary">
+    <p>Prometheus detects threshold breach → Grafana alert fires → PagerDuty receives alert → on-call notification (email, SMS, push)</p>
+  </div>
+  <p class="text-text-secondary mb-4">The architecture should specify which metrics trigger alerts and what the thresholds are. These come directly from the non-functional requirements in the PRD.</p>
+
+  <h2 class="mb-4 mt-10">Key decisions</h2>
+  <p class="text-text-secondary mb-4">These are the operational decisions that define how the system is observed, controlled, and kept alive:</p>
+
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Decision</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Option A</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Option B</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Recommendation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Feature flags</td>
+          <td class="px-4 py-3 text-text-secondary">Unleash (self-hosted Docker)</td>
+          <td class="px-4 py-3 text-text-secondary">LaunchDarkly (hosted, free tier)</td>
+          <td class="px-4 py-3 text-text-secondary">Unleash if you want to learn the internals. LaunchDarkly if you want zero ops.</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Metrics collection</td>
+          <td class="px-4 py-3 text-text-secondary">Prometheus (self-hosted)</td>
+          <td class="px-4 py-3 text-text-secondary">CloudWatch (AWS-native)</td>
+          <td class="px-4 py-3 text-text-secondary">Prometheus. Industry standard. Transferable skill. CloudWatch locks you to AWS.</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Alerting</td>
+          <td class="px-4 py-3 text-text-secondary">PagerDuty</td>
+          <td class="px-4 py-3 text-text-secondary">OpsGenie</td>
+          <td class="px-4 py-3 text-text-secondary">PagerDuty. Free tier is sufficient. Industry standard for incident response.</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Load testing</td>
+          <td class="px-4 py-3 text-text-secondary">k6 (JavaScript scripts)</td>
+          <td class="px-4 py-3 text-text-secondary">Locust (Python scripts)</td>
+          <td class="px-4 py-3 text-text-secondary">k6. Lightweight CLI, JavaScript syntax you already know, excellent reporting.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="mb-4 mt-10">Database schema</h2>
+  <p class="text-text-secondary mb-4">The architecture should include the key tables. At minimum:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">events</strong> — id, title, description, location, event_date, event_time, status (upcoming / live / completed), image_url, created_at</li>
+    <li><strong class="text-text">ticket_types</strong> — id, event_id, name (general / VIP), price, quantity_available, created_at</li>
+    <li><strong class="text-text">tickets</strong> — id, ticket_type_id, event_id, attendee_name, attendee_email, qr_code, stripe_payment_id, status (valid / used / cancelled), purchased_at</li>
+    <li><strong class="text-text">check_ins</strong> — id, ticket_id, event_id, checked_in_at, checked_in_by (staff user ID)</li>
+    <li><strong class="text-text">sales</strong> — a view or materialised view aggregating ticket sales by event, ticket type, and time period for the live dashboard</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Weather API integration</h2>
+  <p class="text-text-secondary mb-4">The Bureau of Meteorology (BoM) API provides weather data for event locations along the surf coast. The integration is display-only — current conditions and a short forecast shown on the event page.</p>
+  <p class="text-text-secondary mb-4">The architecture must handle BoM being unavailable. If the API is down or slow, the event page shows "Weather data unavailable" — it does not block the page load, delay ticket purchases, or throw an error. Use a timeout (2 seconds) and a circuit breaker pattern. Cache the last successful response for 30 minutes.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Weather is informational, not transactional.</strong> The BoM API failing is not an incident. Ticket sales failing is an incident. The architecture should treat external display-only dependencies differently from core transaction dependencies like Stripe and PostgreSQL.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">k6 load testing architecture</h2>
+  <p class="text-text-secondary mb-4">k6 runs locally (or in CI) and sends traffic to the staging environment. The architecture should specify which scenarios to test and what the thresholds are — these come directly from the non-functional requirements:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Ticket purchase surge:</strong> 200 concurrent users buying tickets when a popular event goes on sale</li>
+    <li><strong class="text-text">Check-in rush:</strong> 500 concurrent users scanning QR codes when the gates open at Bells Beach</li>
+    <li><strong class="text-text">Dashboard viewers:</strong> 50 concurrent connections to the live dashboard WebSocket or polling endpoint</li>
+  </ul>
+  <p class="text-text-secondary mb-4">k6 scripts are committed to the repository alongside the application code. They run as a CI step after staging deployment and before production promotion.</p>
+
+  <h2 class="mb-4 mt-10">Incident runbooks</h2>
+  <p class="text-text-secondary mb-4">An incident runbook is a checklist for when things go wrong. The architecture should specify that runbooks exist for the critical failure modes:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Check-in endpoint returning 500s:</strong> Acknowledge alert, check Grafana dashboard, check application logs, identify root cause, remediate (feature flag rollback or hotfix), verify recovery, write post-incident report</li>
+    <li><strong class="text-text">Ticket purchase failures:</strong> Check Stripe status page, check database connections, check application error logs, roll back recent deployment if correlated</li>
+    <li><strong class="text-text">High latency during event:</strong> Check Grafana for resource saturation (CPU, memory, connections), identify the slow endpoint, scale if needed, investigate root cause</li>
+  </ul>
+  <p class="text-text-secondary mb-4">Runbooks live in the repository as markdown files. They are written before the incident happens, not during.</p>
+
+  <h2 class="mb-4 mt-10">Review guidance</h2>
+  <p class="text-text-secondary mb-4">When you review the generated architecture:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Is the CI/CD pipeline fully specified? Every stage from push to production smoke test?</li>
+    <li>Is the manual approval gate on production explicit?</li>
+    <li>Does the feature flag section address what happens when the flag service is down?</li>
+    <li>Are the Prometheus metrics defined? Which endpoints expose metrics? What format?</li>
+    <li>Are the alert thresholds tied to the non-functional requirements? (Error rate > 5% and p95 > 3s should come from the PRD targets)</li>
+    <li>Is the blue/green deployment rollback mechanism specified? (Switch ALB back to old target group)</li>
+    <li>Is the database schema complete? Events, tickets, check-ins, sales?</li>
+    <li>Does the weather API integration specify graceful degradation?</li>
+    <li>Are incident runbooks specified for the critical failure modes?</li>
+  </ul>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>The architecture must address the 500-user target.</strong> How does the system handle 500 concurrent check-in requests? Is one EC2 instance enough? What's the database connection pool size? What happens if the database connection pool is exhausted? These are the questions load testing will answer — but the architecture should have an initial plan.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: feature flag tools</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use Unleash (self-hosted) or LaunchDarkly (free tier). Here's the broader landscape of feature flag tools.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Unleash</strong> — <span class="text-text-secondary">Open-source, self-hosted. Run it as a Docker container. Full control over data and infrastructure. Free for self-hosted. What we use if you want to self-host.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">LaunchDarkly</strong> — <span class="text-text-secondary">The industry leader. Hosted, no infrastructure to manage. Powerful targeting rules, experimentation, and audit logs. Free tier for small teams. What we use if you want hosted.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Flagsmith</strong> — <span class="text-text-secondary">Open-source alternative to LaunchDarkly. Can be self-hosted or cloud-hosted. Remote config and feature flags in one tool.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Split</strong> — <span class="text-text-secondary">Feature flags with built-in experimentation and attribution. Measures the impact of features on metrics. More analytics-focused than Unleash.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">ConfigCat</strong> — <span class="text-text-secondary">Simple, developer-friendly feature flag service. Generous free tier. Less powerful targeting than LaunchDarkly, but simpler to set up.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">Start with Unleash (free, self-hosted, learn the internals) or LaunchDarkly (free tier, zero ops). Both have Python and JavaScript SDKs that integrate with FastAPI and React.</p>
+    </div>
+  </details>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: alerting & on-call</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use PagerDuty. Here's the broader landscape of alerting and on-call management tools.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">PagerDuty</strong> — <span class="text-text-secondary">What we use. Industry standard for incident response. On-call scheduling, escalation policies, alert routing. Free tier supports one team. Integrates with Grafana, Prometheus, and hundreds of other tools.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">OpsGenie (Atlassian)</strong> — <span class="text-text-secondary">PagerDuty competitor owned by Atlassian. Tight integration with Jira and Confluence. Similar features — on-call, escalation, routing. Good if your team is already in the Atlassian ecosystem.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">VictorOps (Splunk On-Call)</strong> — <span class="text-text-secondary">Now part of Splunk. Incident management with timeline-based collaboration. Integrates with Splunk's observability suite. Less common as a standalone tool.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">incident.io</strong> — <span class="text-text-secondary">Newer entrant. Runs incident management through Slack. Declare an incident, coordinate in a Slack channel, auto-generate the post-incident report. Popular with Slack-heavy teams.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">PagerDuty is the safe default. The free tier is enough for learning. The concepts (escalation policies, on-call rotations, alert routing) transfer to any tool.</p>
+    </div>
+  </details>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: load testing</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use k6. Here's the broader landscape of load testing tools.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">k6 (Grafana)</strong> — <span class="text-text-secondary">What we use. Write test scripts in JavaScript. CLI-based, runs locally or in CI. Excellent reporting and thresholds. Acquired by Grafana Labs — integrates well with the Grafana ecosystem.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Locust</strong> — <span class="text-text-secondary">Python-based load testing. Write test scenarios as Python code. Web UI for monitoring tests in real-time. Good if your team prefers Python over JavaScript.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Artillery</strong> — <span class="text-text-secondary">YAML-based load testing with JavaScript hooks. Simple syntax for common scenarios. Good for quick tests without much scripting.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">JMeter</strong> — <span class="text-text-secondary">The veteran. Java-based, GUI-driven. Extremely powerful and flexible. Steep learning curve, heavy on resources. Still widely used in enterprise testing.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Gatling</strong> — <span class="text-text-secondary">Scala-based load testing. Code-based test scripts with a DSL. Excellent HTML reports. Popular in Java/JVM environments.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">k6 is the modern choice for API load testing. JavaScript scripts, fast execution, CI-friendly. JMeter is overkill for this project but worth knowing about — you'll encounter it in enterprise environments.</p>
+    </div>
+  </details>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: metrics & alerting</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use Prometheus + Grafana. Here's the broader landscape of metrics and monitoring tools.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Prometheus + Grafana</strong> — <span class="text-text-secondary">What we use. Open-source. Prometheus collects metrics, Grafana visualises them. The standard for self-hosted monitoring. Free, powerful, widely supported.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Datadog</strong> — <span class="text-text-secondary">All-in-one monitoring SaaS. Metrics, logs, traces, alerting, dashboards. Excellent developer experience. Expensive at scale. Free tier is limited.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">New Relic</strong> — <span class="text-text-secondary">Application performance monitoring (APM) with metrics, logs, and traces. Generous free tier (100GB/month). Good for full-stack observability without self-hosting.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Graphite</strong> — <span class="text-text-secondary">Time-series database for metrics. Older than Prometheus, simpler data model. Still used in legacy systems. Prometheus is the modern choice for new projects.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">InfluxDB</strong> — <span class="text-text-secondary">Time-series database with built-in dashboarding (Chronograf) and alerting (Kapacitor). The TICK stack. Alternative to Prometheus for teams that prefer a single vendor.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">Prometheus + Grafana teaches you the fundamentals of metrics collection and visualisation. In a team environment, Datadog or New Relic trades operational burden for cost — no Prometheus server to maintain, no Grafana to host.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: implementation</h2>
+    <p class="text-text-secondary mb-4">Architecture reviewed. Time to create the backlog and start building.</p>
+    <a
+      href="/web-dev/projects/8/implementation"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Implementation →
+    </a>
+  </div>
+</DocsLayout>

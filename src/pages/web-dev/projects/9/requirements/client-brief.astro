@@ -1,0 +1,89 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="The Client Brief: FreshBox" description="Meet Emma and understand what FreshBox needs — perishable inventory, suburb-based delivery, and a system that scales with rapid growth.">
+  <h1 class="mb-6">The Client Brief: FreshBox</h1>
+  <p class="text-text-secondary mb-4"><strong class="text-text">Emma</strong> runs FreshBox, an organic produce delivery service across Melbourne's inner suburbs — Fitzroy, Carlton, Brunswick, Collingwood, Richmond, Northcote, Thornbury. She sources produce from local farms and delivers weekly boxes plus one-time orders. The business has grown from a side project to a serious operation, and the spreadsheet she's been using can't keep up.</p>
+  <p class="text-text-secondary mb-4">You meet Emma at her packing warehouse in Collingwood. Crates of vegetables line the walls, labelled by suburb and delivery day. A whiteboard lists tomorrow's delivery route. Her laptop is open to a Google Sheet with hundreds of rows.</p>
+
+  <Callout variant="client">
+    <p>"I deliver organic produce boxes around Melbourne's inner north and east. Right now I take orders via a Google Form and manage everything in a spreadsheet. It's broken — last week I oversold avocados because three people ordered at the same time and the spreadsheet didn't update fast enough. I need a proper ordering system. Customers pick their produce, choose a delivery day based on their suburb, and pay. I update stock levels throughout the day as produce comes in from farms and goes out in deliveries. We're growing fast — started with 50 orders a week, now we do 300, and we just got approached by a corporate office that wants to do a weekly order for 200 people. I need this thing to scale."</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">What to pay attention to</h2>
+  <p class="text-text-secondary mb-4">This isn't just a standard e-commerce site. The complexity is in the inventory model and the growth trajectory. Produce is perishable — stock levels aren't static. They change throughout the day as items arrive from farms and go out in deliveries. And the business is growing fast enough that the system needs to handle significantly more load than it does today.</p>
+
+  <h3 class="mb-3 mt-6">What she asked for</h3>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Online ordering:</strong> Customers browse produce, add items to an order, choose a delivery day based on their suburb, and submit</li>
+    <li><strong class="text-text">Weekly box subscriptions:</strong> Recurring weekly orders — same box, same delivery day, automatic</li>
+    <li><strong class="text-text">One-time orders:</strong> Ad hoc orders alongside subscriptions</li>
+    <li><strong class="text-text">Suburb-based delivery scheduling:</strong> Different suburbs have different delivery days (e.g., Fitzroy on Tuesday, Brunswick on Wednesday)</li>
+    <li><strong class="text-text">Real-time stock management:</strong> Emma updates stock levels throughout the day as produce arrives from farms and goes out in deliveries</li>
+    <li><strong class="text-text">Customer accounts:</strong> Login, order history, manage subscriptions</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">What she implied</h3>
+  <p class="text-text-secondary mb-4">Read between the lines:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Stock consistency:</strong> "Three people ordered at the same time and the spreadsheet didn't update fast enough." This is a concurrency problem. Two users ordering the last avocado at the same time — only one should succeed. The system needs atomic inventory updates.</li>
+    <li><strong class="text-text">Perishable inventory:</strong> Stock isn't just "in stock" or "out of stock." It changes throughout the day. Emma adds stock when produce arrives from farms. Stock decreases as orders go out. Some items might be available in the morning but gone by afternoon.</li>
+    <li><strong class="text-text">Rapid growth:</strong> 50 to 300 orders per week in what sounds like months. A corporate deal that could add 200 orders per week overnight. The system can't be built for today's load — it needs to handle tomorrow's.</li>
+    <li><strong class="text-text">Admin interface:</strong> Emma needs to update stock levels, manage delivery schedules, view orders by suburb and day, and handle the corporate account.</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">What she didn't ask for</h3>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">No payment processing in scope</strong> — Emma invoices customers separately. No Stripe, no card collection in the app.</li>
+    <li><strong class="text-text">No delivery tracking</strong> — no GPS, no "your driver is 5 minutes away." Emma manages routes manually.</li>
+    <li><strong class="text-text">No recipe suggestions or meal planning</strong> — just produce ordering</li>
+    <li><strong class="text-text">No marketplace</strong> — Emma is the only seller, not a platform for multiple vendors</li>
+    <li><strong class="text-text">No mobile app</strong> — web only</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Capacity planning</h2>
+  <p class="text-text-secondary mb-4">This is the critical new dimension. Emma's answers directly shape the auto-scaling configuration and cost estimates.</p>
+
+  <Callout variant="client">
+    <p>"Right now we do about 300 orders a week. Most come in on Sunday night and Monday morning — people ordering for the week. That's maybe 150 orders in a 12-hour window. If the corporate deal closes, that's another 200 orders on top. And honestly, if we get featured on a podcast or something, I'd want the site to handle a big spike without falling over. I can't have it go down during peak ordering."</p>
+  </Callout>
+
+  <p class="text-text-secondary mb-4">Translate Emma's answers into infrastructure decisions:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Current load:</strong> 300 orders/week, concentrated on Sunday evening and Monday morning. Peak: ~150 orders in 12 hours. This translates to roughly 12 orders per hour average, with spikes much higher.</li>
+    <li><strong class="text-text">Near-term growth:</strong> The corporate deal could push to 500 orders/week. The system needs to handle this without manual intervention.</li>
+    <li><strong class="text-text">Burst capacity:</strong> A media feature could spike traffic 10x. This is the auto-scaling use case — the system needs to absorb the spike, then scale back down after.</li>
+    <li><strong class="text-text">Concurrency requirement:</strong> 100 concurrent users during normal peak, up to 1,000 during a marketing event or media feature. The stock system must remain consistent under this load.</li>
+    <li><strong class="text-text">Availability:</strong> Downtime during peak ordering is lost revenue. Emma needs high availability — minimum two instances behind a load balancer.</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Anti-scope</h2>
+  <Callout variant="warning">
+    <p class="text-sm"><strong>These are out of scope.</strong> When you generate the PRD, make sure none of these sneak in:</p>
+    <ul class="text-sm space-y-1 mt-2">
+      <li><strong>No payment processing</strong> — no Stripe, no card collection, no online payments in the app</li>
+      <li><strong>No delivery tracking</strong> — no GPS tracking, no driver apps, no real-time delivery updates</li>
+      <li><strong>No marketplace</strong> — Emma is the sole seller, not a platform for multiple vendors</li>
+      <li><strong>No recipe suggestions or meal planning</strong></li>
+      <li><strong>No loyalty program or rewards points</strong></li>
+      <li><strong>No mobile app</strong> — web only</li>
+      <li><strong>No customer reviews or ratings</strong></li>
+      <li><strong>No chat or messaging</strong></li>
+    </ul>
+  </Callout>
+
+  <p class="text-text-secondary mb-4">Organic produce and e-commerce are extremely well-represented in AI training data. When you generate the PRD, AI will try to add a full Shopify-style checkout, delivery driver tracking, recipe recommendations, loyalty points, and a mobile app. Emma wants none of that. She wants an ordering system that handles concurrent stock updates and scales when traffic spikes.</p>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: write the PRD</h2>
+    <p class="text-text-secondary mb-4">You have the brief. Now turn it into a requirements document — this time with capacity planning and concurrency requirements.</p>
+    <a
+      href="/web-dev/projects/9/requirements/writing-the-prd"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Writing the PRD →
+    </a>
+  </div>
+</DocsLayout>

@@ -63,6 +63,40 @@ import Callout from '../../../../components/Callout.astro';
     </div>
   </details>
 
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: containers & cloud platforms</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">Docker is one piece of a much larger infrastructure ecosystem. Here's what else exists and where each fits.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Docker</strong> — <span class="text-text-secondary">What we use. Packages your application and its dependencies into containers that run identically everywhere. The industry standard for application packaging.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Docker Compose</strong> — <span class="text-text-secondary">Runs multiple containers together (frontend, backend, database). What we use for local development. Not designed for production at scale.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Kubernetes (K8s)</strong> — <span class="text-text-secondary">Container orchestration at scale. Manages hundreds of containers across multiple servers. Used by large companies. Complex but powerful. We'll survey this in Project 9.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">AWS</strong> — <span class="text-text-secondary">Amazon's cloud platform. EC2 for servers, RDS for databases, S3 for storage, CloudFront for CDN. We'll go deep on AWS from Project 6 onwards.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Google Cloud (GCP)</strong> — <span class="text-text-secondary">Google's cloud platform. Cloud Run for containers, Cloud SQL for databases, Cloud Storage. Similar to AWS, different naming.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Microsoft Azure</strong> — <span class="text-text-secondary">Microsoft's cloud platform. Dominant in enterprises that use Microsoft tooling (.NET, Teams, Active Directory).</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Terraform</strong> — <span class="text-text-secondary">Infrastructure as Code. Write configuration files that describe your cloud infrastructure, and Terraform creates it. We'll introduce this in Project 6.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Railway / Render / Fly.io</strong> — <span class="text-text-secondary">Platform-as-a-Service. Deploy containers without managing servers. Simpler than AWS, less control. Good for small projects and MVPs.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">Right now you're deploying a full-stack app to a PaaS provider. From Project 6, you'll provision your own infrastructure on AWS using Terraform. The progression: PaaS (someone else manages the server) → IaaS (you manage the server) → IaC (you define infrastructure in code). Each step adds control and responsibility.</p>
+    </div>
+  </details>
+
   <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
     <h2 class="text-xl font-semibold mb-2">Next: client review</h2>
     <p class="text-text-secondary mb-4">Staging is live. Time to show the reviewer and get sign-off.</p>

@@ -1,0 +1,256 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import Checklist from '../../../../components/Checklist.astro';
+---
+
+<DocsLayout title="Monitoring, Incident Response & Handover" description="Go live, build Grafana dashboards, simulate a production incident, write the post-incident report, and prepare the complete handover documentation.">
+  <h1 class="mb-6">Monitoring, Incident Response & Handover</h1>
+  <p class="text-text-secondary mb-8">Aisha signed off. UAT issues are fixed and deployed. Harbour Health is live. This is the final step — and it's the biggest. Three parts: monitoring, incident response, and handover.</p>
+
+  <h2 class="mb-4">Production verification</h2>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-8">
+    <li>Patient registration and login works</li>
+    <li>Specialist directory loads with correct availability data</li>
+    <li>Appointment booking creates the appointment and generates a video room link</li>
+    <li>Video consultation connects — test from two browsers</li>
+    <li>Specialist can write consultation notes during and after the call</li>
+    <li>Prescription request workflow: specialist creates, admin reviews, notification sent</li>
+    <li>Patient cannot see other patients' data (data isolation verified)</li>
+    <li>Specialist cannot see other specialists' patients</li>
+    <li>Audit log records every patient data access</li>
+    <li>HTTPS active on all endpoints</li>
+    <li>axe-core passes on all pages</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Part 1: Grafana dashboards</h2>
+  <p class="text-text-secondary mb-4">Build dashboards for three audiences:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Consultations dashboard</h3>
+      <p class="text-sm text-text-secondary">Consultations scheduled today, consultations completed, no-shows, average consultation duration, prescription requests pending. This is the dashboard Aisha looks at. She wants to know: is the platform being used? Are specialists showing up? Are patients getting the help they need?</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">System health dashboard</h3>
+      <p class="text-sm text-text-secondary">API response times (p50, p95, p99), error rates by endpoint, database connection pool usage, ASG instance count, RDS CPU and memory, video API status. This is the dashboard you look at. If something is slow or broken, this is where you see it first.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Security dashboard</h3>
+      <p class="text-sm text-text-secondary">Failed login attempts (spike = potential attack), 403 errors (access control violations), audit log volume (unusual access patterns), certificate expiry countdown. For a healthcare platform, security monitoring is not optional.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Infrastructure costs dashboard</h3>
+      <p class="text-sm text-text-secondary">Monthly AWS spend: EC2 instances, RDS, S3, CloudFront, data transfer. Aisha needs to know what this costs. A surprise AWS bill erodes trust faster than a bug.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">PagerDuty on-call schedule</h2>
+  <p class="text-text-secondary mb-4">Configure PagerDuty alerting for critical events:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-8">
+    <li><strong class="text-text">P1 (page immediately):</strong> API returning 500 errors, RDS CPU > 90%, video service unreachable</li>
+    <li><strong class="text-text">P2 (alert within 15 minutes):</strong> Error rate > 5%, response time p95 > 2 seconds, certificate expiring within 7 days</li>
+    <li><strong class="text-text">P3 (alert during business hours):</strong> Failed login spike, unusual access pattern in audit log, ASG scaling event</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Incident runbooks</h2>
+  <p class="text-text-secondary mb-4">Write runbooks for the top 5 incident scenarios. Each runbook answers: what's happening, how to diagnose, how to fix, and who to notify.</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Runbook 1: API returning 500 errors</h3>
+      <p class="text-sm text-text-secondary">Check Grafana for error rate spike. Check Sentry for the error details. Check CloudWatch logs for the specific error. Common causes: database connection timeout, unhandled exception in a new deployment, out-of-memory on EC2. Rollback if caused by recent deployment.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Runbook 2: Database overloaded</h3>
+      <p class="text-sm text-text-secondary">Check RDS CPU and connection count. Common causes: missing index on a query that scales poorly, connection pool exhaustion, long-running query blocking others. Immediate: kill long-running queries. Fix: add the missing index on staging, verify, promote to production.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Runbook 3: Video service outage</h3>
+      <p class="text-sm text-text-secondary">Check the video API's status page. If the outage is on their end, nothing to fix — but patients need to be notified. Display a banner: "Video consultations are temporarily unavailable. Scheduled consultations will be rescheduled." Notify Aisha immediately.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Runbook 4: Unauthorized access attempt</h3>
+      <p class="text-sm text-text-secondary">Spike in 401/403 errors from a single IP or pattern. Check audit log for the access pattern. If it's a brute-force attack: verify rate limiting is active, consider blocking the IP at the WAF level. Notify Aisha if patient data may have been exposed.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Runbook 5: Deployment failure</h3>
+      <p class="text-sm text-text-secondary">Blue/green switch failed. Traffic is still on blue (old version). Check the green target group health checks. Common causes: application won't start (missing environment variable, failed database migration), health check endpoint returning unhealthy. Fix the issue on green, re-attempt. If urgent, stay on blue and investigate.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Part 2: The Incident</h2>
+
+  <div class="border-2 border-primary/30 rounded-lg p-6 mb-8 bg-primary-bg/50">
+    <h3 class="text-lg font-semibold mb-4">The scenario</h3>
+    <p class="text-text-secondary mb-4">It's Wednesday morning, 8:47am. PagerDuty fires.</p>
+    <p class="text-text-secondary mb-4"><strong class="text-text">Alert:</strong> "Video service — high error rate. 23% of video API calls returning 503 in the last 5 minutes."</p>
+    <p class="text-text-secondary mb-4">You check the consultation dashboard. 15 consultations are scheduled in the next hour. 3 are in the next 20 minutes.</p>
+    <p class="text-text-secondary">The clock is running.</p>
+  </div>
+
+  <h3 class="mb-3 mt-6">Step 1: Acknowledge</h3>
+  <p class="text-text-secondary mb-4">Acknowledge the PagerDuty alert. Start a timeline — what you know, when you learned it, what you're doing next.</p>
+
+  <h3 class="mb-3 mt-6">Step 2: Assess</h3>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Check Grafana: is the video API returning errors for all calls, or just some? Increasing or stable?</li>
+    <li>Check the video API's status page: provider outage, or something on your end?</li>
+    <li>Check application logs: misconfigured API key, network timeout, rate limiting?</li>
+    <li>Check recent deployments: did anything change in the last 24 hours?</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Step 3: Communicate</h3>
+  <p class="text-text-secondary mb-4">Three consultations start in 20 minutes. Patients and specialists need to know.</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Notify Aisha (admin) — she can contact affected specialists and patients</li>
+    <li>If fully down: cancel or reschedule the next 3 consultations</li>
+    <li>If degraded: advise specialists to test the connection before bringing the patient in</li>
+    <li>Post internal status update</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Step 4: Fix or mitigate</h3>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Provider outage:</strong> Nothing to fix on your side. Monitor. Consider phone consultations as fallback.</li>
+    <li><strong class="text-text">Your configuration:</strong> Recent deployment changed the video API key? Roll back via blue/green switch.</li>
+    <li><strong class="text-text">Rate limiting:</strong> Hitting the API rate limit? Investigate why — legitimate traffic or excessive API calls.</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Step 5: Recover</h3>
+  <p class="text-text-secondary mb-4">Once the video service is healthy: verify video calls work end-to-end, notify Aisha, reschedule cancelled consultations, update internal status.</p>
+
+  <h3 class="mb-3 mt-6">Step 6: Post-incident report</h3>
+  <p class="text-text-secondary mb-4">Within 48 hours, write the report. Not blame — learning.</p>
+
+  <div class="border border-border rounded-lg p-6 mb-8">
+    <p class="text-sm font-semibold mb-3">Post-Incident Report template</p>
+    <ul class="text-sm text-text-secondary space-y-2">
+      <li><strong class="text-text">Incident:</strong> Video service degradation — elevated error rate</li>
+      <li><strong class="text-text">Severity:</strong> SEV-2 (service degraded, patient impact)</li>
+      <li><strong class="text-text">Duration:</strong> [start time] to [resolution time]</li>
+      <li><strong class="text-text">Impact:</strong> [N] consultations affected, [N] rescheduled</li>
+      <li><strong class="text-text">Timeline:</strong> 08:47 alert received, 08:50 checked Grafana (23% error rate), 08:52 checked provider status page, 08:55 notified Aisha...</li>
+      <li><strong class="text-text">Root cause:</strong> [Provider outage / Configuration error / Rate limiting]</li>
+      <li><strong class="text-text">What went well:</strong> [Alert fired quickly, communication was prompt]</li>
+      <li><strong class="text-text">What could be improved:</strong> [Needed a fallback, status page wasn't monitored]</li>
+      <li><strong class="text-text">Action items:</strong> Add video provider status page to monitoring; create fallback procedure; improve alerting threshold to 10%</li>
+    </ul>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Exercise:</strong> Write the full post-incident report for this scenario. Pick a root cause, fill in the timeline, identify action items. The report is part of the handover documentation — it demonstrates the system has been through a real (simulated) incident and the response was documented.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Part 3: The Handover</h2>
+  <p class="text-text-secondary mb-4">Aisha asked: "What happens to the data if you stop working with us?" The handover package is your answer. The test: could another developer operate this system using only the documentation?</p>
+
+  <h3 class="mb-3 mt-6">Handover documentation checklist</h3>
+
+  <Checklist items={[
+    "Architecture documentation — system diagram, component descriptions, data flow, key design decisions (ADRs)",
+    "Terraform state explanation — where the state is stored, how to plan and apply changes, what each module provisions",
+    "Deployment runbook — step-by-step instructions for deploying a new version (staging, verification, production promotion)",
+    "Monitoring guide — what each Grafana dashboard shows, what the alert thresholds mean, how to acknowledge PagerDuty alerts",
+    "Incident response procedures — the five runbooks, escalation paths, communication templates",
+    "Cost breakdown — current monthly AWS spend by service, projected costs at 500 and 1000 patients",
+    "Known issues — any tech debt, performance concerns, or limitations documented honestly",
+    "Access credentials — how to access AWS, Grafana, PagerDuty, video API dashboard, Sentry (stored securely, not in the docs)",
+    "Database — schema documentation, migration history, backup schedule and restore procedure",
+    "Video API — account details, rate limits, what happens when the free tier is exceeded",
+  ]} />
+
+  <p class="text-text-secondary mb-4 mt-6">Each document should be written for someone who has never seen the codebase. No assumptions about what they already know. No "see Slack" or "ask me." The documentation stands alone.</p>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>The ultimate test:</strong> Could someone else, reading only your documentation, deploy a new version, respond to a PagerDuty alert, diagnose a performance issue, and communicate the status to Aisha? If the answer is no, the documentation is incomplete.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">The loop — one last time</h2>
+  <p class="text-text-secondary mb-6">You've completed the full 8-step cycle for the tenth time — this time with everything:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">1</span>
+      <div>
+        <p class="font-semibold text-sm">Requirements</p>
+        <p class="text-sm text-text-secondary">You clarified an ambiguous brief, asked five critical questions, and wrote a PRD with compliance, accessibility, and video integration requirements.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">2</span>
+      <div>
+        <p class="font-semibold text-sm">Design</p>
+        <p class="text-sm text-text-secondary">You designed for trust, accessibility, and three distinct user roles — with WCAG 2.1 AA as a constraint from the first wireframe.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">3</span>
+      <div>
+        <p class="font-semibold text-sm">Architecture</p>
+        <p class="text-sm text-text-secondary">You chose a video platform, designed data isolation at the database level, and composed Terraform modules into a full production stack. Every decision documented in an ADR.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">4</span>
+      <div>
+        <p class="font-semibold text-sm">Implement</p>
+        <p class="text-sm text-text-secondary">You built with accessibility, audit logging, and failure handling as continuous concerns — not afterthoughts.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">5</span>
+      <div>
+        <p class="font-semibold text-sm">Test</p>
+        <p class="text-sm text-text-secondary">You ran the full pyramid: unit, integration, E2E, load, security, and accessibility. 85% coverage minimum. axe-core on every page.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">6</span>
+      <div>
+        <p class="font-semibold text-sm">Deploy</p>
+        <p class="text-sm text-text-secondary">You deployed with blue/green, feature flags, zero-downtime, and healthcare-grade security configuration.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">7</span>
+      <div>
+        <p class="font-semibold text-sm">UAT</p>
+        <p class="text-sm text-text-secondary">Aisha tested a live consultation and raised feedback on video quality, UX, and the handover question. Three types of feedback, three types of response.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">8</span>
+      <div>
+        <p class="font-semibold text-sm">Monitor</p>
+        <p class="text-sm text-text-secondary">You built dashboards, wrote runbooks, responded to a production incident, wrote a post-incident report, and prepared a complete handover package.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Final reflection</h2>
+  <p class="text-text-secondary mb-4">You started with a static website for a landscaper. You're ending with a production telehealth platform with auto-scaling, observability, incident response, and handover documentation. You didn't write most of the code — you directed it. That's the skill.</p>
+
+  <p class="text-text-secondary mb-4">Ask yourself:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li><strong class="text-text">What was harder than expected?</strong> The video integration edge cases? The accessibility requirements? The incident response under time pressure?</li>
+    <li><strong class="text-text">What came naturally?</strong> The deployment pipeline? The backlog ordering? The adversarial testing? Anything that felt routine was a skill you built in earlier projects.</li>
+    <li><strong class="text-text">Where did the brief's ambiguity catch you?</strong> Did you make assumptions that turned out to be wrong? Did the clarification questions save you time?</li>
+    <li><strong class="text-text">Could someone else run Harbour Health from your documentation?</strong> Be honest. Where are the gaps?</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">The confidence statement</h2>
+  <p class="text-text-secondary mb-4">You started Project 1 with: "I can take a set of requirements and produce a working static website."</p>
+  <p class="text-text-secondary mb-4">You're finishing Project 10 with: <strong class="text-text">"I can take a complex brief and deliver a production system with the infrastructure, monitoring, security, incident response, and documentation a real business needs."</strong></p>
+  <p class="text-text-secondary mb-8">That confidence is earned. Ten projects. Ten clients. Ten production systems. One process, refined ten times.</p>
+
+  <div class="mt-8 p-8 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-2xl font-semibold mb-4">You've completed the curriculum.</h2>
+    <p class="text-text-secondary mb-4">Ten projects. From a static landing page to a production telehealth platform. The 8-step loop, repeated until it's instinct.</p>
+    <a
+      href="/web-dev/checkpoints/after-p10"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Final checkpoint →
+    </a>
+  </div>
+</DocsLayout>

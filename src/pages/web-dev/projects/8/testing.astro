@@ -1,0 +1,252 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import Checklist from '../../../../components/Checklist.astro';
+---
+
+<DocsLayout title="Testing" description="Load testing with k6, feature flag testing, and verifying non-functional requirements under pressure.">
+  <h1 class="mb-6">Testing</h1>
+  <p class="text-text-secondary mb-4">Standard automated tests plus a new category: load testing. You need to prove the system meets the non-functional requirements — 500 concurrent users, sub-3-second ticket purchases, sub-1-second check-in scans. The only way to prove it is to simulate the load and measure.</p>
+
+  <h2 class="mb-4 mt-10">Load testing with k6</h2>
+  <p class="text-text-secondary mb-4">k6 is a load testing tool. You write a JavaScript script that defines what a virtual user does (buy a ticket, check in, view the dashboard), then k6 runs hundreds of those virtual users simultaneously against your staging environment.</p>
+
+  <h3 class="mb-3 mt-6">Test scenarios</h3>
+  <p class="text-text-secondary mb-4">Three scenarios, matching the three high-traffic moments for SurfCoast Events:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Scenario 1: Ticket purchase surge</h3>
+      <p class="text-sm text-text-secondary mb-2">The Bells Beach Classic goes on sale. 200 concurrent users load the event page, select tickets, and complete payment through Stripe.</p>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Threshold:</strong> p95 latency under 3 seconds for the full purchase flow. Zero payment failures due to system load (Stripe failures from invalid cards are expected).</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Scenario 2: Check-in rush</h3>
+      <p class="text-sm text-text-secondary mb-2">Gates open at Bells Beach. 500 concurrent users scan QR codes. Each scan hits the check-in API, validates the ticket, records the check-in, and returns a green/red response.</p>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Threshold:</strong> p95 latency under 1 second. Zero false rejections of valid tickets. The system must not degrade — scan 500 is as fast as scan 1.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Scenario 3: Dashboard concurrent viewers</h3>
+      <p class="text-sm text-text-secondary mb-2">50 concurrent connections to the live event-day dashboard. Each connection polls for updated metrics every 15 seconds.</p>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Threshold:</strong> Dashboard data updates within 15 seconds of real-time. No connection drops under sustained load.</p>
+    </div>
+  </div>
+
+  <h3 class="mb-3 mt-6">Example k6 script</h3>
+  <p class="text-text-secondary mb-4">The check-in rush scenario as a k6 script. This is committed to the repository alongside the application code:</p>
+  <CodeBlock lang="js" copy>{`import http from 'k6/http';
+import { check, sleep } from 'k6';
+
+export const options = {
+  stages: [
+    { duration: '1m', target: 100 },  // Ramp up to 100 users
+    { duration: '2m', target: 500 },  // Ramp to 500 (gates open)
+    { duration: '5m', target: 500 },  // Sustain 500 concurrent
+    { duration: '1m', target: 0 },    // Ramp down
+  ],
+  thresholds: {
+    http_req_duration: ['p(95)<1000'], // p95 under 1 second
+    http_req_failed: ['rate<0.01'],    // Less than 1% failure
+  },
+};
+
+export default function () {
+  const ticketId = __VU;
+  const res = http.post(
+    'https://staging.surfcoastevents.com.au/api/check-in',
+    JSON.stringify({ ticket_id: ticketId }),
+    { headers: { 'Content-Type': 'application/json' } }
+  );
+
+  check(res, {
+    'status is 200': (r) => r.status === 200,
+    'response time < 1s': (r) => r.timings.duration < 1000,
+  });
+
+  sleep(1);
+}`}</CodeBlock>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>k6 thresholds are pass/fail gates.</strong> If p95 latency exceeds 1 second, the k6 run fails — just like a failing test. Run this in CI after staging deployment. If it fails, the build doesn't promote to production.</p>
+  </Callout>
+
+  <h3 class="mb-3 mt-6">Performance criteria from the PRD</h3>
+  <p class="text-text-secondary mb-4">Every non-functional requirement must be verified by a k6 test:</p>
+
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Requirement</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Target</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">k6 threshold</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Check-in scan latency</td>
+          <td class="px-4 py-3 text-text-secondary">p95 under 1 second</td>
+          <td class="px-4 py-3 text-text-secondary font-mono text-xs">http_req_duration: ['p(95)&lt;1000']</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Ticket purchase latency</td>
+          <td class="px-4 py-3 text-text-secondary">p95 under 3 seconds</td>
+          <td class="px-4 py-3 text-text-secondary font-mono text-xs">http_req_duration: ['p(95)&lt;3000']</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Concurrent check-in users</td>
+          <td class="px-4 py-3 text-text-secondary">500</td>
+          <td class="px-4 py-3 text-text-secondary font-mono text-xs">{'stages: [{ target: 500 }]'}</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Error rate under load</td>
+          <td class="px-4 py-3 text-text-secondary">Under 1%</td>
+          <td class="px-4 py-3 text-text-secondary font-mono text-xs">http_req_failed: ['rate&lt;0.01']</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="mb-3 mt-6">The prompt</h3>
+  <CodeBlock copy>{`Write a k6 load test script for SurfCoast Events that simulates event-day traffic:
+
+1. Ramp up to 500 virtual users over 2 minutes
+2. Hold at 500 virtual users for 5 minutes
+3. Ramp down over 1 minute
+
+Each virtual user should:
+- Browse the event listing (GET /api/events/:id)
+- Purchase a ticket (POST /api/tickets/purchase) — use a test Stripe token
+- Check in with a QR code (POST /api/checkin)
+
+Success criteria (from the PRD non-functional requirements):
+- All requests complete (no connection refused or timeout errors)
+- Ticket purchase p95 latency under 3 seconds
+- Check-in scan p95 latency under 1 second
+- Error rate under 1%
+- The system stays responsive throughout (no cascading failures)
+
+Run against staging, not production.`}</CodeBlock>
+
+  <h3 class="mb-3 mt-6">Reading k6 results</h3>
+  <p class="text-text-secondary mb-4">After the test runs, k6 reports metrics. The ones that matter:</p>
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Metric</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">What it means</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Target</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-xs">http_req_duration (p95)</td>
+          <td class="px-4 py-3 text-text-secondary">95% of requests completed within this time</td>
+          <td class="px-4 py-3 text-text-secondary">Under 3s for purchases, under 1s for check-in</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono text-xs">http_req_failed</td>
+          <td class="px-4 py-3 text-text-secondary">Percentage of requests that returned errors</td>
+          <td class="px-4 py-3 text-text-secondary">Under 1%</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-xs">http_reqs</td>
+          <td class="px-4 py-3 text-text-secondary">Total requests per second the system handled</td>
+          <td class="px-4 py-3 text-text-secondary">Stable (not dropping during the test)</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono text-xs">vus</td>
+          <td class="px-4 py-3 text-text-secondary">Number of virtual users active</td>
+          <td class="px-4 py-3 text-text-secondary">Reaches 500 and holds</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>If the test fails the targets:</strong> The system can't handle the load. Diagnose: check Grafana during the test. Is CPU maxed? Is the database connection pool exhausted? Is one endpoint the bottleneck? Diagnose first, then optimise (add database indexes, increase connection pool, tune queries). Re-run the test. Repeat until targets are met.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Feature flag testing</h2>
+  <p class="text-text-secondary mb-4">Feature flags add a new testing dimension. For every flagged feature:</p>
+
+  <Checklist items={[
+    "Feature is visible and functional when the flag is ON",
+    "Feature is completely hidden when the flag is OFF — no partial UI, no API data leaks",
+    "App works correctly when the flag service is unreachable (graceful degradation to default state)",
+    "Flag state changes take effect without restarting the application",
+    "Different users can see different flag states (e.g., staff see the feature, public doesn't)",
+  ]} />
+
+  <h3 class="mb-3 mt-6">Edge case: flag service down</h3>
+  <p class="text-text-secondary mb-4">Stop the Unleash container (or disconnect from LaunchDarkly) and use the application. Does it work? It should fall back to the default experience. Every flag should have a default value that makes the app functional without the flag service. If the app crashes when the flag service is down, that's a bug — and on event day, it's a disaster.</p>
+
+  <h2 class="mb-4 mt-10">Automated test prompt</h2>
+  <CodeBlock copy>{`Here is the SurfCoast Events codebase with feature flags, Prometheus metrics, and Stripe integration.
+
+Write a comprehensive test suite that covers:
+
+1. Functional tests:
+   - Event listing CRUD operations
+   - Ticket purchase flow with Stripe (use test tokens)
+   - QR code generation on ticket purchase
+   - QR code check-in (valid ticket, already-used ticket, invalid QR)
+   - Event-day dashboard returns correct aggregate data
+
+2. Feature flag tests:
+   - Feature visible when flag ON, hidden when flag OFF
+   - App degrades gracefully when flag service is unreachable
+   - Flag evaluation respects user context (staff vs public)
+
+3. Metrics tests:
+   - /metrics endpoint returns Prometheus-format data
+   - Request count increases after API calls
+   - Business metrics (tickets_sold_total, checkins_total) increment correctly
+
+4. Edge cases:
+   - Duplicate check-in attempt (same QR code scanned twice)
+   - Ticket purchase with expired Stripe token
+   - Event listing for a past event
+   - Dashboard data for an event with zero check-ins`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Lighthouse audit</h2>
+  <p class="text-text-secondary mb-8">Run Lighthouse on the public event listing page and the ticket purchase flow. Performance, accessibility, and best practices. The event-day dashboard is an internal tool — prioritise functionality over Lighthouse scores there.</p>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: performance testing</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use k6 for load testing. Here's the broader landscape of performance testing tools and approaches.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">k6 (Grafana)</strong> — <span class="text-text-secondary">What we use. Write tests in JavaScript. Fast, developer-friendly, good CLI output. Open-source (Grafana Labs). Can export results to Grafana Cloud for dashboards.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Locust</strong> — <span class="text-text-secondary">Write tests in Python. Web UI for monitoring tests in real-time. Good for Python teams. Distributed load generation across multiple machines.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Artillery</strong> — <span class="text-text-secondary">YAML or JavaScript test definitions. Good for API testing and WebSocket testing. Cloud offering for distributed load. Node.js ecosystem.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Apache JMeter</strong> — <span class="text-text-secondary">The veteran. GUI-based test creation, supports many protocols beyond HTTP. Widely used in enterprises. Java-based, resource-heavy, dated UX. Powerful but clunky.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Lighthouse CI</strong> — <span class="text-text-secondary">Not load testing — measures page performance (loading speed, accessibility, SEO) in CI. Complements k6. Catches frontend performance regressions before users notice. Run it on the event listing and ticket purchase pages.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">k6 for API load testing, Lighthouse CI for frontend performance. Together they cover the full stack. JMeter is overkill for this project but worth knowing about — you'll encounter it in enterprise environments.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: deployment</h2>
+    <p class="text-text-secondary mb-4">Tests pass, load test meets targets. Time to set up the blue/green deployment pipeline.</p>
+    <a
+      href="/web-dev/projects/8/deployment"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Deployment →
+    </a>
+  </div>
+</DocsLayout>

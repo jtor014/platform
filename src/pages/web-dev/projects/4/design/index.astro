@@ -1,0 +1,72 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Design" description="Create the design spec for Vinyl Vault Records.">
+  <h1 class="mb-6">Design</h1>
+  <p class="text-text-secondary mb-4">Same process as P3 — client preferences, prompt, template, review, mockup, iterate. You know the steps. The emphasis here is on what's specific to a record store design.</p>
+
+  <h2 class="mb-4 mt-10">Marcus's visual preferences</h2>
+  <p class="text-text-secondary mb-4">You follow up with Marcus about the look and feel. He flips through a crate of records while he talks:</p>
+
+  <Callout variant="client">
+    <p>"Think classic record shop. Black, white, pops of colour from album art. The records ARE the design — they're colourful enough. I like bold typography, clean grid layouts. Look at Discogs but simpler. Don't make it look like a tech startup."</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <p class="text-text-secondary mb-4">Paste this into Claude along with the design spec template and your PRD:</p>
+
+  <CodeBlock copy>{`Here is a PRD for an online record store:
+
+[Paste your PRD]
+
+And here are the client's visual preferences:
+
+"Think classic record shop. Black, white, pops of colour from album art. The records ARE the design — they're colourful enough. Bold typography, clean grid layouts. Like Discogs but simpler. Not a tech startup look."
+
+Using the following design spec template, generate a complete design specification. Focus on the product card component — album art is the visual centrepiece. Specify exact colour hex values, typography, spacing, responsive behaviour, and how the dark background interacts with album art.
+
+[Paste design template from /templates]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Review the output</h2>
+  <p class="text-text-secondary mb-4">Same review process as P3, with these specific checks:</p>
+
+  <h3 class="mb-3 mt-6">Contrast on dark backgrounds</h3>
+  <p class="text-text-secondary mb-4">Marcus wants black backgrounds. Dark themes need careful text contrast — white text on dark grey is fine, but light grey text on dark grey might not meet WCAG AA (4.5:1). Paste the hex values into a <a href="https://webaim.org/resources/contrastchecker/">contrast checker</a> and verify.</p>
+
+  <h3 class="mb-3 mt-6">Product grid layout</h3>
+  <p class="text-text-secondary mb-4">Records need to be visual — album art is the hero. The spec should define:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Image aspect ratio:</strong> Album covers are square (1:1). Enforce this in the spec.</li>
+    <li><strong class="text-text">Grid columns:</strong> How many per row at each breakpoint?</li>
+    <li><strong class="text-text">Text truncation:</strong> Long artist names and album titles need a defined behaviour.</li>
+    <li><strong class="text-text">Price display:</strong> Currency format, position, size.</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Mobile considerations</h3>
+  <p class="text-text-secondary mb-8">Cart and checkout on mobile matter — people browse record stores on their phones. The spec should address: product grid on mobile (2 columns, not 1), cart UI on small screens, and checkout flow (Stripe handles the payment UI, but the surrounding page is yours).</p>
+
+  <p class="text-text-secondary mb-4">Use the mockup technique from P3 — paste the PRD and design spec into claude.ai, ask for a React artifact mockup, and iterate. Show Marcus. Does it feel like his shop?</p>
+
+  <p class="text-text-secondary mb-4">If you have a <a href="https://www.figma.com/">Figma</a> account (free), try pasting your design spec into Claude and asking it to create a Figma-ready component spec. Or use the mockup technique from P1 — paste into claude.ai and ask for a React artifact. Either way, the goal is a visual reference you can show the client before writing code.</p>
+
+  <h3 class="mb-3 mt-6">A note on design tokens</h3>
+  <p class="text-text-secondary mb-8">In larger projects, design specs include design tokens — a JSON file defining colours, spacing, typography, and other values that both designers and developers reference. The design spec you're generating is the human-readable version. From Project 7 onwards, you'll work with formal token files.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Save your design spec as a markdown file.</strong> You'll reference it throughout the project — same as P3.</p>
+  </Callout>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: architecture</h2>
+    <p class="text-text-secondary mb-4">Design spec is done. Now plan how it's built.</p>
+    <a
+      href="/web-dev/projects/4/architecture"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Architecture →
+    </a>
+  </div>
+</DocsLayout>

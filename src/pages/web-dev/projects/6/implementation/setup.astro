@@ -1,0 +1,82 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Setup" description="Set up the Tidal Brewing project with AWS account, Terraform CLI, AWS CLI, and project folder structure.">
+  <h1 class="mb-6">Setup</h1>
+  <p class="text-text-secondary mb-4">This setup is different. Before touching application code, you need cloud tooling that didn't exist in previous projects. AWS account, Terraform CLI, AWS CLI. These are prerequisites for the infrastructure tickets.</p>
+
+  <h2 class="mb-3">AWS account setup</h2>
+  <p class="text-text-secondary mb-4">Create an AWS account if you don't have one. Go to <a href="https://aws.amazon.com/free/">aws.amazon.com/free</a> and sign up. You'll need a credit card — AWS requires one even for the free tier.</p>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Set a billing alert NOW.</strong> Before doing anything else in AWS. Go to AWS Billing → Budgets → Create a budget → $5/month. This prevents surprise charges. AWS free tier covers most of what you'll use, but a billing alert is your safety net. If something goes wrong — an instance left running, an S3 bucket accumulating data — you'll know before it costs real money.</p>
+  </Callout>
+
+  <h2 class="mb-3 mt-8">Install the CLI tools</h2>
+  <CodeBlock terminal copy>{`# Install Terraform CLI
+# macOS (Homebrew)
+$ brew tap hashicorp/tap
+$ brew install hashicorp/tap/terraform
+
+# Verify installation
+$ terraform version
+
+# Install AWS CLI
+# macOS (Homebrew)
+$ brew install awscli
+
+# Verify installation
+$ aws --version`}</CodeBlock>
+
+  <p class="text-text-secondary mt-4 mb-4">For other operating systems, see the <a href="https://developer.hashicorp.com/terraform/install">Terraform install docs</a> and <a href="https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html">AWS CLI install docs</a>.</p>
+
+  <h2 class="mb-3 mt-8">Configure AWS credentials</h2>
+  <p class="text-text-secondary mb-4">Create an IAM user in the AWS console with programmatic access. Give it the permissions needed for EC2, S3, VPC, Secrets Manager, and CloudWatch. Then configure the CLI:</p>
+  <CodeBlock terminal copy>{`$ aws configure
+AWS Access Key ID: [your-access-key]
+AWS Secret Access Key: [your-secret-key]
+Default region name: ap-southeast-2
+Default output format: json`}</CodeBlock>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Region choice:</strong> <code>ap-southeast-2</code> is Sydney — closest to Melbourne. Choose the region nearest to where most of your traffic comes from. For a Brunswick brewery, Sydney is the right call.</p>
+  </Callout>
+
+  <h2 class="mb-3 mt-8">Create the project</h2>
+  <CodeBlock terminal copy>{`$ mkdir -p ~/dev && cd ~/dev
+$ mkdir tidal-brewing && cd tidal-brewing
+$ mkdir -p infra
+$ code .`}</CodeBlock>
+
+  <p class="text-text-secondary mt-4 mb-4">The project has two top-level directories: the application code (root) and the infrastructure code (<code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/infra</code>). Terraform files live in <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/infra</code>. Application code lives at the root. They're in the same repository — infrastructure and application are versioned together.</p>
+
+  <h2 class="mb-3 mt-8">Launch Claude Code and hand over the files</h2>
+  <p class="text-text-secondary mb-4">Open the terminal in VS Code, run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">claude</code>, and give it everything:</p>
+  <CodeBlock copy>{`Here's the CLAUDE.md for the project:
+
+[Paste CLAUDE.md here]
+
+And here's the BACKLOG.md:
+
+[Paste BACKLOG.md here]`}</CodeBlock>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>AWS credentials are sensitive.</strong> Your AWS Access Key ID and Secret Access Key should never be committed to git. The <code>aws configure</code> command stores them in <code>~/.aws/credentials</code> on your local machine. Terraform reads them from there automatically. Make sure <code>.aws/</code> is in your <code>.gitignore</code> (it should be by default since it's in your home directory, not the project).</p>
+  </Callout>
+
+  <p class="text-text-secondary mt-6 mb-4">Start with the infrastructure tickets. Terraform first, then application.</p>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: building</h2>
+    <p class="text-text-secondary mb-4">Project set up. Time to build — infrastructure first, then application.</p>
+    <a
+      href="/web-dev/projects/6/implementation/building"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Building →
+    </a>
+  </div>
+</DocsLayout>

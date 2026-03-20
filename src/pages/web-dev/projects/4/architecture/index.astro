@@ -1,0 +1,149 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Architecture" description="Plan the technical architecture for Vinyl Vault, with critical attention to API integration and hallucination prevention.">
+  <h1 class="mb-6">Architecture</h1>
+  <p class="text-text-secondary mb-4">Same process as P3 — prompt with PRD + design spec + architecture template. The critical new content is how the architecture handles third-party API integration.</p>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <p class="text-text-secondary mb-4">Paste this into Claude along with the architecture template, your PRD, and your design spec:</p>
+
+  <CodeBlock copy>{`Here is the PRD and design spec for an online record store:
+
+[Paste your PRD]
+[Paste your design spec]
+
+Tech stack: React frontend, FastAPI backend, PostgreSQL, Stripe for payments, Google Maps for store location, Docker, GitHub Actions CI, Gemini reviewer.
+
+Using the following architecture template, generate a complete architecture document. For each third-party integration, specify:
+1. Which specific API/product you're using and why
+2. The data flow between your app and the external service
+3. How API keys are managed
+4. How webhooks are handled (for Stripe)
+
+The architecture must include a CLAUDE.md file with this explicit instruction: "Do not use any Stripe API method without citing the documentation URL. Do not use any Google Maps API method without citing the documentation URL."
+
+[Paste architecture template from /templates]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Key decisions</h2>
+
+  <h3 class="mb-3 mt-6">Stripe: which product?</h3>
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Product</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">What it is</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Recommendation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-medium">Stripe Checkout</td>
+          <td class="px-4 py-3 text-text-secondary">Hosted payment page — Stripe handles the entire UI</td>
+          <td class="px-4 py-3 text-text-secondary">Simplest. Recommended for this project.</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-medium">Stripe Elements</td>
+          <td class="px-4 py-3 text-text-secondary">Embeddable payment form components</td>
+          <td class="px-4 py-3 text-text-secondary">More control, more work. Valid choice.</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-medium">Custom (PaymentIntents)</td>
+          <td class="px-4 py-3 text-text-secondary">Low-level API for custom payment flows</td>
+          <td class="px-4 py-3 text-text-secondary">Overkill for a small record store.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 class="mb-3 mt-6">Google Maps: embed vs API?</h3>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Embed (iframe):</strong> Simple, no JavaScript needed. Good enough for a single location. Recommended.</li>
+    <li><strong class="text-text">JavaScript API:</strong> Full control — custom markers, styling. More complex, requires an API key with billing enabled.</li>
+  </ul>
+  <p class="text-text-secondary mb-4">For showing a single store pin, the embed is sufficient.</p>
+
+  <h3 class="mb-3 mt-6">Database schema</h3>
+  <p class="text-text-secondary mb-6">Simpler than it sounds. No user accounts means no users table. The core tables: <strong class="text-text">products</strong> (records in the catalog), <strong class="text-text">orders</strong> (completed purchases), and <strong class="text-text">order_items</strong> (which records were in each order). Check that the architecture includes these and that the relationships make sense.</p>
+
+  <h2 class="mb-4 mt-10">Create an OpenAPI spec</h2>
+  <p class="text-text-secondary mb-4">Before Claude Code writes any backend code, generate an API contract. This is a YAML file that defines every endpoint, its parameters, and its response format — before any implementation exists.</p>
+  <p class="text-text-secondary mb-4">Add this to your Claude prompt:</p>
+
+  <CodeBlock copy>{`Generate an OpenAPI 3.0 spec for this architecture. Define every endpoint, request body, response schema, and error format. Output as a YAML file called openapi.yaml.`}</CodeBlock>
+
+  <p class="text-text-secondary mb-4">Save the generated <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">openapi.yaml</code> in your project root. This becomes the API contract — implementation must match it.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Why this matters:</strong> FastAPI auto-generates OpenAPI documentation at <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/docs</code>. Once Claude Code builds the API, visit <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">localhost:8000/docs</code> and compare the auto-generated spec against your original <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">openapi.yaml</code>. If they diverge, the implementation drifted from the contract. Fix it before moving on.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Create an architecture diagram</h2>
+  <p class="text-text-secondary mb-4">Open <a href="https://excalidraw.com">Excalidraw</a> (excalidraw.com, free) or <a href="https://app.diagrams.net">Draw.io</a> (app.diagrams.net, free). Create a diagram showing the system architecture:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-4">
+    <li>Browser → Frontend (React)</li>
+    <li>Frontend → API (FastAPI)</li>
+    <li>API → Database (PostgreSQL)</li>
+    <li>API → Stripe (external service)</li>
+    <li>Frontend → Google Maps (external service)</li>
+  </ul>
+  <p class="text-text-secondary mb-6">This diagram is a deliverable — save it in the repo as <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">architecture-diagram.png</code>. It helps anyone (including future you) understand the system at a glance.</p>
+
+  <h2 class="mb-4 mt-10">API documentation verification</h2>
+  <p class="text-text-secondary mb-4">This is the core P4 skill, and it starts in the architecture.</p>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>When Claude generates Stripe integration code, it will hallucinate.</strong> Real-looking but wrong — deprecated endpoints, invented parameters, incorrect response formats. The architecture must build verification into the process, not treat it as an afterthought.</p>
+  </Callout>
+
+  <p class="text-text-secondary mb-4">The architecture should specify:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">All Stripe API calls must be verified against <a href="https://stripe.com/docs">stripe.com/docs</a> before implementation</strong></li>
+    <li><strong class="text-text">All Google Maps integration must be verified against <a href="https://developers.google.com/maps">Google's documentation</a></strong></li>
+    <li>The CLAUDE.md must include: <em>"Do not use any Stripe API method without citing the documentation URL"</em></li>
+  </ul>
+
+  <p class="text-text-secondary mb-4">This CLAUDE.md instruction forces Claude Code to reference the docs when writing integration code. It won't eliminate hallucinations — but it gives you a clear signal when verification is needed and makes it easier to check.</p>
+
+  <h2 class="mb-4 mt-10">Review guidance</h2>
+  <p class="text-text-secondary mb-4">When reviewing the architecture, check everything from P3 (over-engineering, schema, endpoints, CLAUDE.md consistency) plus:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Does the Stripe integration section reference a specific Stripe product (Checkout, Elements)?</li>
+    <li>Is webhook handling defined — which events, how signatures are verified, what happens when a webhook arrives?</li>
+    <li>Are API keys managed via environment variables with <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.env</code> in <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.gitignore</code>?</li>
+    <li>Does the CLAUDE.md anti-scope match the PRD? Does it include the doc-citation instruction?</li>
+  </ul>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Save the architecture and CLAUDE.md as separate files.</strong> The CLAUDE.md goes into the project root. The doc-citation instruction is the most important line in it.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: API specification</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">You're using OpenAPI/Swagger to define your REST API contract. This is the most common approach, but not the only one.</p>
+      <div class="space-y-3">
+        <div><p class="text-sm"><strong class="text-text">OpenAPI/Swagger</strong> — <span class="text-text-secondary">The standard for REST APIs. YAML or JSON format. Widely supported by tools, code generators, and documentation platforms. What you're using in this project.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">GraphQL Schema</strong> — <span class="text-text-secondary">A query language where the client specifies exactly which fields it wants. One endpoint instead of many. Used by GitHub, Shopify, and Facebook.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">gRPC Proto Files</strong> — <span class="text-text-secondary">Binary protocol using Protocol Buffers. Fast and type-safe. Common in microservices and internal APIs where performance matters.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">tRPC</strong> — <span class="text-text-secondary">End-to-end type safety between TypeScript frontend and backend. No separate API definition — the types are the contract. Popular in the Next.js ecosystem.</span></p></div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">OpenAPI is the right starting point. When you encounter GraphQL or gRPC in the wild, you'll recognise they solve the same problem — defining a contract between client and server — with different trade-offs.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: implementation</h2>
+    <p class="text-text-secondary mb-4">Architecture is done. Time to build it.</p>
+    <a
+      href="/web-dev/projects/4/implementation"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Implementation →
+    </a>
+  </div>
+</DocsLayout>

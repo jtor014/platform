@@ -101,4 +101,35 @@ const prdRaw = fs.readFileSync('content/projects/project-2/prd-factfeed.md', 'ut
     <li>Must work after a full clean restart</li>
     <li>Environment variables for all configuration (never hardcoded)</li>
   </ul>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: backend frameworks</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">FastAPI is one of many backend frameworks. Here's what else exists and where each fits.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">FastAPI</strong> — <span class="text-text-secondary">What we use. Python, async, auto-generates OpenAPI docs. Fast to develop, great for AI-directed work because the docs are machine-readable.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Django</strong> — <span class="text-text-secondary">Python's full-featured framework. Batteries included: admin panel, ORM, auth, forms. Heavier than FastAPI but more built-in. The most common Python web framework.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Express.js</strong> — <span class="text-text-secondary">Node.js minimal framework. Lightweight, flexible, huge ecosystem. The most common JavaScript backend.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Next.js API Routes</strong> — <span class="text-text-secondary">Full-stack React framework with built-in API routes. Popular for projects where frontend and backend are tightly coupled.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Laravel</strong> — <span class="text-text-secondary">PHP framework. Dominant in WordPress/PHP agencies. Elegant syntax, strong ORM, good documentation.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Ruby on Rails</strong> — <span class="text-text-secondary">Convention-over-configuration. Fast to prototype. Less common in new projects but still powers major products (GitHub, Shopify).</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">.NET</strong> — <span class="text-text-secondary">Microsoft's framework. Dominant in enterprise, especially financial services and healthcare. C# language.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">We use FastAPI because it's fast to build with, AI understands it well, and it auto-generates API documentation. The concepts — routes, controllers, middleware, database queries — exist in every framework. If you can build with FastAPI, you can read any of these.</p>
+    </div>
+  </details>
 </DocsLayout>

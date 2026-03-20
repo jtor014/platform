@@ -1,0 +1,123 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="The Client Brief: SurfCoast Events" description="Meet Liam and understand what SurfCoast Events needs — ticketing, check-in, live dashboards, and absolute event-day reliability.">
+  <h1 class="mb-6">The Client Brief: SurfCoast Events</h1>
+  <p class="text-text-secondary mb-4"><strong class="text-text">Liam</strong> organises surf competitions and beach festivals across Victoria's surf coast — Bells Beach, Torquay, Lorne, Apollo Bay. His biggest event is the Bells Beach Classic, drawing 3,000 attendees. Right now he sells tickets through Eventbrite, but the platform fees are eating into margins and he can't customise the experience for sponsors or attendees.</p>
+  <p class="text-text-secondary mb-4">You meet Liam at a cafe in Torquay, a few hundred metres from the beach. He's got a laptop open showing spreadsheets — ticket sales numbers, volunteer rosters, sponsor logos. His phone keeps buzzing with messages from his team about the next event.</p>
+
+  <Callout variant="client">
+    <p>"I run surf competitions and beach festivals up and down the coast. The biggest is the Bells Beach Classic — 3,000 attendees. Right now I sell tickets through Eventbrite but they take a massive cut and I can't customise the experience. I need my own platform: event listings, ticket sales, QR code check-in on the day, and a live dashboard so I can see how many people have checked in and how much we've made. On event days, the system HAS to work. If 500 people are trying to check in at the gates and the system goes down, that's a disaster. I also want to be able to launch new features gradually — try them with my team first before the public sees them."</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">What to pay attention to</h2>
+  <p class="text-text-secondary mb-4">This brief has something none of the previous projects had: <strong class="text-text">explicit non-functional requirements</strong>. Liam didn't just say "I need ticketing." He said "the system HAS to work" on event day, "500 people trying to check in," and "I want to launch features gradually." These drive architecture decisions more than the feature list does.</p>
+
+  <h3 class="mb-3 mt-6">What he asked for</h3>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Event listings:</strong> Surf competitions and festivals with dates, locations, descriptions, and ticket types</li>
+    <li><strong class="text-text">Ticket sales:</strong> Online ticket purchasing with Stripe (carry forward from P4)</li>
+    <li><strong class="text-text">QR code check-in:</strong> Each ticket generates a QR code. Staff scan it at the gate on event day.</li>
+    <li><strong class="text-text">Live event-day dashboard:</strong> Real-time view of check-ins, ticket sales, and revenue during the event</li>
+    <li><strong class="text-text">Gradual feature rollout:</strong> Try new features with the team before the public sees them</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">What he implied</h3>
+  <p class="text-text-secondary mb-4">Read between the lines. Liam described operational requirements without using the technical terms:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">"500 people trying to check in"</strong> means 500 concurrent users. The system must handle this without degradation. This is a load requirement.</li>
+    <li><strong class="text-text">"The system HAS to work"</strong> means high availability during events. Downtime during check-in is unacceptable. This drives multi-AZ database, health checks, and alerting.</li>
+    <li><strong class="text-text">"Ticket purchase under 3 seconds"</strong> is a latency requirement. The Stripe integration, database queries, and API must all complete within that window.</li>
+    <li><strong class="text-text">"Zero downtime during events"</strong> means blue/green deployment — you can't take the system offline to deploy a fix during the Bells Beach Classic.</li>
+    <li><strong class="text-text">"Try with my team first"</strong> means feature flags. Staff see the new feature, the public doesn't, until Liam says go.</li>
+    <li><strong class="text-text">Weather integration:</strong> Surf events are weather-dependent. Bureau of Meteorology data on the event page helps attendees plan.</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">What he didn't ask for</h3>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">No social features</strong> — no attendee profiles, no comments, no forums</li>
+    <li><strong class="text-text">No refund processing</strong> — Liam handles refunds manually through Stripe dashboard</li>
+    <li><strong class="text-text">No seat selection</strong> — general admission, not assigned seating</li>
+    <li><strong class="text-text">No mobile app</strong> — web is fine, the check-in works on a phone browser</li>
+    <li><strong class="text-text">No multi-currency</strong> — AUD only</li>
+    <li><strong class="text-text">No competitor registration</strong> — competitors register separately, not through the public ticketing</li>
+    <li><strong class="text-text">No video streaming</strong> — no live coverage of the event through the platform</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">The non-functional requirements</h2>
+  <p class="text-text-secondary mb-4">These are the requirements that don't appear in user stories but determine whether the system survives production. Liam gave you the numbers — now formalise them:</p>
+
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Requirement</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Target</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Source</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Concurrent users during check-in</td>
+          <td class="px-4 py-3 text-text-secondary">500</td>
+          <td class="px-4 py-3 text-text-secondary">"500 people at the gates"</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Ticket purchase latency (p95)</td>
+          <td class="px-4 py-3 text-text-secondary">Under 3 seconds</td>
+          <td class="px-4 py-3 text-text-secondary">User expectation for payment flow</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Check-in scan latency (p95)</td>
+          <td class="px-4 py-3 text-text-secondary">Under 1 second</td>
+          <td class="px-4 py-3 text-text-secondary">Gate staff scanning speed</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Availability during events</td>
+          <td class="px-4 py-3 text-text-secondary">99.9% (under 1 minute downtime per event day)</td>
+          <td class="px-4 py-3 text-text-secondary">"The system HAS to work"</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Deployment strategy</td>
+          <td class="px-4 py-3 text-text-secondary">Zero downtime (blue/green)</td>
+          <td class="px-4 py-3 text-text-secondary">"Zero downtime during events"</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Non-functional requirements are not optional.</strong> A system that sells tickets but falls over at 200 concurrent users is broken, even if every feature works perfectly in local development. The PRD must include these targets so the architecture can be designed to meet them, and the load tests can verify they're met.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Anti-scope</h2>
+  <Callout variant="warning">
+    <p class="text-sm"><strong>These are out of scope.</strong> When you generate the PRD, make sure none of these sneak in:</p>
+    <ul class="text-sm space-y-1 mt-2">
+      <li><strong>No social features</strong> — no attendee profiles, comments, or forums</li>
+      <li><strong>No refund processing in the app</strong> — Liam uses Stripe dashboard directly</li>
+      <li><strong>No seat selection</strong> — general admission only</li>
+      <li><strong>No mobile app</strong> — web only, responsive for phone browsers</li>
+      <li><strong>No multi-currency</strong> — AUD only</li>
+      <li><strong>No competitor registration</strong> — separate system</li>
+      <li><strong>No video streaming</strong> — no live event coverage</li>
+      <li><strong>No email marketing</strong> — no newsletters, no attendee email campaigns</li>
+      <li><strong>No venue maps</strong> — no interactive maps or wayfinding</li>
+    </ul>
+  </Callout>
+
+  <p class="text-text-secondary mb-4">Event management platforms are heavily represented in AI training data. When you generate the PRD, AI will try to add Eventbrite-style features — social sharing, waitlists, promo codes, referral programs, sponsor portals, volunteer management. Liam wants event listings, ticket sales, QR check-in, and a live dashboard. That's it.</p>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: write the PRD</h2>
+    <p class="text-text-secondary mb-4">You have the brief. Now turn it into a requirements document with non-functional requirements and a feature flag strategy.</p>
+    <a
+      href="/web-dev/projects/8/requirements/writing-the-prd"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Writing the PRD →
+    </a>
+  </div>
+</DocsLayout>

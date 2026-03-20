@@ -1,0 +1,99 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import Checklist from '../../../../../components/Checklist.astro';
+---
+
+<DocsLayout title="Building" description="The build loop with adversarial testing built into every auth-related ticket.">
+  <h1 class="mb-6">Building</h1>
+  <p class="text-text-secondary mb-4">The build loop is routine by now. Direct, verify, review, merge. Same backlog-driven approach. The new dimension: after every ticket that touches a protected resource, you try to break it before moving on.</p>
+
+  <h2 class="mb-4 mt-10">Building auth safely</h2>
+  <p class="text-text-secondary mb-4">Auth bugs are different from other bugs. A broken layout is visible — you see it immediately. A broken auth check is invisible until someone exploits it. The endpoint returns data it shouldn't, but it looks like a normal response. There's no visual indicator that a permission boundary has been violated.</p>
+  <p class="text-text-secondary mb-4">This is why you test after <strong class="text-text">every ticket</strong> that touches a protected resource, not just at the end. After every ticket:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Can you access the endpoint without a token? (Should get 401)</li>
+    <li>Can you access an admin endpoint with a member token? (Should get 403)</li>
+    <li>Can you access owner endpoints with an admin token? (Should get 403)</li>
+  </ul>
+  <p class="text-text-secondary mb-4">Don't wait until the testing step to check this. Verify after every ticket.</p>
+
+  <h2 class="mb-4 mt-10">Verification for auth tickets</h2>
+  <p class="text-text-secondary mb-4">Standard ticket verification plus these additional checks:</p>
+
+  <Checklist items={[
+    "Log in as each role and verify the feature works for permitted roles",
+    "Try to access the feature from a role that shouldn't have access — verify it's blocked",
+    "Try to access the API endpoint with no token at all — verify 401",
+    "Check that the token expires correctly and the app handles it gracefully",
+    "Check that logging out actually prevents further access (token cleared, can't reuse)",
+  ]} />
+
+  <h2 class="mb-4 mt-10">The adversarial testing checklist</h2>
+  <p class="text-text-secondary mb-4">After completing any ticket that involves access control, run through these:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">URL manipulation</h3>
+      <p class="text-sm text-text-secondary">Change <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/bookings/123</code> to <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/bookings/124</code> in the browser. Can you see someone else's booking? Try accessing <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/admin</code> while logged in as a member.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Direct API calls</h3>
+      <p class="text-sm text-text-secondary">Use curl or the browser console to hit admin endpoints while logged in as a member. Does the backend reject you with a 403, or does it return data it shouldn't?</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Token manipulation</h3>
+      <p class="text-sm text-text-secondary">Modify the JWT payload in the browser — change the role from "member" to "admin". Does the backend verify the signature and reject the tampered token, or trust the payload blindly?</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Role escalation</h3>
+      <p class="text-sm text-text-secondary">Can a member change their role by modifying the request body? If there's a profile update endpoint, can a member add <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">{`"role": "admin"`}</code> to the request? The role should come from the database, never from user input.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Missing auth</h3>
+      <p class="text-sm text-text-secondary">Hit API endpoints with no token at all. Every protected endpoint should return 401, not data.</p>
+    </div>
+  </div>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>If you find a way in, that's the skill working.</strong> File it as a ticket, fix it, and verify the fix. The goal is to find every hole before a real user does.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Common AI mistakes with auth</h2>
+  <p class="text-text-secondary mb-4">Watch for these patterns in Claude's code:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Frontend-only guards</h3>
+      <p class="text-sm text-text-secondary">Hiding a menu item or a route doesn't protect the API endpoint. Claude might add a <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">{'if (role !== "admin") redirect("/")'}</code> in React but forget to add the middleware on the backend. The API is still wide open.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Missing middleware on new endpoints</h3>
+      <p class="text-sm text-text-secondary">Claude adds a new endpoint and forgets the auth check. It happens especially when adding helper endpoints, data export endpoints, or anything that feels "internal." Every endpoint that returns protected data needs the middleware.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Role check bugs</h3>
+      <p class="text-sm text-text-secondary">Watch for <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">role === 'admin'</code> when it should be <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">role === 'admin' || role === 'owner'</code>. Owners should inherit admin access, but a strict equality check blocks them. The architecture should specify how role hierarchy works.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">The rhythm</h2>
+  <ol class="text-sm text-text-secondary list-decimal list-inside space-y-2 mb-8">
+    <li>Direct Claude to implement the ticket</li>
+    <li>Verify against acceptance criteria (the functional test)</li>
+    <li>Run the adversarial checklist (the security test)</li>
+    <li>If anything breaks, file a fix ticket immediately — don't move on</li>
+    <li>Review, merge, next ticket</li>
+  </ol>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: testing</h2>
+    <p class="text-text-secondary mb-4">Implementation complete. Now automate the adversarial tests so they run on every change.</p>
+    <a
+      href="/web-dev/projects/5/testing"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Testing →
+    </a>
+  </div>
+</DocsLayout>

@@ -1,0 +1,201 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import Checklist from '../../../../../components/Checklist.astro';
+---
+
+<DocsLayout title="Building" description="Build order, three types of work, migration-first development, and the fourth-location extension scenario.">
+  <h1 class="mb-6">Building</h1>
+  <p class="text-text-secondary mb-4">The build loop is routine by now. Direct, verify, review, merge. What changes is the <strong class="text-text">types of work</strong> and the <strong class="text-text">build order</strong>. This project has three distinct categories of tickets with explicit dependencies. Infrastructure creates the environment. Migrations create the schema. Application builds features on top.</p>
+
+  <h2 class="mb-4 mt-10">Build order</h2>
+  <p class="text-text-secondary mb-4">Each phase depends on the one before it. Don't skip ahead.</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Phase 1: RDS via Terraform</h3>
+      <p class="text-sm text-text-secondary">Provision the database first. <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform plan</code>, review, <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform apply</code>. Verify RDS is running in the AWS console. Verify security groups allow EC2 to reach RDS on port 5432 and block all other traffic.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Phase 2: ALB via Terraform</h3>
+      <p class="text-sm text-text-secondary">Provision the load balancer. ALB in the public subnet, HTTPS listener with ACM certificate, target groups for blue/green deployment, health check endpoint configured. Verify HTTPS responds on the domain.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Phase 3: Alembic initial migration</h3>
+      <p class="text-sm text-text-secondary">Apply the initial migration to create the core tables: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">users</code>, <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">locations</code>, <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">practitioner_availability</code>, <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">appointments</code>, <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">clinical_notes</code>. This is the baseline. Every subsequent schema change goes through a new migration.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Phase 4: API endpoints</h3>
+      <p class="text-sm text-text-secondary">Auth first (JWT with three roles), then booking, scheduling, clinical notes, admin management. Each feature ticket specifies its migration dependency.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Phase 5: Frontend</h3>
+      <p class="text-sm text-text-secondary">Three dashboard views (patient, practitioner, admin), appointment calendar, clinical notes interface, location selector. Build against the API endpoints from Phase 4.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Phase 6: Grafana dashboards</h3>
+      <p class="text-sm text-text-secondary">Connect Grafana to CloudWatch. Build dashboards for RDS metrics (connections, IOPS, free storage), application metrics (request rate, error rate, latency), and system metrics (EC2 CPU, memory). Set up alerts.</p>
+    </div>
+  </div>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>The first Alembic migration is the baseline.</strong> Do not make manual database changes after this point. Every schema change — adding a column, creating an index, modifying a constraint — goes through <code>alembic revision --autogenerate</code>. If you change the database manually, Alembic's understanding of the schema drifts from reality, and future migrations will fail or produce incorrect SQL.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Three types of work</h2>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Application tickets</h3>
+      <p class="text-sm text-text-secondary">Feature development — booking, scheduling, clinical notes, dashboards. Same as previous projects. Verify against acceptance criteria, test access controls, review the PR.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Infrastructure tickets</h3>
+      <p class="text-sm text-text-secondary">Terraform changes — provisioning RDS, configuring ALB, updating security groups. Verification: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform plan</code> shows the expected changes, <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform apply</code> succeeds, and the resource is accessible and configured correctly. Check the AWS console to confirm.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Migration tickets</h3>
+      <p class="text-sm text-text-secondary">Alembic migrations — adding tables, columns, indexes. Verification: the migration applies cleanly, the schema matches expectations, and the rollback works. Every migration ticket is verified before the feature ticket that depends on it.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Migration-first development</h2>
+  <p class="text-text-secondary mb-4">This is the key discipline for this project. Before building a feature that needs a new table or column, create and verify the migration first.</p>
+
+  <div class="bg-bg-muted rounded-lg p-6 mb-6 font-mono text-xs text-text-secondary">
+    <p class="mb-2 text-text font-semibold font-sans text-sm">The migration-first flow</p>
+    <p>1. Feature needs a new table → create the Alembic migration</p>
+    <p class="mt-1">2. Review the migration SQL — check types, constraints, indexes</p>
+    <p class="mt-1">3. Apply to dev: <span class="text-primary">alembic upgrade head</span></p>
+    <p class="mt-1">4. Verify the schema: check the table exists with correct columns</p>
+    <p class="mt-1">5. Test rollback: <span class="text-primary">alembic downgrade -1</span> → verify table is gone</p>
+    <p class="mt-1">6. Re-apply: <span class="text-primary">alembic upgrade head</span></p>
+    <p class="mt-1">7. Now build the feature that uses the table</p>
+  </div>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Never skip the rollback test in dev.</strong> If a migration's downgrade function doesn't work in dev, it won't work in production. And in production, a broken rollback means you can't undo a bad migration without manual database surgery. Test the rollback every time.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Verification for each type</h2>
+
+  <h3 class="mb-3 mt-6">Infrastructure ticket verification</h3>
+  <Checklist items={[
+    "terraform plan shows only the expected changes — no surprises",
+    "terraform apply completes without errors",
+    "The resource exists in the AWS console with the correct configuration",
+    "Security groups are correct — test connectivity (can EC2 reach RDS? can ALB reach EC2?)",
+    "RDS automated backups are enabled and retention period is correct",
+  ]} />
+
+  <h3 class="mb-3 mt-6">Migration ticket verification</h3>
+  <Checklist items={[
+    "The migration file is readable — you understand the SQL it generates",
+    "alembic upgrade head applies without errors",
+    "The database schema matches expectations (correct tables, columns, types, constraints)",
+    "alembic downgrade -1 rolls back cleanly",
+    "After rollback, the schema is back to the previous state",
+    "Re-apply the migration — it should be idempotent (applying twice doesn't break anything)",
+  ]} />
+
+  <h3 class="mb-3 mt-6">Application ticket verification</h3>
+  <Checklist items={[
+    "Feature works against acceptance criteria",
+    "Access controls hold — patients can't see other patients' data, practitioners only see their own patients",
+    "Multi-location logic works — appointments are tied to the correct location",
+    "API endpoints return correct status codes for each role (200, 401, 403)",
+    "PR reviewed and CI passes",
+  ]} />
+
+  <h2 class="mb-4 mt-10">Working with Linear during the build</h2>
+  <p class="text-text-secondary mb-4">As you work through tickets, update their status in Linear:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Move the current ticket to "In Progress"</li>
+    <li>When verified and merged, move to "Done"</li>
+    <li>If you discover a new issue during development, create a new ticket in Linear — don't let it live in your head or in a comment</li>
+    <li>If a ticket turns out to be larger than expected, split it in Linear</li>
+  </ul>
+  <p class="text-text-secondary mb-4">The goal is the same as GitHub Projects: the board reflects reality. Anyone looking at it can see what's done, what's in progress, and what's left.</p>
+
+  <h2 class="mb-4 mt-10">Common issues</h2>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Migration conflicts</h3>
+      <p class="text-sm text-text-secondary">If two feature branches both create migrations, they'll have different revision IDs but the same "head" parent. When you merge both, Alembic can't determine the order. Resolution: after merging, run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">alembic merge heads</code> to create a merge migration, then verify the schema.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">RDS connection issues</h3>
+      <p class="text-sm text-text-secondary">If the application can't connect to RDS, check the security group — does it allow traffic from the EC2 instance's security group on port 5432? Check the database URL — is it using the RDS endpoint, not localhost?</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">ALB health check failures</h3>
+      <p class="text-sm text-text-secondary">If the ALB marks your instance as unhealthy, check: is the health check endpoint returning 200? Is the application actually running? Is the security group allowing ALB traffic to the application port? Check the ALB target group health in the AWS console.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">The rhythm</h2>
+  <ol class="text-sm text-text-secondary list-decimal list-inside space-y-2 mb-8">
+    <li>Check Linear — what's the next ticket?</li>
+    <li>If it's a migration ticket: create the migration, review the SQL, apply, verify, test rollback</li>
+    <li>If it's an infrastructure ticket: write the Terraform, plan, review, apply, verify</li>
+    <li>If it's an application ticket: direct Claude, verify against acceptance criteria and access controls</li>
+    <li>Update Linear, review, merge, next ticket</li>
+  </ol>
+
+  <h2 class="mb-4 mt-10">Extension scenario: Megan opens a fourth location</h2>
+  <p class="text-text-secondary mb-4">Halfway through the build, simulate a real change request:</p>
+
+  <Callout variant="client">
+    <p>"We're opening a fourth clinic in Hastings next month. Can the system handle it?"</p>
+  </Callout>
+
+  <p class="text-text-secondary mb-4">Walk through what this requires:</p>
+  <ol class="list-decimal list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Data, not schema:</strong> The <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">locations</code> table already exists. You add a row, not a column. A data migration inserts the Hastings location record.</li>
+    <li><strong class="text-text">Practitioner availability:</strong> Set up availability schedules for practitioners who will work at Hastings. Same table, new rows.</li>
+    <li><strong class="text-text">Application code:</strong> Zero changes. The location selector already queries all locations. Appointments already reference a <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">location_id</code>. Practitioner availability is already per-location.</li>
+    <li><strong class="text-text">Infrastructure:</strong> Zero changes. RDS, ALB, and EC2 don't care about the number of locations.</li>
+    <li><strong class="text-text">Deployment:</strong> Deploy with zero downtime via blue/green. The new location appears in the booking interface after the data migration runs.</li>
+  </ol>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>This is the test of good architecture.</strong> Adding a location is a data change, not a structural change. If adding Hastings required modifying application code or infrastructure, the architecture would be wrong. The schema was designed to support N locations from the start — not hardcoded for three.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: deployment strategies</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use blue/green deployment. Here's what else exists and when teams reach for each strategy.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Blue/green deployment</strong> — <span class="text-text-secondary">What we use. Two identical environments. Deploy to the idle one, verify, switch traffic. Instant rollback. Best for systems where downtime is unacceptable and you want full verification before switching.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Canary deployment</strong> — <span class="text-text-secondary">Route a small percentage of traffic (e.g., 5%) to the new version. Monitor for errors. Gradually increase to 100% if healthy. Reduces blast radius — only a fraction of users hit the new code initially.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Rolling deployment</strong> — <span class="text-text-secondary">Replace instances one at a time. Old and new versions run simultaneously during the rollout. Standard on Kubernetes. Simpler than blue/green for large fleets of instances.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Feature flags</strong> — <span class="text-text-secondary">Deploy new code to all users but enable it for specific users or percentages. Decouple deployment from release. The code is deployed but inactive until you flip the flag. We'll introduce feature flags from Project 8.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Recreate (stop/start)</strong> — <span class="text-text-secondary">The simplest strategy. Stop the old version, start the new one. Causes downtime. Acceptable for internal tools or during maintenance windows. What we did before this project.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">Blue/green is the right fit for Coastal Physio — Megan can't afford downtime during business hours, and the ALB target group mechanism makes it straightforward. The progression: recreate (P6) to blue/green (P7) to feature flags (P8).</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: testing</h2>
+    <p class="text-text-secondary mb-4">Implementation complete. Now test the application, the infrastructure, and the migrations.</p>
+    <a
+      href="/web-dev/projects/7/testing"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Testing →
+    </a>
+  </div>
+</DocsLayout>

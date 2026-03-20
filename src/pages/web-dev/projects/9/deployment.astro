@@ -1,0 +1,157 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Deployment" description="Blue/green deployment via ASG rolling update, CloudFront cache invalidation, zero-downtime verification, and cost review.">
+  <h1 class="mb-6">Deployment</h1>
+  <p class="text-text-secondary mb-4">Blue/green deployment via the Auto Scaling Group. New instances launch with the updated AMI, old instances drain and terminate. CloudFront cache invalidation ensures users see the latest assets. Zero-downtime verification: run a load test during deployment and prove no requests fail.</p>
+
+  <h2 class="mb-4 mt-10">Blue/green via ASG rolling update</h2>
+  <p class="text-text-secondary mb-4">The ASG handles blue/green deployment through a rolling update. When you update the launch template (new AMI with the latest application code), the ASG launches new instances with the updated configuration, waits for them to pass health checks, then terminates old instances one by one.</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Step 1: Build new AMI</h3>
+      <p class="text-sm text-text-secondary">Bake a new AMI with the latest application code. The AMI includes everything needed to run the application — runtime, dependencies, application code, configuration.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Step 2: Update launch template</h3>
+      <p class="text-sm text-text-secondary">Update the launch template to reference the new AMI. This doesn't change any running instances — it only affects new instances.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Step 3: Instance refresh</h3>
+      <p class="text-sm text-text-secondary">Trigger an instance refresh on the ASG. The ASG launches new instances with the updated launch template, waits for health checks to pass, then drains and terminates old instances. During this process, the ALB routes traffic to both old and new instances — no downtime.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Step 4: CloudFront cache invalidation</h3>
+      <p class="text-sm text-text-secondary">After the new instances are serving traffic, invalidate the CloudFront cache. This forces CloudFront to fetch fresh static assets from the origin.</p>
+    </div>
+  </div>
+
+  <CodeBlock lang="bash" copy>{`# Trigger CloudFront cache invalidation
+aws cloudfront create-invalidation \\
+  --distribution-id YOUR_DISTRIBUTION_ID \\
+  --paths "/*"`}</CodeBlock>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Why invalidate "/*"?</strong> For simplicity. In production, you'd invalidate only the paths that changed (e.g., <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/static/*</code>). Wildcard invalidation is free for the first 1,000 paths per month. If you're deploying frequently, be more specific to avoid charges.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Zero-downtime verification</h2>
+  <p class="text-text-secondary mb-4">The strongest proof of zero-downtime deployment: run a k6 load test during the deployment. If no requests fail during the rollout, the deployment is truly zero-downtime.</p>
+
+  <CodeBlock lang="javascript" copy>{`// zero-downtime-check.js
+import http from 'k6/http';
+import { check } from 'k6';
+
+export const options = {
+  vus: 10,
+  duration: '10m',  // Run for the entire deployment window
+  thresholds: {
+    http_req_failed: ['rate==0'],  // Zero failures
+  },
+};
+
+export default function () {
+  const res = http.get('https://your-cloudfront-domain.com/api/products');
+  check(res, {
+    'status is 200': (r) => r.status === 200,
+  });
+}`}</CodeBlock>
+
+  <p class="text-text-secondary mb-4">Start this k6 script, then trigger the deployment. If k6 reports zero failures over the entire deployment window, you've verified zero downtime.</p>
+
+  <h2 class="mb-4 mt-10">Cost review after first deploy</h2>
+  <p class="text-text-secondary mb-4">After the first deployment, check AWS Cost Explorer. Compare actual spend to your architecture estimate ($70-100/month). Look for surprises:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">NAT gateway costs:</strong> NAT gateways charge per hour and per GB processed. If your private subnet instances make frequent outbound requests, this adds up. A common surprise on the first bill.</li>
+    <li><strong class="text-text">Data transfer:</strong> Traffic between AZs, between CloudFront and the origin, between EC2 and RDS — all charged. Small amounts, but they add up.</li>
+    <li><strong class="text-text">RDS multi-AZ:</strong> Multi-AZ roughly doubles the RDS cost. Is it justified at Emma's current scale? That's an ADR-worthy decision.</li>
+  </ul>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Don't skip the cost review.</strong> The architecture estimated $70-100/month. If the first month's bill is $150, find out why. Is it the NAT gateway? Data transfer? Instances running larger than planned? Cost awareness is a skill you build by actually checking.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Terraform module deployment</h2>
+  <p class="text-text-secondary mb-4">When infrastructure changes span multiple modules, <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform plan</code> shows changes across all of them. Review each module's changes separately. A CDN configuration change shouldn't require reviewing the database module output.</p>
+
+  <CodeBlock terminal copy>{`$ cd terraform/environments/production
+$ terraform plan
+# Review changes — which modules are affected?
+# Compute module: launch template updated ✓
+# CDN module: no changes ✓
+# Database module: no changes ✓
+# VPC module: no changes ✓
+$ terraform apply`}</CodeBlock>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Review the plan before every apply.</strong> Especially after Terraform module refactoring. A misconfigured module input could trigger resource recreation — destroying your RDS instance and creating a new (empty) one. The plan tells you. Read it.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Cost-aware deployment: Infracost in CI</h2>
+  <p class="text-text-secondary mb-4">Add Infracost to the CI pipeline. On every PR that touches Terraform files, Infracost posts a comment showing the cost impact of the change. "This PR adds a NAT gateway: +$32/month." The reviewer sees the cost before approving.</p>
+
+  <CodeBlock lang="yaml" copy>{`# .github/workflows/infracost.yml
+name: Infracost
+on: [pull_request]
+jobs:
+  infracost:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: infracost/actions/setup@v3
+        with:
+          api-key: \${{ secrets.INFRACOST_API_KEY }}
+      - run: infracost breakdown --path terraform/environments/production --format json --out-file /tmp/infracost.json
+      - run: infracost comment github --path /tmp/infracost.json --repo \${{ github.repository }} --pull-request \${{ github.event.pull_request.number }} --github-token \${{ github.token }}`}</CodeBlock>
+
+  <p class="text-text-secondary mb-4">Every Terraform change now has cost visibility. No infrastructure PR merges without the team knowing the cost impact.</p>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: deployment automation</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We deploy via ASG rolling updates triggered by Terraform. Here's what else exists for automating deployments at scale.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">AWS CodeDeploy</strong> — <span class="text-text-secondary">AWS-native deployment service. Supports in-place and blue/green deployments to EC2, ECS, and Lambda. Integrates with ASG for rolling updates. AppSpec file defines deployment lifecycle hooks.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">ArgoCD</strong> — <span class="text-text-secondary">GitOps continuous delivery for Kubernetes. Watches a git repo and automatically syncs the desired state to the cluster. Declarative — the repo is the source of truth. Popular in Kubernetes-native organisations.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Spinnaker</strong> — <span class="text-text-secondary">Multi-cloud continuous delivery platform. Originally built by Netflix. Supports canary deployments, traffic splitting, and automated rollback. Complex to set up but extremely powerful for large-scale deployments.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Octopus Deploy</strong> — <span class="text-text-secondary">Deployment automation platform. Strong in .NET and Windows environments but supports any stack. Visual deployment pipeline editor. Popular in enterprise environments.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">For FreshBox, ASG instance refresh with Terraform is the right level of complexity. CodeDeploy adds value when you need more deployment lifecycle control (pre-install scripts, health check validation). ArgoCD and Spinnaker are overkill without Kubernetes.</p>
+    </div>
+  </details>
+
+  <h2 class="mb-4 mt-10">Deployment checklist</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>New AMI built with latest application code</li>
+    <li>Launch template updated with new AMI ID</li>
+    <li>Instance refresh triggered on ASG</li>
+    <li>New instances pass ALB health checks</li>
+    <li>Old instances drained and terminated</li>
+    <li>CloudFront cache invalidated</li>
+    <li>Zero-downtime k6 test confirms no failed requests during rollout</li>
+    <li>AWS Cost Explorer reviewed — actual spend compared to estimate</li>
+  </ul>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: UAT</h2>
+    <p class="text-text-secondary mb-4">Deployed and verified. Time to show Emma.</p>
+    <a
+      href="/web-dev/projects/9/uat"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      UAT →
+    </a>
+  </div>
+</DocsLayout>

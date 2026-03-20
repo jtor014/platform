@@ -1,0 +1,139 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="The Client Brief: Coastal Physio" description="Meet Dr. Megan Chen and understand what Coastal Physio needs — three user types, three locations, sensitive medical data.">
+  <h1 class="mb-6">The Client Brief: Coastal Physio</h1>
+  <p class="text-text-secondary mb-4"><strong class="text-text">Dr. Megan Chen</strong> runs Coastal Physio, a physiotherapy practice with three clinics on the Mornington Peninsula — Mornington, Rosebud, and Dromana. Three locations, six physiotherapists, and a growing patient base. You meet Megan at the Mornington clinic. She walks you through the current setup: a paper diary at each location, phone calls between clinics, and a filing cabinet of patient notes.</p>
+
+  <Callout variant="client">
+    <p>"I run three physio clinics on the Peninsula. Right now we use a paper diary at each location and it's chaos — double bookings, lost notes, patients calling one clinic to book at another and the message doesn't get through. I need a system where patients can book online, my physios can see their schedule and write notes after each session, and my receptionists can manage everything across all three locations. Patient data is sensitive — these are medical notes. I cannot lose this data. If the system goes down during business hours, that's bad — we can't see who's coming in. But I can live with an hour of downtime overnight if there's maintenance."</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">What to pay attention to</h2>
+  <p class="text-text-secondary mb-4">This brief has two layers of complexity: <strong class="text-text">multi-location</strong> (every booking is tied to a specific clinic) and <strong class="text-text">data sensitivity</strong> (medical notes under the Australian Privacy Act). The features themselves are straightforward — booking, scheduling, notes. The constraints around the data are what make this project different.</p>
+
+  <h3 class="mb-3 mt-6">Three user types</h3>
+  <div class="space-y-4 mb-6">
+    <div class="border border-border rounded-lg p-6">
+      <h4 class="text-base font-semibold mb-2">Patients</h4>
+      <p class="text-sm text-text-secondary">Book appointments online at any of the three locations. View their own upcoming appointments. View their own clinical history (notes from past sessions). Cannot see other patients' data. Cannot see practitioner notes for other patients.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h4 class="text-base font-semibold mb-2">Practitioners (physiotherapists)</h4>
+      <p class="text-sm text-text-secondary">View their own schedule across locations (a physio might work at Mornington on Monday and Rosebud on Wednesday). View assigned patients' records. Write clinical notes after each session. Cannot see patients assigned to other practitioners. Cannot manage bookings or other practitioners.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h4 class="text-base font-semibold mb-2">Admin / reception</h4>
+      <p class="text-sm text-text-secondary">Manage all bookings across all three locations. Manage practitioner schedules and assignments. View all patient records. Handle cancellations and rebookings. The receptionists are the ones fielding phone calls and managing the day-to-day operations.</p>
+    </div>
+  </div>
+
+  <h3 class="mb-3 mt-6">Multi-location requirement</h3>
+  <p class="text-text-secondary mb-4">Every appointment is at a specific location. A patient might see a practitioner in Mornington this week and Rosebud next week. Practitioners may work across multiple locations on different days. The reception team manages all three locations from wherever they're sitting. This means:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Appointments are tied to a location, a practitioner, and a time slot</li>
+    <li>Practitioner availability is per-location, per-day</li>
+    <li>Admin needs a view that shows all three locations simultaneously — or can filter by location</li>
+    <li>A patient booking at "Coastal Physio" needs to select which clinic</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Data sensitivity analysis</h3>
+  <p class="text-text-secondary mb-4">This is medical data. Under the Australian Privacy Act, health information is a sensitive category with stricter handling requirements. For this project, understand the classification:</p>
+
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Data</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Classification</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Patient name, email, phone</td>
+          <td class="px-4 py-3 text-text-secondary">PII (Personally Identifiable Information)</td>
+          <td class="px-4 py-3 text-text-secondary">Standard privacy protections</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Date of birth</td>
+          <td class="px-4 py-3 text-text-secondary">PII</td>
+          <td class="px-4 py-3 text-text-secondary">Used for patient identification</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Clinical notes</td>
+          <td class="px-4 py-3 text-text-secondary">Health information (sensitive)</td>
+          <td class="px-4 py-3 text-text-secondary">Strictest protections. Practitioner-written, text only.</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Appointment history</td>
+          <td class="px-4 py-3 text-text-secondary">Health information (sensitive)</td>
+          <td class="px-4 py-3 text-text-secondary">Reveals treatment patterns</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Practitioner names, schedules</td>
+          <td class="px-4 py-3 text-text-secondary">Business operational</td>
+          <td class="px-4 py-3 text-text-secondary">Not sensitive, needed for booking</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Location details</td>
+          <td class="px-4 py-3 text-text-secondary">Public</td>
+          <td class="px-4 py-3 text-text-secondary">Clinic addresses are public information</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Data sensitivity shapes infrastructure decisions.</strong> This data cannot be lost (automated backups, point-in-time recovery). Access must be controlled (role-based, with practitioners only seeing their own patients). This isn't just a feature requirement — it drives the choice of RDS over a self-managed database, the backup retention policy, and the security group configuration.</p>
+  </Callout>
+
+  <h3 class="mb-3 mt-6">Uptime requirements</h3>
+  <p class="text-text-secondary mb-4">Megan's brief tells you exactly what she needs:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">During business hours (8am-6pm):</strong> The system must be available. Receptionists are looking up who's coming in, practitioners are checking their schedule, patients are booking. Downtime during business hours means calls start piling up.</li>
+    <li><strong class="text-text">Overnight (10pm-6am):</strong> An hour of maintenance downtime is acceptable. This is the window for database maintenance, migrations, and infrastructure updates.</li>
+    <li><strong class="text-text">Recovery time:</strong> If something breaks, how fast can you get back? RDS automated backups and point-in-time recovery make this measurable.</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">What she didn't ask for</h3>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">No video consultations</strong> — that's a telehealth feature, not a booking system (that's P10)</li>
+    <li><strong class="text-text">No payment processing</strong> — patients pay at reception. No Stripe, no card collection.</li>
+    <li><strong class="text-text">No medical imaging</strong> — clinical notes are text only. No X-rays, no scans, no file uploads.</li>
+    <li><strong class="text-text">No SMS reminders</strong> — nice to have, but not in the brief</li>
+    <li><strong class="text-text">No mobile app</strong> — web is fine</li>
+    <li><strong class="text-text">No waiting list</strong> — if a slot is full, try another time</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Anti-scope</h2>
+  <Callout variant="warning">
+    <p class="text-sm"><strong>These are out of scope.</strong> When you generate the PRD, make sure none of these sneak in:</p>
+    <ul class="text-sm space-y-1 mt-2">
+      <li><strong>No video consultations or telehealth</strong></li>
+      <li><strong>No payment processing</strong> — no Stripe, no Medicare billing, no invoicing</li>
+      <li><strong>No medical imaging or file uploads</strong> — notes are text only</li>
+      <li><strong>No SMS or email appointment reminders</strong></li>
+      <li><strong>No mobile app</strong></li>
+      <li><strong>No waiting list or queue management</strong></li>
+      <li><strong>No integration with Medicare or private health insurers</strong></li>
+      <li><strong>No prescription management</strong></li>
+      <li><strong>No exercise program builder</strong></li>
+    </ul>
+  </Callout>
+
+  <p class="text-text-secondary mb-4">Healthcare is one of the most over-specified domains in AI training data. When you generate the PRD, AI will try to add every feature from every practice management system it's seen — Medicare integration, insurance billing, exercise programs, telehealth, appointment reminders, waiting room management. None of that is in Megan's brief. Cut it ruthlessly.</p>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: write the PRD</h2>
+    <p class="text-text-secondary mb-4">You have the brief. Now turn it into a requirements document with data classification and SLA targets.</p>
+    <a
+      href="/web-dev/projects/7/requirements/writing-the-prd"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Writing the PRD →
+    </a>
+  </div>
+</DocsLayout>

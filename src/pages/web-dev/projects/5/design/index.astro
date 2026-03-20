@@ -1,0 +1,101 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Design" description="Create the design spec for DeskHub with three role-based dashboard views and a login screen.">
+  <h1 class="mb-6">Design</h1>
+  <p class="text-text-secondary mb-4">Same process — client preferences, prompt, template, review. Priya has a clear visual direction:</p>
+
+  <Callout variant="client">
+    <p>"Professional but not boring. We're a creative space — designers, developers, freelancers. Modern, clean. Our brand colours are deep blue and white with orange accents. Think WeWork's vibe but less corporate. Three different dashboard views for three roles."</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <CodeBlock copy>{`Here is the PRD for DeskHub, a co-working space management system:
+
+[Paste your PRD here]
+
+Using the following design spec template, create a complete design specification. The system has three roles (Member, Admin, Owner), each with a different dashboard view.
+
+Key requirements:
+- Professional but creative — deep blue and white with orange accents
+- WeWork vibe but less corporate
+- Three distinct dashboard views showing only what each role can access
+- Login page — this is the first thing every user sees, it needs to be polished
+- Availability colour coding: green for available, red for booked
+- Responsive — works on laptop and tablet at minimum
+- Navigation changes per role (members don't see admin links)
+
+[Paste design spec template here]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">The key design challenge</h2>
+  <p class="text-text-secondary mb-4">Three different views from the same app. The design spec needs to address all three dashboards plus the login screen. This is the first time the design has to account for role-based rendering.</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Member dashboard</h3>
+      <p class="text-sm text-text-secondary">Availability grid (desks and rooms), own bookings, profile. No admin navigation, no member management, no revenue data. The member shouldn't even see links to things they can't access.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Admin dashboard</h3>
+      <p class="text-sm text-text-secondary">Everything the member sees, plus: all bookings across all members, member management, room and pricing configuration. No revenue reports or billing data. The admin navigation includes management links but not financial ones.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Owner dashboard</h3>
+      <p class="text-sm text-text-secondary">Everything the admin sees, plus: revenue reports, occupancy rates, room popularity. The owner can access every part of the system.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">The login screen matters</h2>
+  <p class="text-text-secondary mb-4">This is the first thing every user sees. The design spec needs to cover:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Login form — email and password fields, submit button</li>
+    <li>Invalid credentials — clear error message, not "something went wrong"</li>
+    <li>Logged-out state — redirect to login with friendly messaging</li>
+    <li>Session expired — what does the user see? Automatic redirect with a message?</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Review guidance</h2>
+  <p class="text-text-secondary mb-4">When you review the generated design spec:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Is there a dashboard mockup for each role?</strong> Three views, three descriptions.</li>
+    <li><strong class="text-text">Does the navigation change per role?</strong> Members shouldn't see admin links. Admins shouldn't see revenue links.</li>
+    <li><strong class="text-text">Check against your permissions matrix.</strong> For every "No" in the matrix, verify the design doesn't show that element to that role — not even a greyed-out link.</li>
+  </ul>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Three views, one design language.</strong> The dashboards should look like they belong to the same app. Consistent colours, typography, and layout patterns — just different content based on role.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: multi-view applications</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">Building role-specific views from scratch is one approach. Here's what else exists for building admin panels and dashboard-style applications.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Dashboard frameworks (Retool, Appsmith)</strong> — <span class="text-text-secondary">Low-code platforms for building internal tools. Drag-and-drop interfaces connected to databases and APIs. Fast to build, limited customisation. Good for internal admin panels.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Admin panel generators (Django Admin, Laravel Nova, Forest Admin)</strong> — <span class="text-text-secondary">Auto-generate admin interfaces from your database models. Django Admin is free and built-in. Laravel Nova and Forest Admin are paid. Fast setup, opinionated design.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Component libraries (Ant Design, Material UI, Chakra UI)</strong> — <span class="text-text-secondary">Pre-built UI components for React. Tables, forms, charts, layouts. You build the views yourself but don't design from scratch. Ant Design is particularly popular for dashboard-heavy apps.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">We build custom views to understand role-based rendering. In production, component libraries (Ant Design, Material UI) accelerate development while keeping full control. Admin generators are useful when you need an internal tool fast and don't need pixel-perfect design.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: architecture</h2>
+    <p class="text-text-secondary mb-4">Design spec is done. Now make the critical architecture decisions around authentication.</p>
+    <a
+      href="/web-dev/projects/5/architecture"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Architecture →
+    </a>
+  </div>
+</DocsLayout>
