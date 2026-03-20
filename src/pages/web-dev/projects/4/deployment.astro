@@ -1,0 +1,120 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import Callout from '../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Deployment" description="Deploy Vinyl Vault to staging with API keys configured in production.">
+  <h1 class="mb-6">Deployment</h1>
+  <p class="text-text-secondary mb-4">Same multi-service pattern as P3: frontend (Netlify), backend (Railway/Render/Fly.io), database (managed PostgreSQL). The critical addition: environment variables for third-party API keys.</p>
+
+  <h2 class="mb-4 mt-10">API keys in production</h2>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Stay in Stripe test mode.</strong> For this project, deploy with test keys (<code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">sk_test_</code> and <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">pk_test_</code>). Never process real payments in a learning project. Switching to live mode is a deliberate step you take when you're ready — not something that happens during deployment.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Environment variables</h2>
+  <p class="text-text-secondary mb-4">Set these in your hosting provider's environment configuration — never in code:</p>
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Variable</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Purpose</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-sm">STRIPE_SECRET_KEY</td>
+          <td class="px-4 py-3 text-text-secondary">Backend Stripe API calls</td>
+          <td class="px-4 py-3 text-text-secondary">Use <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">sk_test_</code> for staging</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono text-sm">STRIPE_PUBLISHABLE_KEY</td>
+          <td class="px-4 py-3 text-text-secondary">Frontend Stripe.js</td>
+          <td class="px-4 py-3 text-text-secondary">Use <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">pk_test_</code> for staging</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-sm">STRIPE_WEBHOOK_SECRET</td>
+          <td class="px-4 py-3 text-text-secondary">Webhook signature verification</td>
+          <td class="px-4 py-3 text-text-secondary">Get from Stripe webhook settings</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono text-sm">GOOGLE_MAPS_API_KEY</td>
+          <td class="px-4 py-3 text-text-secondary">Maps embed or JavaScript API</td>
+          <td class="px-4 py-3 text-text-secondary">Restrict to your production domain</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-sm">DATABASE_URL</td>
+          <td class="px-4 py-3 text-text-secondary">PostgreSQL connection</td>
+          <td class="px-4 py-3 text-text-secondary">Production database URL</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="mb-4 mt-10">Stripe webhook configuration</h2>
+  <p class="text-text-secondary mb-4">In development you used the Stripe CLI to forward webhooks locally. In production, configure the endpoint in the Stripe dashboard:</p>
+  <ol class="list-decimal list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Go to <strong class="text-text">Developers > Webhooks</strong> in the Stripe dashboard</li>
+    <li>Add your production webhook endpoint URL (e.g., <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">https://api.your-domain.com/api/webhooks/stripe</code>)</li>
+    <li>Select the events to listen for (e.g., <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">checkout.session.completed</code>)</li>
+    <li>Copy the webhook signing secret to your production environment variables</li>
+  </ol>
+
+  <h2 class="mb-4 mt-10">Verification</h2>
+  <p class="text-text-secondary mb-2">After deployment, run through this on the staging URL:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>Product catalog loads with records</li>
+    <li>Search works (try various artist names)</li>
+    <li>Add items to cart, verify total</li>
+    <li>Complete a test purchase with <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">4242 4242 4242 4242</code></li>
+    <li>Verify payment appears in the Stripe test dashboard</li>
+    <li>Order confirmation page displays correctly</li>
+    <li>Order confirmation email sends</li>
+    <li>Google Maps loads and shows the correct location</li>
+    <li>Mobile: product grid, cart, and checkout all work</li>
+  </ul>
+
+  <details class="mb-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-4 py-3 cursor-pointer font-medium text-sm">Troubleshooting: "Stripe returns an error on staging"</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary mb-2">Common causes:</p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Missing or incorrect environment variables — check all Stripe keys are set</li>
+        <li>Webhook endpoint URL is wrong — make sure it points to your staging backend, not localhost</li>
+        <li>Success/cancel URLs still pointing to localhost — update them for the staging domain</li>
+        <li>CORS issues — the frontend domain needs to be allowed by the backend</li>
+      </ul>
+      <p class="text-sm text-text-secondary mt-2">Copy the error, paste it to Claude, and direct the fix.</p>
+    </div>
+  </details>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: secrets in production</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">You're using .env files locally and your hosting provider's environment variables in production. As projects grow, secrets management becomes its own discipline.</p>
+      <div class="space-y-3">
+        <div><p class="text-sm"><strong class="text-text">.env files (local only)</strong> — <span class="text-text-secondary">Simple key-value files loaded by your app. Never committed to git. What you're using for local development. Fine for solo projects, doesn't scale to teams.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">GitHub Secrets (CI)</strong> — <span class="text-text-secondary">Encrypted variables available to GitHub Actions workflows. Used for CI/CD pipelines — deploying, running tests, publishing packages. You set them in repo settings.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">AWS Secrets Manager</strong> — <span class="text-text-secondary">Cloud service for storing and rotating secrets. Applications fetch secrets at runtime instead of reading environment variables. Used in AWS-hosted production systems.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">HashiCorp Vault</strong> — <span class="text-text-secondary">Enterprise-grade secrets management. Dynamic secrets, access policies, audit logging. Common in large organisations with strict security requirements.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Doppler</strong> — <span class="text-text-secondary">Developer-friendly secrets manager. Syncs secrets across environments (local, staging, production) and integrates with most hosting providers. Good middle ground between .env files and Vault.</span></p></div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">The progression is natural: .env files for solo work, GitHub Secrets for CI, then a dedicated secrets manager when you have multiple environments and team members who need different access levels.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: client review</h2>
+    <p class="text-text-secondary mb-4">Staging is live. Time to show Marcus the store.</p>
+    <a
+      href="/web-dev/projects/4/uat"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      UAT (User Acceptance Testing) →
+    </a>
+  </div>
+</DocsLayout>

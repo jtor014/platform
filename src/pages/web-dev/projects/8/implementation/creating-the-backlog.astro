@@ -1,0 +1,77 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Creating the Backlog" description="Generate an ordered backlog for SurfCoast Events with operational infrastructure first.">
+  <h1 class="mb-6">Creating the Backlog</h1>
+  <p class="text-text-secondary mb-4">Same process. Architecture in, ordered tickets out. The critical ordering decision: operational infrastructure (Prometheus, Unleash, PagerDuty) goes first, before any feature work. You can't observe a system you haven't instrumented.</p>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <CodeBlock copy>{`Here is the PRD, design spec, and architecture for SurfCoast Events:
+
+[Paste your PRD here]
+[Paste your design spec here]
+[Paste your architecture here]
+
+Create a BACKLOG.md with ordered tickets. Each ticket should have a title, description, and acceptance criteria checklist.
+
+Critical ordering:
+1. Project setup (Docker, database, CI/CD pipeline, Gemini reviewer)
+2. Operational infrastructure:
+   a. Prometheus metrics endpoint (/metrics) and scrape config
+   b. Grafana datasource connected to Prometheus
+   c. Unleash server (Docker container) or LaunchDarkly account setup
+   d. PagerDuty free account and Grafana alert integration
+3. Core features:
+   a. Event listings (CRUD, public view)
+   b. Ticket sales with Stripe integration
+   c. QR code generation on ticket purchase
+   d. QR code check-in scanning
+4. Feature-flagged features:
+   a. New ticket purchase flow (behind a flag, staff-only initially)
+   b. Weather integration via Bureau of Meteorology API (behind a flag)
+5. Event-day live dashboard (tickets sold, check-ins, revenue)
+6. Load testing with k6 (500 concurrent users)
+7. Incident response runbook
+8. Deploy with blue/green and environment approvals
+
+Operational infrastructure MUST come before feature tickets. Every feature endpoint should emit Prometheus metrics from the start. Feature-flagged features should include acceptance criteria for both flag-on and flag-off states.
+
+Keep infrastructure tickets separate from feature tickets. "Set up Prometheus" is NOT bundled with "Build event listings." They are different tickets.`}</CodeBlock>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Why operational infrastructure first:</strong> If you build features before Prometheus exists, you'll have endpoints with no metrics. If you build features before Unleash exists, you can't put anything behind flags. Building the observation and control infrastructure first means every feature you add is automatically measured and controllable from day one.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Label tickets by type</h2>
+  <p class="text-text-secondary mb-4">In Linear, label every ticket with one of three types. This makes it clear how much of the project is "tool setup" versus "feature work" — and this project has more tool setup than any previous one:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">infrastructure</strong> — Prometheus setup, Grafana datasource, CI/CD pipeline, Terraform additions</li>
+    <li><strong class="text-text">feature</strong> — Event listings, ticket sales, QR check-in, live dashboard</li>
+    <li><strong class="text-text">ops</strong> — PagerDuty integration, k6 load tests, incident runbooks, feature flag configuration</li>
+  </ul>
+  <p class="text-text-secondary mb-4">When you look at the board, you should see the progression: infrastructure tickets complete first, then feature tickets, then ops tickets. If you're working on ops before infrastructure is done, something is out of order.</p>
+
+  <h2 class="mb-4 mt-10">Review the backlog</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Operational infrastructure tickets come first</strong> — Prometheus, Grafana, Unleash, PagerDuty before any feature work</li>
+    <li><strong class="text-text">Infrastructure tickets are separate from feature tickets</strong> — "Set up Prometheus metrics" is not bundled with "Build ticket sales"</li>
+    <li><strong class="text-text">Every feature ticket includes metrics criteria</strong> — "The endpoint emits request_count and request_duration_seconds metrics"</li>
+    <li><strong class="text-text">Feature-flagged tickets include both states</strong> — "When flag is ON, user sees new flow. When flag is OFF, user sees existing flow. When flag service is down, user sees existing flow."</li>
+    <li><strong class="text-text">Load testing is its own ticket</strong> — after features are built, before production deploy</li>
+    <li><strong class="text-text">Incident response runbook is a ticket</strong> — a written deliverable, not just code</li>
+  </ul>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: setup</h2>
+    <p class="text-text-secondary mb-4">Backlog reviewed. Set up the project and operational tooling.</p>
+    <a
+      href="/web-dev/projects/8/implementation/setup"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Setup →
+    </a>
+  </div>
+</DocsLayout>

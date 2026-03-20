@@ -1,0 +1,91 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Setup" description="Set up the DeskHub project with seed data and test users for each role.">
+  <h1 class="mb-6">Setup</h1>
+  <p class="text-text-secondary mb-4">Fifth time. You know this. Create the folder, open VS Code, launch Claude Code, hand over the files.</p>
+
+  <h2 class="mb-3">Create the project</h2>
+  <CodeBlock terminal copy>{`$ mkdir -p ~/dev && cd ~/dev
+$ mkdir deskhub && cd deskhub
+$ code .`}</CodeBlock>
+
+  <h2 class="mb-3 mt-8">Set up the branching strategy</h2>
+  <p class="text-text-secondary mb-4">This project uses a staging/production pipeline. Create a <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">develop</code> branch — this is where feature branches merge first. After testing on staging, you promote to <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">main</code> for production.</p>
+  <CodeBlock terminal copy>{`$ cd ~/dev/deskhub
+$ git init
+$ git checkout -b main
+$ git checkout -b develop`}</CodeBlock>
+  <p class="text-text-secondary mt-4 mb-8">Feature branches merge into <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">develop</code>. When staging is verified, <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">develop</code> merges into <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">main</code> for production deployment.</p>
+
+  <h2 class="mb-3 mt-8">Launch Claude Code and hand over the files</h2>
+  <p class="text-text-secondary mb-4">Open the terminal in VS Code, run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">claude</code>, and give it everything:</p>
+  <CodeBlock copy>{`Here's the CLAUDE.md for the project:
+
+[Paste CLAUDE.md here]
+
+And here's the BACKLOG.md:
+
+[Paste BACKLOG.md here]`}</CodeBlock>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>No external API keys needed.</strong> Unlike P3's email service or P4's Stripe and Google Maps, authentication is built-in — there are no third-party services to configure. The JWT library, password hashing, and role middleware are all part of your own codebase.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Seed data</h2>
+  <p class="text-text-secondary mb-4">The setup should create test users for each role with known passwords. You'll switch between these constantly during development and adversarial testing.</p>
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Email</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Role</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Password</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-sm">member@test.com</td>
+          <td class="px-4 py-3 text-text-secondary">Member</td>
+          <td class="px-4 py-3 font-mono text-sm">testpass123</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono text-sm">member2@test.com</td>
+          <td class="px-4 py-3 text-text-secondary">Member</td>
+          <td class="px-4 py-3 font-mono text-sm">testpass123</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-sm">admin@test.com</td>
+          <td class="px-4 py-3 text-text-secondary">Admin</td>
+          <td class="px-4 py-3 font-mono text-sm">testpass123</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono text-sm">owner@test.com</td>
+          <td class="px-4 py-3 text-text-secondary">Owner</td>
+          <td class="px-4 py-3 font-mono text-sm">testpass123</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="text-text-secondary mb-4">Two member accounts — you need both to test data isolation. Create bookings as member 1, log in as member 2, and verify they can't see them.</p>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>These are development-only seed users.</strong> Real production passwords must be strong. The seed data is just for testing — it lets you switch between roles quickly without creating accounts manually each time.</p>
+  </Callout>
+
+  <p class="text-text-secondary mt-6 mb-4">Start Ticket 1. You know what to do.</p>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: building</h2>
+    <p class="text-text-secondary mb-4">Project set up. Time to build — with adversarial testing at every step.</p>
+    <a
+      href="/web-dev/projects/5/implementation/building"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Building →
+    </a>
+  </div>
+</DocsLayout>

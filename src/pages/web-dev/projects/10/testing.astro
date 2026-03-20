@@ -1,0 +1,187 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Testing" description="The full test pyramid — unit, integration, E2E, load, security, and accessibility testing for a healthcare platform.">
+  <h1 class="mb-6">Testing</h1>
+  <p class="text-text-secondary mb-4">This is the most comprehensive test suite you've built. The full pyramid: unit tests, integration tests, end-to-end tests, load tests, security tests, and accessibility tests. Every layer matters when the system handles medical data.</p>
+
+  <h2 class="mb-4 mt-10">The test pyramid</h2>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Unit tests (pytest)</h3>
+      <p class="text-sm text-text-secondary">Business logic, data validation, role checks, audit log entry creation. Fast, isolated, no database. These are the foundation — if the unit tests are wrong, everything above them is wrong too.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Integration tests (API tests with auth)</h3>
+      <p class="text-sm text-text-secondary">Every API endpoint tested with each role. Patient token accessing specialist endpoints returns 403. Specialist token accessing another specialist's patient returns 404 (not 403 — don't reveal the record exists). Admin accessing the prescription queue returns 200. Test the data isolation at the API level.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">End-to-end tests (Playwright)</h3>
+      <p class="text-sm text-text-secondary">Full user journeys across all three roles. Patient: register, browse specialists, book appointment, join consultation room. Specialist: view schedule, join consultation, write notes, flag prescription. Admin: review prescription queue, manage specialists, view consultation metrics.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Load tests (k6)</h3>
+      <p class="text-sm text-text-secondary">Simulate 100 concurrent consultations. Can the system handle it? Where does it break? This tests the auto-scaling configuration — does the ASG scale up in time? Does the database handle the connection load? Does the video service hold?</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Security tests</h3>
+      <p class="text-sm text-text-secondary">All the adversarial testing from P5 — token tampering, IDOR, endpoint probing, role escalation — plus OWASP ZAP scanning. For a healthcare platform, security testing is not optional. Run ZAP against the staging environment and address every finding.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Accessibility tests (axe-core in Playwright)</h3>
+      <p class="text-sm text-text-secondary">Integrate axe-core into your Playwright test suite. Every page, every role, every state — the accessibility check runs automatically. A page that fails axe-core is a failing test, same as a broken feature.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Security testing</h2>
+  <p class="text-text-secondary mb-4">Same adversarial approach from P5. The difference: an IDOR vulnerability on patient records is a compliance violation under the Australian Privacy Act, not just a bug. Medical data makes every security test higher stakes.</p>
+
+  <CodeBlock copy>{`Write adversarial security tests for Harbour Health:
+
+1. Data isolation (the critical tests):
+   - Patient A cannot view Patient B's consultation notes
+   - Specialist A cannot view Specialist B's patient records
+   - Changing the consultation ID in the URL does not bypass isolation
+   - Admin can view prescription queue but not full consultation notes
+
+2. IDOR on every patient-facing endpoint:
+   - GET /api/consultations/:id — only the patient and their specialist
+   - GET /api/prescriptions/:id — only the patient, their specialist, and admin
+   - GET /api/patients/:id — only the patient themselves and assigned specialists
+
+3. Prescription workflow authorization:
+   - Only specialists can create prescription requests
+   - Only admins can approve/reject prescription requests
+   - Specialist cannot approve their own prescription request`}</CodeBlock>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Count the tests.</strong> Three roles plus unauthenticated, across every patient-data endpoint. If you have 15 endpoints touching patient data, that's at least 60 authorization tests. If you have significantly fewer, something is missing.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Accessibility testing</h2>
+  <p class="text-text-secondary mb-4">Automated tools catch roughly 30-40% of accessibility issues. Manual testing catches the rest. You need both.</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Automated (axe-core, pa11y):</strong> Run on every page. Integrate pa11y-ci in the CI pipeline. Catches contrast failures, missing labels, ARIA errors.</li>
+    <li><strong class="text-text">Manual keyboard testing:</strong> Tab through every workflow. Book an appointment. Join a video call. Write consultation notes. Every interactive element must be reachable.</li>
+    <li><strong class="text-text">Manual screen reader:</strong> Navigate with VoiceOver or NVDA. Is the specialist directory understandable when read aloud? Are video controls announced?</li>
+    <li><strong class="text-text">Zoom to 200%:</strong> Does the layout break? Can you still use all features? WCAG 2.1 AA requires usability at 200% zoom.</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Performance testing</h2>
+  <p class="text-text-secondary mb-4">Use k6 to load-test the system. The key scenario: simulate 100 concurrent video consultations worth of API load.</p>
+
+  <CodeBlock lang="javascript" copy>{`// k6 load test: concurrent consultation bookings
+import http from 'k6/http';
+import { check, sleep } from 'k6';
+
+export const options = {
+  stages: [
+    { duration: '2m', target: 50 },
+    { duration: '5m', target: 100 },
+    { duration: '2m', target: 0 },
+  ],
+  thresholds: {
+    http_req_duration: ['p(95)<500'],
+    http_req_failed: ['rate<0.01'],
+  },
+};`}</CodeBlock>
+
+  <p class="text-text-secondary mb-4 mt-4">What to watch: does the ASG scale up in time? Does the database handle the connection load? Do response times degrade gracefully or cliff?</p>
+
+  <h2 class="mb-4 mt-10">Video quality testing</h2>
+  <p class="text-text-secondary mb-4">Use Chrome DevTools Network throttling to simulate bandwidth constraints:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">5 Mbps:</strong> Standard regional broadband. Video should be clear at reduced resolution. Audio must be uninterrupted.</li>
+    <li><strong class="text-text">2 Mbps:</strong> Poor connection. Video will be degraded. Audio should still work. UI should indicate low bandwidth.</li>
+    <li><strong class="text-text">1 Mbps:</strong> Minimum viable. Video may drop to audio-only. System should not crash.</li>
+    <li><strong class="text-text">Connection drop:</strong> Kill network mid-call. Does the system show "reconnecting..."? Does it recover?</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <CodeBlock copy>{`Here is the Harbour Health codebase with authentication, role-based access control, video consultations, and audit logging.
+
+Write a comprehensive test suite covering:
+
+1. Unit tests (pytest):
+   - Patient data validation
+   - Prescription request status transitions
+   - Audit log entry creation
+   - Role permission checks
+
+2. Integration tests (API with auth tokens):
+   - Every endpoint tested with patient, specialist, and admin tokens
+   - Every endpoint tested with no token (expect 401)
+   - Data isolation: patient A cannot see patient B's data
+   - Data isolation: specialist A cannot see specialist B's patients
+   - Prescription workflow: create → review → send lifecycle
+   - Audit log: verify entries created for every patient data access
+
+3. E2E tests (Playwright):
+   - Patient journey: register → browse → book → join consultation room
+   - Specialist journey: view schedule → join → write notes → flag prescription
+   - Admin journey: prescription queue → review → send to GP
+   - Cross-role: verify patient cannot access specialist views
+   - Video: verify join button appears and consultation room loads
+
+4. Load tests (k6):
+   - 100 concurrent API requests to the specialist directory
+   - 50 concurrent consultation bookings
+   - Verify response times under load (p95 < 500ms)
+
+5. Security tests:
+   - Token tampering (modified JWT payload)
+   - IDOR (patient A's URL with patient B's token)
+   - OWASP ZAP scan on staging
+
+6. Accessibility tests (axe-core + Playwright):
+   - Every page scanned with axe-core — zero violations
+   - Keyboard navigation verified on all interactive pages
+   - Video controls accessible via keyboard`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Coverage threshold</h2>
+  <p class="text-text-secondary mb-4">85% coverage minimum in CI. If a PR drops below 85%, it fails. For auth-related code and audit logging code, aim for close to 100%.</p>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Coverage is a floor, not a goal.</strong> 85% coverage doesn't mean the system is well-tested. It means the obvious gaps are covered. The adversarial tests, load tests, and accessibility tests go beyond what coverage measures. A system can have 100% coverage and still fail an OWASP ZAP scan or an axe-core audit.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: accessibility testing methodologies</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">Accessibility testing is a mix of automated scanning, manual testing, and structured auditing. No single approach catches everything.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Automated scanning (axe-core, pa11y, Lighthouse)</strong> — <span class="text-text-secondary">Catches ~30-40% of WCAG issues. Fast, repeatable, CI-integrable. Good for contrast ratios, missing labels, ARIA errors. Cannot evaluate reading order, keyboard usability, or whether content makes sense to a screen reader.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Manual keyboard testing</strong> — <span class="text-text-secondary">Navigate without a mouse. Catches focus traps, unreachable elements, missing focus indicators, broken tab order. Essential for any application with complex interactions — modals, dropdowns, video controls.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Screen reader testing (VoiceOver, NVDA, JAWS)</strong> — <span class="text-text-secondary">The most revealing test. No automated tool can tell you if the reading order makes sense or if a screen reader user can understand the consultation booking flow. Test with VoiceOver (macOS), NVDA (Windows free), or JAWS (enterprise) at least once before UAT.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">WCAG audit process</strong> — <span class="text-text-secondary">Systematic review against the WCAG 2.1 AA success criteria. 50 criteria across perceivable, operable, understandable, and robust categories. Professional audits follow this process. For the capstone, focus on the criteria most relevant to telehealth: keyboard access, screen reader compatibility, colour contrast, and form usability.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">User testing with people with disabilities</strong> — <span class="text-text-secondary">The gold standard. Real users with real assistive technology. Catches issues no tool finds — confusing workflows, missing context, unexpected behaviour. Not always feasible for a learning project, but essential for production healthcare software.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">For Harbour Health: automated scanning in CI (pa11y-ci), manual keyboard and screen reader testing for key flows, and zoom-to-200% on every page. This covers the majority of WCAG 2.1 AA requirements.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: deployment</h2>
+    <p class="text-text-secondary mb-4">Tests pass. Time to deploy — blue/green, feature flags, zero-downtime.</p>
+    <a
+      href="/web-dev/projects/10/deployment"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Deployment →
+    </a>
+  </div>
+</DocsLayout>

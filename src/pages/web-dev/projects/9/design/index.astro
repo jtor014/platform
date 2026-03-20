@@ -1,0 +1,171 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Design" description="Create the design spec for FreshBox from scratch — no provided mockups, learner owns everything.">
+  <h1 class="mb-6">Design</h1>
+  <p class="text-text-secondary mb-4">Same process — client preferences, prompt, template, review. No mockups provided this time. You create everything from scratch.</p>
+
+  <Callout variant="client">
+    <p>"Fresh, organic, earthy — but modern. Think farmers market meets tech. Green, cream, natural photography. The ordering flow needs to be dead simple — our customers are busy parents, not tech people."</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <CodeBlock copy>{`Here is the PRD for FreshBox, an organic produce ordering platform:
+
+[Paste your PRD here]
+
+Using the following design spec template, create a complete design specification.
+
+Key requirements:
+- Fresh, organic, earthy but modern — farmers market meets tech
+- Green and cream colour palette, natural photography
+- Dead simple ordering flow — busy parents, not tech people
+- Product browsing with clear stock indicators (available, low stock, out of stock)
+- Suburb selector that determines available delivery days
+- Subscription management — view, pause, modify, cancel
+- Admin dashboard for Emma: stock management, orders by suburb/day, revenue
+- Responsive — works on phone (most customers order from mobile)
+- Stock status must be immediately visible — no surprises at checkout
+
+No mockups are provided. You design everything from the ground up.
+
+[Paste design spec template here]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">The key design challenges</h2>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Stock visibility</h3>
+      <p class="text-sm text-text-secondary">Produce is perishable. Stock changes throughout the day. The design needs clear, real-time stock indicators: available (green), low stock with count (amber), out of stock (grey/red). A customer should never be surprised by an "out of stock" error after adding items to their order. The product listing page and the order summary both need to reflect current stock.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Suburb-based delivery scheduling</h3>
+      <p class="text-sm text-text-secondary">Different suburbs have different delivery days. The design needs to make this clear: select your suburb, see your available delivery days. Not a generic "choose a delivery date" — a constrained selection based on where you live. The suburb selector should be early in the ordering flow, not at checkout.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Simple ordering flow for non-tech users</h3>
+      <p class="text-sm text-text-secondary">Emma's customers are busy parents. The ordering flow needs to be minimal: browse produce, add to order, confirm delivery day, submit. No complex multi-step checkout. No account creation wall before browsing. The design should feel like a shopping list, not an enterprise form.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Admin dashboard</h3>
+      <p class="text-sm text-text-secondary">Emma manages everything: stock levels (updated throughout the day), orders grouped by suburb and delivery day, subscription management, the corporate account. The admin view needs to be efficient — Emma updates stock while packing orders, so the interface must be fast and responsive.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Stock indicator UX</h2>
+  <p class="text-text-secondary mb-4">The stock indicator is a core UI element. It needs to communicate three states instantly, without the customer needing to click or hover:</p>
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">State</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Display</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Colour</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">In stock</td>
+          <td class="px-4 py-3 text-text-secondary">"In stock"</td>
+          <td class="px-4 py-3 text-text-secondary">Green</td>
+          <td class="px-4 py-3 text-text-secondary">Add to order (enabled)</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Low stock</td>
+          <td class="px-4 py-3 text-text-secondary">"Low stock (3 left)"</td>
+          <td class="px-4 py-3 text-text-secondary">Amber</td>
+          <td class="px-4 py-3 text-text-secondary">Add to order (enabled, with urgency)</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Out of stock</td>
+          <td class="px-4 py-3 text-text-secondary">"Out of stock"</td>
+          <td class="px-4 py-3 text-text-secondary">Grey/Red</td>
+          <td class="px-4 py-3 text-text-secondary">Add to order (disabled)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="text-text-secondary mb-4">These indicators update in real-time as produce sells. A customer browsing at 9am sees "In stock." By 11am, after several orders, the same item might show "Low stock (3 left)." By noon, "Out of stock." The UI reflects the current state of the inventory, not a cached snapshot from page load.</p>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Don't rely on colour alone.</strong> The text label ("In stock", "Low stock (3 left)", "Out of stock") is essential for accessibility. Colour-blind users can't distinguish green from amber. The text communicates the state. The colour reinforces it.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">No mockups — you own this</h2>
+  <p class="text-text-secondary mb-4">Previous projects had client visual direction or industry conventions to follow. This time, the design spec is entirely yours. The prompt gives AI the constraints. You review the output against Emma's brief and the PRD. Does it feel like a farmers market meets tech? Is the ordering flow actually simple?</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Test the flow mentally.</strong> Walk through the ordering process as a busy parent on a phone. How many taps from "I want avocados" to "order submitted"? If it's more than 4-5 steps, simplify. Emma said "dead simple." Hold the design to that standard.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Review guidance</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Does stock status appear on every product?</strong> Available, low stock, out of stock — clearly indicated.</li>
+    <li><strong class="text-text">Is the suburb selector early in the flow?</strong> Before browsing, not at checkout.</li>
+    <li><strong class="text-text">Is the ordering flow genuinely simple?</strong> Count the steps. Fewer is better.</li>
+    <li><strong class="text-text">Does the admin dashboard support Emma's workflow?</strong> Stock updates, orders by suburb/day, subscription management.</li>
+    <li><strong class="text-text">Mobile-first?</strong> Most customers order from their phone. Is the design responsive?</li>
+  </ul>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: design systems & component libraries</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">FreshBox needs a clean, modern UI. Here's what exists for building consistent interfaces and when teams reach for each approach.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Material Design (MUI)</strong> — <span class="text-text-secondary">Google's design system. Comprehensive React component library. Highly customisable through theming. Large ecosystem, excellent documentation. Can feel "Google-y" without customisation. Good for dashboards and admin interfaces.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Ant Design</strong> — <span class="text-text-secondary">Enterprise-focused React component library. Comprehensive — tables, forms, date pickers, calendars. Opinionated design language. Popular for admin dashboards and internal tools. Large bundle size but covers nearly every UI pattern you'll need.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Tailwind UI</strong> — <span class="text-text-secondary">Pre-built components and templates using Tailwind CSS. Not a library — a collection of copy-paste HTML. You own the code completely. Beautiful defaults. Paid product ($299 one-time). Works with any framework.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Radix UI</strong> — <span class="text-text-secondary">Unstyled, accessible primitives. You bring your own styles. Maximum control over appearance. Often paired with Tailwind CSS. Foundation for shadcn/ui. Excellent for custom designs where you need accessibility handled but want full visual control.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">shadcn/ui</strong> — <span class="text-text-secondary">Not a library — a collection of copy-paste components built on Radix UI and Tailwind. You own the code. No dependency to update. Currently very popular in the React ecosystem. Good balance of speed and customisation.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">For FreshBox, the customer-facing ordering UI benefits from something lightweight and customisable (Tailwind UI or shadcn/ui) — Emma's "farmers market meets tech" aesthetic needs a custom feel. The admin dashboard benefits from something comprehensive (Ant Design or MUI) — Emma needs tables, forms, and data views that work out of the box.</p>
+    </div>
+  </details>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: e-commerce platforms</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We build custom to learn. Here's what exists for building e-commerce and when teams reach for each approach.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Shopify</strong> — <span class="text-text-secondary">Hosted e-commerce platform. Handles everything: product listings, cart, checkout, payments, shipping, inventory. $39/month and up. The default choice for most small businesses. Limited customisation without Liquid templating or the Storefront API.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">WooCommerce</strong> — <span class="text-text-secondary">WordPress plugin for e-commerce. Self-hosted. Free core, paid extensions. More customisable than Shopify but requires WordPress knowledge and hosting management. Popular with existing WordPress sites.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">BigCommerce</strong> — <span class="text-text-secondary">Hosted e-commerce like Shopify but with more built-in features and B2B capabilities. Better API for headless commerce. Higher price point.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Medusa</strong> — <span class="text-text-secondary">Open-source headless commerce engine. Node.js backend, bring your own frontend. Full control over the shopping experience. More work to set up but no platform fees and complete customisation.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">When to build custom vs use a platform: if the business needs are standard (products, cart, checkout, shipping), use Shopify or similar. If the business has unique requirements (perishable inventory with real-time updates, suburb-based delivery scheduling, corporate subscription accounts), custom makes more sense. Emma's requirements — real-time stock, suburb scheduling, subscription management — push toward custom. A Shopify store could handle the basics but would require significant customisation for the inventory model.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: architecture</h2>
+    <p class="text-text-secondary mb-4">Design spec is done. Now make the critical architecture decisions — auto-scaling, CDN, Terraform modules, and cost estimation.</p>
+    <a
+      href="/web-dev/projects/9/architecture"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Architecture →
+    </a>
+  </div>
+</DocsLayout>

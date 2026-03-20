@@ -1,0 +1,319 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Architecture" description="Architecture for Coastal Physio — RDS PostgreSQL, ALB, Alembic migrations, blue/green deployment, and Grafana monitoring.">
+  <h1 class="mb-6">Architecture</h1>
+  <p class="text-text-secondary mb-4">This is the biggest architecture page yet. Previous projects added one new infrastructure piece at a time. This project adds several that work together: RDS for the database, ALB for load balancing and HTTPS, Alembic for migrations, blue/green for zero-downtime deployment, and Grafana for dashboards. Each piece has a clear reason for being here.</p>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <CodeBlock copy>{`Here is the PRD and design spec for Coastal Physio, a patient appointment booking and clinical notes system:
+
+[Paste your PRD here]
+[Paste your design spec here]
+
+Using the following architecture template, create a complete technical architecture document.
+
+Tech stack: React frontend, FastAPI backend, RDS PostgreSQL (AWS), EC2 behind ALB, Terraform for all infrastructure, Alembic for database migrations, Grafana for monitoring.
+
+Key architecture decisions to address:
+1. RDS PostgreSQL — single-AZ, free tier, automated backups, why managed over self-hosted
+2. ALB — sits in front of EC2, handles HTTPS termination with ACM certificate
+3. Alembic migrations — every schema change through migration files, version-controlled
+4. Blue/green deployment — deploy to new EC2, health check, switch ALB target group
+5. Grafana — connect to CloudWatch and application metrics, build dashboards
+6. Security groups — RDS only accessible from EC2, EC2 only accessible from ALB
+7. Data sensitivity — how medical data is protected at rest and in transit
+
+[Paste architecture template here]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">RDS PostgreSQL</h2>
+  <p class="text-text-secondary mb-4">Until now, PostgreSQL ran in a Docker container on your EC2 instance. If the instance crashed, the database was gone. If the disk filled up, you found out when queries started failing. If you needed to restore data from yesterday, you couldn't — there were no backups.</p>
+  <p class="text-text-secondary mb-4">RDS is a managed database service. AWS runs the database server. You specify the instance size, storage, and backup retention — AWS handles the rest.</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Why managed</h3>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Automated backups:</strong> RDS takes a daily snapshot and continuously logs transactions. You can restore to any point in the last 7-35 days (configurable). For Megan's medical data, this is non-negotiable — you cannot afford to lose patient records.</p>
+      <p class="text-sm text-text-secondary mt-2"><strong class="text-text">Automated patching:</strong> PostgreSQL security patches are applied during your maintenance window (10pm-6am). No manual intervention.</p>
+      <p class="text-sm text-text-secondary mt-2"><strong class="text-text">Monitoring:</strong> CloudWatch metrics out of the box — CPU, connections, IOPS, free storage. You know when something's wrong before users notice.</p>
+      <p class="text-sm text-text-secondary mt-2"><strong class="text-text">Point-in-time recovery:</strong> Restore the database to any second in the last retention period. If a bad migration deletes data at 2:15pm, you can restore to 2:14pm.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Configuration</h3>
+      <p class="text-sm text-text-secondary">Start with the free tier: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">db.t3.micro</code>, 20 GB storage, single-AZ. This is enough for Coastal Physio's initial load. Terraform provisions it — instance class, storage, engine version, backup retention, maintenance window, security group. All in code, all reviewable.</p>
+    </div>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Single-AZ vs Multi-AZ:</strong> Single-AZ means the database runs in one data centre. If that data centre has an issue, the database is unavailable until it recovers. Multi-AZ runs a standby replica in a second data centre — automatic failover if the primary goes down. We start single-AZ (cheaper, simpler) and upgrade to multi-AZ in the extension scenario when Megan's practice grows.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Application Load Balancer (ALB)</h2>
+  <p class="text-text-secondary mb-4">In P6, your EC2 instance was directly exposed to the internet. The ALB sits between the internet and your EC2 instance. All traffic goes through the ALB first.</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">HTTPS termination</h3>
+      <p class="text-sm text-text-secondary">The ALB handles SSL/TLS. You provision an ACM (AWS Certificate Manager) certificate for your domain — free, auto-renewing. The ALB terminates HTTPS and forwards plain HTTP to your EC2 instance on the private network. Your application code doesn't need to handle certificates.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Health checks</h3>
+      <p class="text-sm text-text-secondary">The ALB pings your application's health endpoint every 30 seconds. If the instance stops responding, the ALB stops sending traffic to it. This is the foundation of blue/green deployment — the ALB only routes traffic to healthy instances.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Target groups</h3>
+      <p class="text-sm text-text-secondary">EC2 instances are registered in target groups. The ALB routes traffic to the active target group. During blue/green deployment, you create a new target group with the new version, verify it, then switch. This is how zero-downtime deployment works.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Alembic migrations</h2>
+  <p class="text-text-secondary mb-4">Every schema change goes through a migration file. No logging into the database and running <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">ALTER TABLE</code> manually. No "just add the column in production." Every change is versioned, reviewed, and reversible.</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">The workflow</h3>
+      <ol class="text-sm text-text-secondary list-decimal list-inside space-y-2 mt-2">
+        <li>Change your SQLAlchemy model (add a column, create a table)</li>
+        <li>Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">alembic revision --autogenerate -m "add phone to patients"</code></li>
+        <li>Review the generated migration file — Alembic writes the upgrade and downgrade SQL</li>
+        <li>Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">alembic upgrade head</code> to apply it to your dev database</li>
+        <li>Verify the schema matches expectations</li>
+        <li>Commit the migration file to git — it's part of the codebase</li>
+      </ol>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Rollback</h3>
+      <p class="text-sm text-text-secondary">Every migration has an upgrade (forward) and a downgrade (backward). Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">alembic downgrade -1</code> to roll back the last migration. This only works if the downgrade function is correct — which is why you review migration files before applying them.</p>
+    </div>
+  </div>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Always review generated migrations.</strong> Alembic's autogenerate is helpful but not perfect. It might miss index changes, generate incorrect column types, or produce a downgrade that doesn't actually reverse the upgrade. Read the SQL. Run it in dev first. Verify the schema. Then apply to production.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Blue/green deployment</h2>
+  <p class="text-text-secondary mb-4">In P5, deploying meant downtime — the old version goes down, the new version comes up. With blue/green, the old version (blue) keeps running while you deploy the new version (green) alongside it. Once green is healthy, you switch traffic. If green has problems, you switch back to blue. Zero downtime.</p>
+
+  <div class="bg-bg-muted rounded-lg p-6 mb-6 font-mono text-xs text-text-secondary">
+    <p class="mb-2 text-text font-semibold font-sans text-sm">Blue/green flow</p>
+    <p>1. Blue is live (current version serving traffic via ALB)</p>
+    <p class="mt-1">2. Deploy green (new EC2 instance with new version)</p>
+    <p class="mt-1">3. ALB health checks green → <span class="text-primary">green is healthy</span></p>
+    <p class="mt-1">4. Switch ALB target group from blue to green</p>
+    <p class="mt-1">5. Drain connections from blue (existing requests finish)</p>
+    <p class="mt-1">6. Terminate blue instance</p>
+    <p class="mt-1">If step 3 fails → <span class="text-red-600">terminate green, blue stays live, no impact</span></p>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Blue/green with database migrations:</strong> The tricky part. If the new version requires a schema change, you need to run the migration before switching traffic — but the old version is still running against the same database. The migration must be backward-compatible: add columns (don't rename or remove them), make new columns nullable, and don't break queries the old version runs. This constraint shapes how you write migrations.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Grafana</h2>
+  <p class="text-text-secondary mb-4">CloudWatch collects metrics. Grafana makes them visible. Instead of checking the AWS console for individual metrics, you build dashboards that show everything in one place.</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Application dashboards</h3>
+      <p class="text-sm text-text-secondary">Request rate (requests per second), error rate (percentage of 4xx and 5xx responses), response time (p50, p95, p99 latency). These three metrics — rate, errors, duration — are the foundation of application monitoring.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">RDS dashboards</h3>
+      <p class="text-sm text-text-secondary">CPU utilisation, active connections, IOPS (read and write), free storage. These tell you if the database is under pressure before it affects the application.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">System dashboards</h3>
+      <p class="text-sm text-text-secondary">EC2 CPU, memory, disk usage. The infrastructure health underneath the application.</p>
+    </div>
+  </div>
+
+  <p class="text-text-secondary mb-4">Setup options: self-host Grafana on your EC2 instance (free, you manage it) or use Grafana Cloud free tier (managed, limited dashboards). Either works. Grafana connects to CloudWatch as a data source — you configure it once, then build dashboards.</p>
+
+  <h2 class="mb-4 mt-10">Terraform plan</h2>
+  <p class="text-text-secondary mb-4">The architecture should specify what Terraform provisions. This is the complete infrastructure-as-code picture:</p>
+
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Resource</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-sm">aws_vpc</td>
+          <td class="px-4 py-3 text-text-secondary">Isolated network for all resources</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono text-sm">aws_subnet (public)</td>
+          <td class="px-4 py-3 text-text-secondary">ALB lives here — internet-facing</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-sm">aws_subnet (private)</td>
+          <td class="px-4 py-3 text-text-secondary">EC2 and RDS live here — not directly internet-accessible</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono text-sm">aws_lb (ALB)</td>
+          <td class="px-4 py-3 text-text-secondary">Load balancer with HTTPS listener</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-sm">aws_lb_target_group</td>
+          <td class="px-4 py-3 text-text-secondary">Blue and green target groups for deployment</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono text-sm">aws_acm_certificate</td>
+          <td class="px-4 py-3 text-text-secondary">HTTPS certificate for the domain</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-sm">aws_instance (EC2)</td>
+          <td class="px-4 py-3 text-text-secondary">Application server running Docker containers</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono text-sm">aws_db_instance (RDS)</td>
+          <td class="px-4 py-3 text-text-secondary">Managed PostgreSQL with automated backups</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-sm">aws_security_group (ALB)</td>
+          <td class="px-4 py-3 text-text-secondary">Allow 443 (HTTPS) from internet</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono text-sm">aws_security_group (EC2)</td>
+          <td class="px-4 py-3 text-text-secondary">Allow traffic from ALB only</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-sm">aws_security_group (RDS)</td>
+          <td class="px-4 py-3 text-text-secondary">Allow port 5432 from EC2 only</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono text-sm">aws_s3_bucket</td>
+          <td class="px-4 py-3 text-text-secondary">Database backup exports, Terraform state</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Security group layering:</strong> Traffic flows internet → ALB → EC2 → RDS. Each layer only allows traffic from the one before it. RDS is never directly accessible from the internet — only from EC2. EC2 is never directly accessible from the internet — only from the ALB. This defence-in-depth is standard for any production database architecture.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Database schema</h2>
+  <p class="text-text-secondary mb-4">The architecture should include the key tables. At minimum:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">users</strong> — id, email, password_hash, role (patient/practitioner/admin), name, phone, created_at</li>
+    <li><strong class="text-text">locations</strong> — id, name (Mornington/Rosebud/Dromana), address</li>
+    <li><strong class="text-text">practitioner_availability</strong> — practitioner_id, location_id, day_of_week, start_time, end_time</li>
+    <li><strong class="text-text">appointments</strong> — id, patient_id, practitioner_id, location_id, start_time, end_time, status (booked/cancelled/completed), created_at</li>
+    <li><strong class="text-text">clinical_notes</strong> — id, appointment_id, practitioner_id, patient_id, content (text), created_at, updated_at</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Review guidance</h2>
+  <p class="text-text-secondary mb-4">When you review the generated architecture:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Is RDS configured with automated backups and a maintenance window?</li>
+    <li>Is the ALB handling HTTPS termination with an ACM certificate?</li>
+    <li>Are security groups layered correctly (ALB → EC2 → RDS)?</li>
+    <li>Is every schema change going through Alembic migrations?</li>
+    <li>Is the blue/green deployment flow described step by step?</li>
+    <li>Is Grafana connected to CloudWatch with dashboards for application, RDS, and system metrics?</li>
+    <li>Does the schema support multi-location appointments with practitioner availability?</li>
+  </ul>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: managed databases</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use RDS PostgreSQL. Here's what else exists and when teams reach for each option.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Amazon RDS</strong> — <span class="text-text-secondary">What we use. Managed PostgreSQL, MySQL, MariaDB, Oracle, SQL Server. Automated backups, patching, monitoring. Multi-AZ for high availability. The standard choice on AWS.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Cloud SQL (Google Cloud)</strong> — <span class="text-text-secondary">Google's equivalent of RDS. Managed PostgreSQL, MySQL, SQL Server. Same concepts, different cloud. Choose based on which cloud you're already on.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Azure Database</strong> — <span class="text-text-secondary">Microsoft's managed databases. PostgreSQL, MySQL, MariaDB, SQL Server. Same pattern — managed, automated, cloud-native.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">PlanetScale</strong> — <span class="text-text-secondary">Managed MySQL with a branching model (like git for databases). Schema changes deploy like code merges. Popular with modern web apps. MySQL only.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Supabase</strong> — <span class="text-text-secondary">Managed PostgreSQL with a built-in API layer, auth, and real-time subscriptions. Open-source Firebase alternative. Good for rapid development.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Neon</strong> — <span class="text-text-secondary">Serverless PostgreSQL with branching. Scales to zero when idle (cost savings for dev environments). Branch the database for testing — like a git branch for your data.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">CockroachDB</strong> — <span class="text-text-secondary">Distributed SQL database. PostgreSQL-compatible. Survives entire data centre failures by replicating across regions. For when even multi-AZ isn't enough. Complex, expensive.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">RDS is the industry default for PostgreSQL on AWS. The managed database market is mature — the core offering (automated backups, patching, monitoring, failover) is consistent across all major clouds. The differentiators are ecosystem integration and advanced features like branching or serverless scaling.</p>
+    </div>
+  </details>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: database migration tools</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use Alembic with SQLAlchemy. Here's what else exists across different stacks.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Alembic</strong> — <span class="text-text-secondary">What we use. Python, works with SQLAlchemy. Autogenerate migrations from model changes. Version-controlled. The standard for Python + PostgreSQL projects.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Flyway</strong> — <span class="text-text-secondary">SQL-based migrations. Write raw SQL files, Flyway tracks which ones have been applied. Language-agnostic — works with Java, .NET, any stack. Simpler model: just SQL files with version numbers.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Liquibase</strong> — <span class="text-text-secondary">XML, YAML, JSON, or SQL-based migrations. More enterprise-focused than Flyway. Supports database diffing, rollback plans, and changelogs. Used in larger organisations.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Prisma Migrate</strong> — <span class="text-text-secondary">Part of the Prisma ORM (TypeScript/JavaScript). Schema-first — you define the schema, Prisma generates migrations. Popular in the Node.js ecosystem.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Django migrations</strong> — <span class="text-text-secondary">Built into Django. Autogenerate from model changes, like Alembic but Django-specific. If you're using Django, you get this for free.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Knex migrations</strong> — <span class="text-text-secondary">Part of the Knex.js query builder (Node.js). JavaScript-based migration files. Simpler than Prisma, more manual than Django.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">The core concept is identical across all tools: versioned schema changes, applied in order, with rollback support. The tool you use depends on your stack. The skill — writing and reviewing migrations — transfers.</p>
+    </div>
+  </details>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: load balancers</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use AWS ALB. Here's what else exists and when teams reach for each option.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Application Load Balancer (ALB)</strong> — <span class="text-text-secondary">What we use. Layer 7 (HTTP/HTTPS). Content-based routing, health checks, target groups. The standard choice for web applications on AWS.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Network Load Balancer (NLB)</strong> — <span class="text-text-secondary">Layer 4 (TCP/UDP). Higher performance, lower latency than ALB. For non-HTTP traffic or extreme throughput requirements. No content-based routing.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Cloudflare Load Balancer</strong> — <span class="text-text-secondary">CDN-integrated load balancing. Global traffic management, DDoS protection built in. Cloud-agnostic — works with any backend.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">HAProxy</strong> — <span class="text-text-secondary">Open-source, self-hosted load balancer. Extremely performant and configurable. The industry standard for self-managed load balancing. Used by major tech companies.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Traefik</strong> — <span class="text-text-secondary">Modern, container-native reverse proxy and load balancer. Auto-discovers services in Docker and Kubernetes. Automatic HTTPS via Let's Encrypt. Popular in container deployments.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">ALB is the default for web applications on AWS. The choice between ALB and NLB depends on whether you need Layer 7 features (routing rules, HTTPS termination) or raw performance. For a healthcare booking system, ALB is the right fit.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: implementation</h2>
+    <p class="text-text-secondary mb-4">Architecture reviewed. Time to create the backlog in Linear and start building.</p>
+    <a
+      href="/web-dev/projects/7/implementation"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Implementation →
+    </a>
+  </div>
+</DocsLayout>

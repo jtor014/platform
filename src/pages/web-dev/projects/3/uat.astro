@@ -1,0 +1,115 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import Callout from '../../../../components/Callout.astro';
+---
+
+<DocsLayout title="UAT (User Acceptance Testing)" description="Show Sarah the staging site, handle feedback including a scope question, and iterate.">
+  <h1 class="mb-6">UAT (User Acceptance Testing)</h1>
+  <p class="text-text-secondary mb-4">Staging is live. Now show Sarah. Same process as Project 1 — show the client, collect feedback, turn it into tickets, fix, redeploy, get sign-off.</p>
+  <p class="text-text-secondary mb-8">The difference: you wrote the PRD. If Sarah's feedback reveals a missing requirement, that's a planning lesson — not just an implementation fix.</p>
+
+  <div class="mt-3 pt-3 border-t border-border grid gap-2 sm:grid-cols-2 mb-8">
+    <div class="text-xs"><span class="font-semibold text-text">You:</span> <span class="text-text-secondary">Show the client, collect feedback, turn it into tickets</span></div>
+    <div class="text-xs"><span class="font-semibold text-text">AI:</span> <span class="text-text-secondary">No change — this is a human step</span></div>
+  </div>
+
+  <h2 class="mb-4">Client review</h2>
+  <p class="text-text-secondary mb-4">You send Sarah the staging URL. She opens it on her phone at the studio and on her laptop at home. She signs up for a test class, checks her email, browses the listings. A few hours later she sends you a message:</p>
+
+  <Callout variant="client">
+    <p>"This looks fantastic, I love it! Three things though:</p>
+    <ol class="list-decimal list-inside space-y-2 mt-2">
+      <li>The signup form works but it doesn't tell me if the class is almost full — can it show 'only 2 spots left' when it's close? I think people would sign up faster if they knew spots were running out.</li>
+      <li>I want to change the class descriptions sometimes. Right now I'd have to ask you every time. Is there a simple way I can edit them?</li>
+      <li>When someone signs up, the confirmation email just says 'You're signed up.' Can it include the class name, date, and time? People sign up for multiple classes and they won't know which one this is about.</li>
+    </ol>
+    <p class="mt-2">Otherwise, ready to go!"</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Triage the feedback</h2>
+  <p class="text-text-secondary mb-4">Before turning feedback into tickets, assess each item. Not all feedback is the same kind of work.</p>
+
+  <h3 class="mb-3 mt-6">Item 1: "Show spots remaining" — enhancement, in scope</h3>
+  <p class="text-text-secondary mb-4">This is a UI enhancement. The data already exists (spots remaining is in the database). The request is to display it more prominently when spots are low. This is reasonable, implementable, and within the scope of the current system.</p>
+
+  <h3 class="mb-3 mt-6">Item 2: "Let me edit class descriptions" — scope question</h3>
+  <p class="text-text-secondary mb-8">This is not a bug. This is not a tweak. Sarah is asking for an admin panel or CMS — a way to edit content without going through you. That's a feature that was never in the PRD, and for good reason: building an admin interface is a significant piece of work that would expand the project considerably.</p>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>This is a scope decision, not a technical one.</strong> The right answer is not "sure, I'll add that." The right answer is to flag it as out of scope for this version, offer a simple interim solution, and note it for a future version. Something like:</p>
+    <p class="text-sm text-text-secondary mt-2">"For now, when you want to update a class description, send me the new text and I'll update the database directly — takes 5 minutes. For v2, we can look at adding a simple admin page where you can edit descriptions yourself."</p>
+    <p class="text-sm text-text-secondary mt-2">This is a judgment call. Saying yes to everything is how projects spiral. Saying no without offering an alternative frustrates clients. The middle ground — solve the immediate need simply, plan the real solution for later — is the professional response.</p>
+  </Callout>
+
+  <h3 class="mb-3 mt-6">Item 3: "Include class details in email" — bug/gap, in scope</h3>
+  <p class="text-text-secondary mb-4">The confirmation email should have included this from the start. If your PRD specified email content, this is a bug. If it didn't, this is a gap in your requirements — and a planning lesson for next time.</p>
+
+  <h2 class="mb-4 mt-10">Turn implementable feedback into tickets</h2>
+  <p class="text-text-secondary mb-4">Items 1 and 3 are in scope. Item 2 gets a conversation, not a ticket. Create these as GitHub Issues and add them to your project board in the <strong class="text-text">To Do</strong> column — same workflow as the original backlog tickets.</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">CF-1</span>
+        <h3 class="text-base font-semibold">Show low-availability indicator on class listings</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Why:</strong> Client wants users to see when a class is almost full to encourage signups.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>When a class has 3 or fewer spots remaining, display "Only X spots left" on the class card</li>
+        <li>The indicator is visually distinct (colour or weight) from the regular spots-remaining text</li>
+        <li>When a class is full, display "Class full" instead of the spots count</li>
+        <li>The threshold (3 spots) is configurable in the backend, not hardcoded in the frontend</li>
+      </ul>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">CF-2</span>
+        <h3 class="text-base font-semibold">Include class details in confirmation email</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Why:</strong> Confirmation email currently doesn't specify which class, confusing for users who sign up for multiple classes.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Confirmation email includes the class name (e.g., "Wheel Throwing — Beginners")</li>
+        <li>Confirmation email includes the date and time of the class</li>
+        <li>Admin notification email to Sarah also includes class details</li>
+        <li>Email is readable and well-formatted (not just raw text dump)</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Fix and redeploy</h2>
+  <p class="text-text-secondary mb-4">Same loop. Bundle the fixes:</p>
+  <CodeBlock copy>{`Fix client feedback items:
+
+CF-1: When a class has 3 or fewer spots remaining, show "Only X spots left" on the class card in a visually distinct style. Show "Class full" when spots reach 0. Make the threshold configurable in the backend.
+
+CF-2: Update confirmation and admin notification emails to include the class name, date, and time. Currently the email just says "You're signed up" with no details.`}</CodeBlock>
+
+  <p class="text-text-secondary mt-4 mb-4">Verify each fix, merge, redeploy to staging. Send Sarah the link again. She confirms — spots indicator works, emails have the right details. For the class descriptions, you've agreed on the interim solution. Sign-off.</p>
+
+  <h2 class="mb-4 mt-10">The planning lessons</h2>
+  <p class="text-text-secondary mb-4">Look at what Sarah's feedback revealed:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li><strong class="text-text">CF-1 (spots indicator):</strong> A UX enhancement you could have anticipated. When you know data exists in the system, think about how users will want to see it.</li>
+    <li><strong class="text-text">CF-2 (email content):</strong> A requirement you should have specified in the PRD. "Send a confirmation email" is not specific enough — you need to specify what the email contains. Next time you write a PRD involving email, you'll include the email content.</li>
+    <li><strong class="text-text">Item 2 (admin panel):</strong> A scope question that tested your judgment. The client will always want more. Your job is to distinguish between "yes, we should do that" and "that's a future version."</li>
+  </ul>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>The key lesson from P1 still applies:</strong> Feedback is not failure — it's a normal part of delivering software. The difference in P3 is that you can trace feedback back to your own planning decisions. That's how planning judgment develops.</p>
+  </Callout>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: Go live</h2>
+    <p class="text-text-secondary mb-4">Client signed off. Time to go live, monitor, and reflect.</p>
+    <a
+      href="/web-dev/projects/3/monitoring"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Monitoring & Iteration →
+    </a>
+  </div>
+</DocsLayout>

@@ -33,6 +33,34 @@ import Callout from '../../../../components/Callout.astro';
   <p class="text-text-secondary mb-4">Netlify is a <strong class="text-text">static hosting provider</strong>. It serves pre-built files — no server running your code, no database to maintain. That's why it can offer a free tier: serving static files is cheap. Vercel, Cloudflare Pages, and GitHub Pages work the same way. For a project like this, free hosting is the right choice.</p>
   <p class="text-text-secondary mb-8">The <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.netlify.app</code> URL is your staging environment. It's where you verify the site works in the real world — and it's what you show the client next.</p>
 
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: hosting & deployment</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">Where your code runs depends on what you're building. Here's the hosting landscape from simple to complex.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Netlify</strong> — <span class="text-text-secondary">What we use. Git-push deploys for static sites. Free tier is generous. Good for frontends and JAMstack.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Vercel</strong> — <span class="text-text-secondary">Netlify's main competitor. Made by the Next.js team. Better for Next.js projects, comparable for everything else.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Cloudflare Pages</strong> — <span class="text-text-secondary">Fast, free, integrated with Cloudflare's CDN and security. Growing quickly.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">GitHub Pages</strong> — <span class="text-text-secondary">Free hosting for public GitHub repos. More limited than Netlify/Vercel but zero configuration.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">AWS S3 + CloudFront</strong> — <span class="text-text-secondary">Host static files on S3, serve through CloudFront CDN. More control, more complexity. We'll use this from Project 9 onwards.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Railway / Render / Fly.io</strong> — <span class="text-text-secondary">PaaS for full-stack apps. Deploy containers without managing servers. We'll use these for backend hosting in Projects 3-5 before moving to AWS.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">Netlify is perfect for static sites. When you add a backend, database, and containers, deployment gets more complex. The progression: PaaS (Netlify, Railway) → containers on a server (Docker on EC2) → full cloud infrastructure (Terraform + AWS). Each step adds control and complexity.</p>
+    </div>
+  </details>
+
   <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
     <h2 class="text-xl font-semibold mb-2">Next: client review</h2>
     <p class="text-text-secondary mb-4">Staging is live. Time to show the client and get sign-off.</p>

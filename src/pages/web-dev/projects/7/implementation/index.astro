@@ -1,0 +1,22 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Card from '../../../../../components/Card.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Implementation" description="Create the backlog in Linear, set up the project with Alembic, and build Coastal Physio with migration-first development.">
+  <h1 class="mb-6">Implementation</h1>
+  <p class="text-text-secondary mb-4">You know the loop. The new dimensions: three types of work (application tickets, infrastructure tickets, migration tickets), a new project management tool (Linear), and migration-first development — every database change starts with an Alembic migration, not application code.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>This project uses Linear for project management.</strong> Same kanban workflow as GitHub Projects — backlog, in progress, done. Different interface, different features. We switch tools deliberately to demonstrate that the project management skill transfers. If you can manage a backlog in GitHub Projects, you can manage it in Linear.</p>
+  </Callout>
+
+  <p class="text-text-secondary mb-8">Work through these in order:</p>
+
+  <div class="grid gap-4">
+    <Card title="1. Creating the backlog" subtitle="Set up Linear and create ordered tickets — infrastructure first" href="/web-dev/projects/7/implementation/creating-the-backlog" />
+    <Card title="2. Setup" subtitle="Project folder, Linear workspace, Terraform infra directory, Alembic config" href="/web-dev/projects/7/implementation/setup" />
+    <Card title="3. Building" subtitle="Three types of work: application, infrastructure, and migration tickets" href="/web-dev/projects/7/implementation/building" />
+  </div>
+</DocsLayout>

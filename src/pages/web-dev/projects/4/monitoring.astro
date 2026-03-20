@@ -1,0 +1,155 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Monitoring & Iteration" description="Go live, monitor payments and integrations, and reflect on API verification.">
+  <h1 class="mb-6">Monitoring & Iteration</h1>
+  <p class="text-text-secondary mb-8">Marcus signed off. Client feedback is fixed and deployed. Vinyl Vault is live — people can browse records, search by artist or genre, add to cart, pay with Stripe, and find the physical shop on the map.</p>
+
+  <h2 class="mb-4">What to monitor</h2>
+  <p class="text-text-secondary mb-4">Vinyl Vault has more moving parts than Clay & Co. Payment processing and third-party integrations add monitoring requirements:</p>
+
+  <h3 class="mb-3 mt-6">Stripe dashboard</h3>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li><strong class="text-text">Successful vs failed payments</strong> — a sudden spike in failures means something broke</li>
+    <li><strong class="text-text">Webhook delivery</strong> — Stripe shows whether webhooks were delivered and accepted. Failed webhooks mean orders aren't being confirmed</li>
+    <li><strong class="text-text">Disputed payments</strong> — rare for a small store, but worth monitoring</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Error logs and order records</h3>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li><strong class="text-text">API failures</strong> — 500 errors, database connection issues, third-party service outages</li>
+    <li><strong class="text-text">Order consistency</strong> — do orders in your database match payments in Stripe? If they diverge, webhook handling is broken</li>
+    <li><strong class="text-text">Inventory accuracy</strong> — are stock counts correct after purchases?</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Google Maps</h3>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>API usage in Google Cloud Console — stay within the free tier</li>
+    <li>Embed still loads and shows the correct pin location</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Sentry error tracking</h3>
+  <p class="text-text-secondary mb-4">Open your Sentry dashboard. If there are errors, you'll see them grouped with stack traces, affected users, and frequency. This is your first real monitoring tool — it tells you things are broken before users complain.</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li><strong class="text-text">Unhandled exceptions</strong> — Sentry captures these automatically. A spike in errors after deployment means something broke.</li>
+    <li><strong class="text-text">Error grouping</strong> — Similar errors are grouped together. One entry might represent hundreds of occurrences of the same bug.</li>
+    <li><strong class="text-text">Stack traces</strong> — Each error shows exactly where it happened in your code. No more guessing from vague user reports.</li>
+    <li><strong class="text-text">Release tracking</strong> — If you tag releases, Sentry shows which deployment introduced the error.</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">The Loop</h2>
+  <p class="text-text-secondary mb-6">You've completed the 8-step cycle again — with third-party API integration and a new verification skill:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">1</span>
+      <div>
+        <p class="font-semibold text-sm">Requirements</p>
+        <p class="text-sm text-text-secondary">You wrote the PRD for an online store with payments — catching e-commerce scope creep.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">2</span>
+      <div>
+        <p class="font-semibold text-sm">Design</p>
+        <p class="text-sm text-text-secondary">You created the design spec — dark theme, album art as hero, Stripe-handled payment UI.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">3</span>
+      <div>
+        <p class="font-semibold text-sm">Architecture</p>
+        <p class="text-sm text-text-secondary">You planned Stripe integration, Google Maps, webhook handling, and API key management.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">4</span>
+      <div>
+        <p class="font-semibold text-sm">Implement</p>
+        <p class="text-sm text-text-secondary">You built from your backlog — verifying every API call against official documentation.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">5</span>
+      <div>
+        <p class="font-semibold text-sm">Test</p>
+        <p class="text-sm text-text-secondary">You tested with real Stripe test payments, verified webhook handling, and checked API compliance.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">6</span>
+      <div>
+        <p class="font-semibold text-sm">Deploy</p>
+        <p class="text-sm text-text-secondary">You deployed with production environment variables — API keys configured, never committed to git.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">7</span>
+      <div>
+        <p class="font-semibold text-sm">UAT</p>
+        <p class="text-sm text-text-secondary">You showed Marcus, fixed the search bug and missing confirmation page, and handled the scope question about admin access.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">8</span>
+      <div>
+        <p class="font-semibold text-sm">Monitor</p>
+        <p class="text-sm text-text-secondary">You went live, set up payment and integration monitoring, and reflected on the API verification process.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Reflect: API hallucination</h2>
+  <p class="text-text-secondary mb-4">This is the core reflection for P4. Think honestly about the verification process:</p>
+
+  <h3 class="mb-3 mt-6">About hallucination detection</h3>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>How many times did Claude write incorrect API calls? What was wrong — method names, parameters, response fields?</li>
+    <li>How did you catch the errors? By reading the docs, by testing, or by hitting a runtime error?</li>
+    <li>How long did API verification take compared to verifying non-API code?</li>
+    <li>Did the CLAUDE.md instruction about citing documentation URLs help? Would you write it differently next time?</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">About the verification habit</h3>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>Did you verify every API call, or did you start skipping some because "it looks right"?</li>
+    <li>Were you faster at verification by the end of the project than at the start?</li>
+    <li>Would you trust AI-generated API integration code without checking the docs? Why or why not?</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">About the process</h3>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>Did isolating API tickets in the backlog make verification easier?</li>
+    <li>Was the backlog ordering right — core features before integrations?</li>
+    <li>How did Marcus's scope question compare to Sarah's in P3? Was it easier to handle the second time?</li>
+  </ul>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>The key insight:</strong> The Stripe docs are more reliable than any AI. The skill isn't knowing Stripe — it's knowing to check. Every third-party API you integrate in the future follows the same pattern: AI generates the code, you verify against the official documentation. The API changes. The habit stays the same.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: error tracking & APM</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">Sentry is an error tracker — it captures exceptions and tells you what broke. APM (Application Performance Monitoring) goes further, tracking response times, database queries, and system health. Many tools do both.</p>
+      <div class="space-y-3">
+        <div><p class="text-sm"><strong class="text-text">Sentry</strong> — <span class="text-text-secondary">Error tracking with stack traces, release tracking, and alerting. Free tier is generous. What you're using in this project. Also offers basic performance monitoring.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Bugsnag</strong> — <span class="text-text-secondary">Similar to Sentry — error monitoring with grouping and alerts. Strong mobile SDK support. Popular in iOS and Android development.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Rollbar</strong> — <span class="text-text-secondary">Error tracking with a focus on real-time alerting and deploy tracking. Integrates well with CI/CD pipelines.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Datadog APM</strong> — <span class="text-text-secondary">Full APM platform — traces requests across services, monitors infrastructure, and tracks errors. Enterprise-grade. Expensive but comprehensive.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">New Relic</strong> — <span class="text-text-secondary">One of the original APM tools. Monitors everything from server metrics to browser performance. Free tier available. Heavy but powerful.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Honeybadger</strong> — <span class="text-text-secondary">Simple error tracking aimed at small teams. Less feature-rich than Sentry but easier to set up and understand.</span></p></div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">Start with error tracking (Sentry). When you need to understand why something is slow — not just broken — you'll move toward full APM. Most teams start with Sentry and add Datadog or New Relic as they scale.</p>
+    </div>
+  </details>
+
+  <div class="border border-border rounded-lg p-6 my-8 bg-bg-subtle text-center">
+    <h3 class="text-lg font-semibold mb-3">Show someone</h3>
+    <p class="text-text-secondary mb-3">Open the store on your phone. Search for a record. Add it to the cart. Go through checkout with a test card. Show someone the order confirmation page. Then open the Stripe dashboard and show them the payment.</p>
+    <p class="text-text-secondary font-medium">"I built an online store with real payment processing. I directed AI to write the code and verified every API call against the official documentation."</p>
+    <p class="text-sm text-text-secondary mt-3">That last part matters. Anyone can get AI to generate Stripe code. Knowing that you need to check it — and knowing how — is the difference between code that works and code that fails when a customer tries to pay.</p>
+  </div>
+</DocsLayout>

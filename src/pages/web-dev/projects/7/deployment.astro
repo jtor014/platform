@@ -1,0 +1,129 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import StepList from '../../../../components/StepList.astro';
+import Checklist from '../../../../components/Checklist.astro';
+---
+
+<DocsLayout title="Deployment" description="Blue/green deployment — deploy new versions with zero downtime by switching ALB target groups.">
+  <h1 class="mb-6">Deployment</h1>
+  <p class="text-text-secondary mb-4">Blue/green deployment is the star of this step. Instead of taking the application down, deploying the new version, and bringing it back up — you deploy the new version alongside the old one, verify it works, and switch traffic. If something goes wrong, you switch back. Zero downtime.</p>
+
+  <h2 class="mb-4 mt-10">Blue/green deployment step by step</h2>
+  <p class="text-text-secondary mb-4">This is the deployment pipeline, automated through GitHub Actions:</p>
+
+  <StepList steps={[
+    { title: "Create new target group (green)", content: "Terraform creates a new ALB target group for the new version." },
+    { title: "Launch new EC2 instance", content: "Deploy the new application version to a fresh EC2 instance. Register it with the green target group." },
+    { title: "Run database migrations", content: "Apply any pending Alembic migrations. The migration must be backward-compatible — the old version (blue) is still running against the same database." },
+    { title: "Health checks", content: "ALB health checks verify the new instance is healthy. The health endpoint returns 200, application responds to requests, database is connected." },
+    { title: "Switch ALB listener", content: "Update the ALB listener to forward traffic to the green target group. New requests go to the new version." },
+    { title: "Drain connections from blue", content: "The old instance finishes processing in-flight requests. No new requests are routed to it. The ALB deregistration delay handles this (default: 300 seconds)." },
+    { title: "Verify and terminate blue", content: "After drain period, verify the new version is stable. Terminate the old EC2 instance. Green is now the live environment." },
+  ]} />
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Rollback is a switch, not a rebuild.</strong> If the green instance fails health checks, the ALB never switches — blue stays live, green is terminated, no impact. If green passes health checks but has a bug discovered after switching, you re-register the blue instance (if still running) or redeploy the previous version. The key: keep the blue instance alive for a buffer period after switching.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Backward-compatible migrations</h2>
+  <p class="text-text-secondary mb-4">The hardest part of blue/green deployment. During the switch, the old version (blue) and new version (green) briefly run against the same database. Migrations must not break the old version.</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Safe migration patterns</h3>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-2">
+        <li><strong class="text-text">Add a column:</strong> Safe. The old version ignores the new column.</li>
+        <li><strong class="text-text">Add a table:</strong> Safe. The old version doesn't know about it.</li>
+        <li><strong class="text-text">Add an index:</strong> Safe but may lock the table briefly on large datasets.</li>
+        <li><strong class="text-text">Make a column nullable:</strong> Safe. Existing data and queries still work.</li>
+      </ul>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Unsafe migration patterns</h3>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-2">
+        <li><strong class="text-text">Rename a column:</strong> Breaks the old version — its queries reference the old name.</li>
+        <li><strong class="text-text">Remove a column:</strong> Breaks the old version — its queries reference the deleted column.</li>
+        <li><strong class="text-text">Change a column type:</strong> May break the old version depending on implicit casts.</li>
+        <li><strong class="text-text">Add a NOT NULL constraint without default:</strong> Breaks inserts from the old version that don't include the column.</li>
+      </ul>
+    </div>
+  </div>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Unsafe migrations require a two-phase approach.</strong> To rename a column: Phase 1 — add the new column (safe), deploy code that writes to both columns. Phase 2 — after all instances use the new column, drop the old one. This is more complex but ensures zero-downtime compatibility.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">GitHub Actions pipeline</h2>
+  <CodeBlock copy>{`Set up the GitHub Actions deployment pipeline:
+
+1. On push to develop: deploy to staging (standard deploy, not blue/green — staging doesn't need zero downtime)
+2. On push to main: blue/green deploy to production
+   - Terraform creates new target group and EC2 instance
+   - Deploy application to new instance
+   - Run Alembic migrations
+   - Wait for ALB health checks to pass
+   - Switch ALB listener to new target group
+   - Wait for connection draining
+   - Terminate old instance
+
+Include rollback step: if health checks fail after 5 minutes, terminate the new instance and keep the old one live.`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Deployment verification</h2>
+  <p class="text-text-secondary mb-4">After a blue/green deploy, verify:</p>
+  <Checklist items={[
+    "The application responds on the production URL (no errors)",
+    "Login works for all three user types",
+    "Appointment booking works across all three locations",
+    "Clinical notes can be written and viewed",
+    "Database schema is correct (migration applied successfully)",
+    "ALB health checks show the new target group as healthy",
+    "Old target group is draining or terminated",
+    "Grafana dashboards show normal metrics (no error spikes)",
+  ]} />
+
+  <h2 class="mb-4 mt-10">Zero-downtime verification</h2>
+  <p class="text-text-secondary mb-4">The whole point of blue/green is zero downtime. Prove it works:</p>
+  <p class="text-text-secondary mb-4">During a deployment, run a simple load test — continuous requests to the health endpoint or a read endpoint. After deployment completes, check: did any requests fail? If the answer is zero failures, the blue/green deployment works. If requests failed during the switch, the ALB listener update or connection draining needs tuning.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>This is a real production technique.</strong> Teams running blue/green in production monitor error rates during every deploy. A spike in errors during the switch means something is misconfigured — health check timing, drain period, or migration compatibility. The deployment itself is a thing you observe and verify, not just fire and forget.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: zero-downtime deployment patterns</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">Blue/green is one approach to zero-downtime deployment. Here's the broader landscape.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Blue/green with ALB</strong> — <span class="text-text-secondary">What we use. Two target groups, one active. Instant switch. Best for single-instance or small-fleet deployments. Simple mental model.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Rolling deployment (ECS/Kubernetes)</strong> — <span class="text-text-secondary">Replace containers one at a time in a managed cluster. The orchestrator handles health checks and traffic routing. Standard for container-based deployments. Slower but uses fewer resources than blue/green.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Canary with weighted routing</strong> — <span class="text-text-secondary">Route 5% of traffic to the new version, monitor error rates, gradually increase to 100%. AWS ALB supports weighted target groups. Safest for high-traffic systems where even blue/green feels risky.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Immutable infrastructure</strong> — <span class="text-text-secondary">Never update a running instance. Create a new AMI (machine image) with the new version, launch a new instance from it, switch traffic. The old instance is destroyed, not updated. Prevents configuration drift.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Expand/contract migrations</strong> — <span class="text-text-secondary">The database side of zero-downtime. Phase 1 (expand): add the new column, keep the old one, deploy code that writes to both. Phase 2 (contract): remove the old column after all instances use the new one. Two migrations, two deployments, zero downtime.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">Blue/green with ALB is the right complexity level for Coastal Physio. The concepts scale — canary, rolling, and immutable infrastructure are the same ideas applied to larger systems. The migration timing challenge (expand/contract) is universal across all zero-downtime strategies.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: UAT</h2>
+    <p class="text-text-secondary mb-4">Deployed and verified. Time to show Megan.</p>
+    <a
+      href="/web-dev/projects/7/uat"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      UAT →
+    </a>
+  </div>
+</DocsLayout>

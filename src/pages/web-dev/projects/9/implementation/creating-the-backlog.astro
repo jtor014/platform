@@ -1,0 +1,75 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Creating the Backlog" description="Generate an ordered backlog for FreshBox with infrastructure modules first, then application features, then monitoring.">
+  <h1 class="mb-6">Creating the Backlog</h1>
+  <p class="text-text-secondary mb-4">Same process. Architecture in, ordered tickets out. Tickets go into Linear. The critical ordering: infrastructure modules before application features, monitoring as a dedicated phase.</p>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <CodeBlock copy>{`Here is the PRD, design spec, and architecture for FreshBox:
+
+[Paste your PRD here]
+[Paste your design spec here]
+[Paste your architecture here]
+
+Create a BACKLOG.md with ordered tickets. Each ticket should have a title, description, and acceptance criteria checklist.
+
+Critical ordering:
+1. Terraform module: VPC (networking foundation)
+2. Terraform module: Compute (ASG + ALB)
+3. Terraform module: Database (RDS PostgreSQL multi-AZ)
+4. Terraform module: CDN (CloudFront distribution)
+5. ASG configuration (launch template, scaling policies)
+6. CloudFront distribution (cache behaviours, invalidation)
+7. Application: inventory management (stock CRUD, atomic updates, race condition handling)
+8. Application: ordering flow (browse, add to order, suburb selection, delivery day, submit)
+9. Application: subscription management (create, pause, modify, cancel)
+10. Application: delivery scheduling (suburb-day mapping, admin management)
+11. Application: customer accounts (registration, login, order history)
+12. Application: admin dashboard (stock management, orders by suburb/day, revenue)
+13. Monitoring: Prometheus metrics and Grafana dashboards
+14. Monitoring: AWS Budget alarm at $100/month
+15. Load testing: k6 scripts for scaling verification
+16. S3 lifecycle policies
+
+Infrastructure modules MUST come before application features. Each module is a separate ticket with its own plan/apply cycle. Don't bundle VPC + compute + database into one ticket.`}</CodeBlock>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Why infrastructure first:</strong> If you build the application before the infrastructure exists, you'll develop against a local environment and hope it works in production. Build the infrastructure first, deploy a health check endpoint, verify it works on the real ASG behind the real ALB with the real RDS. Then build features on a known-good foundation.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">ADR tickets</h2>
+  <p class="text-text-secondary mb-4">New discipline: create ADR tickets alongside implementation tickets. Write the ADR <em>before</em> implementing the decision. Not after, not retroactively — before. The ADR forces you to think through alternatives and consequences before committing to a path.</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">ADR-001: ASG over ECS/Fargate</strong> — write before implementing the compute module</li>
+    <li><strong class="text-text">ADR-002: CloudFront over Cloudflare</strong> — write before implementing the CDN module</li>
+    <li><strong class="text-text">ADR-003: Locking strategy for inventory</strong> — write before implementing the stock system</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Infrastructure cost tracking</h2>
+  <p class="text-text-secondary mb-4">New emphasis: for every infrastructure ticket, note whether it adds an AWS resource that costs money. The VPC module adds a NAT gateway (~$32/month). The compute module adds EC2 instances (~$15/month each). Track these so you can estimate total cost before provisioning. No surprise bills.</p>
+
+  <h2 class="mb-4 mt-10">Review the backlog</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Infrastructure tickets come first</strong> — VPC, then compute, then database, then CDN. Each module is a separate ticket.</li>
+    <li><strong class="text-text">Inventory management before ordering</strong> — the stock system must exist before orders can decrement it</li>
+    <li><strong class="text-text">Race condition handling is explicit</strong> — not bundled into "build ordering flow" but a specific ticket or acceptance criterion</li>
+    <li><strong class="text-text">Monitoring is not an afterthought</strong> — Grafana dashboards and budget alarms are tickets, not nice-to-haves</li>
+    <li><strong class="text-text">Load testing is a dedicated phase</strong> — k6 scripts with specific scenarios and pass criteria</li>
+    <li><strong class="text-text">No ticket is too large</strong> — "implement all application features" is too big. Break it down.</li>
+  </ul>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: setup</h2>
+    <p class="text-text-secondary mb-4">Backlog reviewed. Set up the project.</p>
+    <a
+      href="/web-dev/projects/9/implementation/setup"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Setup →
+    </a>
+  </div>
+</DocsLayout>

@@ -1,0 +1,173 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Monitoring & Iteration" description="Go live, monitor the running system, and reflect on the full planning-to-delivery process.">
+  <h1 class="mb-6">Monitoring & Iteration</h1>
+  <p class="text-text-secondary mb-8">Sarah signed off. Client feedback is fixed and deployed. The class booking system is live. People can browse classes, sign up, and get confirmation emails. Sarah gets notified of every signup.</p>
+
+  <h2 class="mb-4">Go live</h2>
+  <p class="text-text-secondary mb-4">If you deployed to Railway, Render, or Fly.io, the staging URL can become your production URL — there's no separate "go live" step. If you want a custom domain, the hosting provider's docs will walk you through DNS setup.</p>
+  <p class="text-text-secondary mb-8">The system is live. People are using it. This is the part where things can break.</p>
+
+  <h2 class="mb-4">Why monitoring matters now</h2>
+  <p class="text-text-secondary mb-4">In Project 1, monitoring was simple — can you load the page? A static site either works or it doesn't. Project 3 is different. You have a database that fills up, an email service that has rate limits, a backend that can crash, and forms that real people submit with real data.</p>
+  <p class="text-text-secondary mb-4">Things that can break in production:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-8">
+    <li>The database fills up or the connection drops</li>
+    <li>The email service hits its daily sending limit</li>
+    <li>The backend runs out of memory or crashes</li>
+    <li>Someone submits data that triggers an unhandled edge case</li>
+    <li>The hosting provider's free tier sleeps the backend after inactivity</li>
+  </ul>
+
+  <h2 class="mb-4">Basic health checks</h2>
+  <p class="text-text-secondary mb-4">Run through these periodically — especially in the first few days after launch:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>Can you load the page? Do the class listings appear?</li>
+    <li>Can you submit a form? Does the signup go through?</li>
+    <li>Does the confirmation email arrive?</li>
+    <li>Are the spots-remaining counts accurate?</li>
+    <li>Check the email service dashboard — are emails sending? Any bounces or failures?</li>
+    <li>Check the hosting provider's dashboard — any error logs? Is memory usage normal?</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Final verification</h2>
+  <p class="text-text-secondary mb-2">Full checklist on the production URL:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-8">
+    <li>Class listings load with correct dates, times, and spots remaining</li>
+    <li>Low-availability indicator shows on nearly-full classes (CF-1 fix)</li>
+    <li>Signup form works end-to-end — fill out, submit, get confirmation email</li>
+    <li>Confirmation email includes class name, date, and time (CF-2 fix)</li>
+    <li>Sarah receives admin notification when someone signs up</li>
+    <li>Full class shows correct state — no ability to sign up</li>
+    <li>Mobile responsive — test on an actual phone</li>
+    <li>All API endpoints respond correctly</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">The Loop</h2>
+  <p class="text-text-secondary mb-6">You've completed the full cycle again — but this time you created the planning artifacts, not just reviewed them:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">1</span>
+      <div>
+        <p class="font-semibold text-sm">Requirements</p>
+        <p class="text-sm text-text-secondary">You wrote the PRD from a client brief — scoping features, defining acceptance criteria, setting anti-scope.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">2</span>
+      <div>
+        <p class="font-semibold text-sm">Design</p>
+        <p class="text-sm text-text-secondary">You created the design spec from client preferences, not a provided spec.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">3</span>
+      <div>
+        <p class="font-semibold text-sm">Architecture</p>
+        <p class="text-sm text-text-secondary">You defined the architecture — database schema, API structure, service boundaries.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">4</span>
+      <div>
+        <p class="font-semibold text-sm">Implement</p>
+        <p class="text-sm text-text-secondary">You built from your own backlog — directing, verifying, merging.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">5</span>
+      <div>
+        <p class="font-semibold text-sm">Test</p>
+        <p class="text-sm text-text-secondary">You tested API endpoints, form validation, email delivery, and the full integration flow.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">6</span>
+      <div>
+        <p class="font-semibold text-sm">Deploy</p>
+        <p class="text-sm text-text-secondary">You deployed a multi-service stack — frontend, backend, database, email — and verified it all connects.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">7</span>
+      <div>
+        <p class="font-semibold text-sm">UAT</p>
+        <p class="text-sm text-text-secondary">You showed Sarah, collected feedback, made a scope judgment call, iterated, and got sign-off.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">8</span>
+      <div>
+        <p class="font-semibold text-sm">Monitor</p>
+        <p class="text-sm text-text-secondary">You went live, set up health checks, and reflected on the full process — planning through delivery.</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Reflect: 8 questions</h2>
+  <p class="text-text-secondary mb-6">One question per step. Be honest — these are for you, not for grading.</p>
+
+  <div class="space-y-6 mb-8">
+    <div>
+      <h3 class="mb-2"><span class="text-primary font-bold">1. Requirements</span> — You wrote the PRD. Was it complete?</h3>
+      <p class="text-sm text-text-secondary">Did you miss anything that caused problems during implementation? Think about the email content gap that Sarah's feedback revealed. What would you add to the PRD if you wrote it again?</p>
+    </div>
+    <div>
+      <h3 class="mb-2"><span class="text-primary font-bold">2. Design</span> — Did the design spec work?</h3>
+      <p class="text-sm text-text-secondary">Did you have to revise it during implementation? Did the design hold up when real data was in the system, or did it look different from what you imagined?</p>
+    </div>
+    <div>
+      <h3 class="mb-2"><span class="text-primary font-bold">3. Architecture</span> — Were your technical decisions right?</h3>
+      <p class="text-sm text-text-secondary">Did the database schema work as designed, or did you need to add columns or tables? Did the API structure make sense once you were building against it? Did anything need to change mid-project?</p>
+    </div>
+    <div>
+      <h3 class="mb-2"><span class="text-primary font-bold">4. Implementation</span> — How was building from your own backlog?</h3>
+      <p class="text-sm text-text-secondary">Were your tickets well-scoped? Were the acceptance criteria specific enough to verify? Did you hit dependency issues because the ordering was wrong? How does it compare to working from a provided backlog?</p>
+    </div>
+    <div>
+      <h3 class="mb-2"><span class="text-primary font-bold">5. Testing</span> — What did tests catch?</h3>
+      <p class="text-sm text-text-secondary">Did automated tests find bugs you wouldn't have caught manually? Were there edge cases that surprised you? Was the test coverage adequate, or did you find gaps in production?</p>
+    </div>
+    <div>
+      <h3 class="mb-2"><span class="text-primary font-bold">6. Deployment</span> — Did the multi-service deploy go smoothly?</h3>
+      <p class="text-sm text-text-secondary">What went wrong? Environment variables, CORS, database connections, email configuration — which gave you the most trouble? What would you set up differently?</p>
+    </div>
+    <div>
+      <h3 class="mb-2"><span class="text-primary font-bold">7. UAT</span> — How did you handle the scope question?</h3>
+      <p class="text-sm text-text-secondary">Sarah asked for an admin panel to edit class descriptions. Did you immediately say yes, or did you recognise it as a scope expansion? The ability to say "not in this version, here's what we'll do instead" is a critical skill.</p>
+    </div>
+    <div>
+      <h3 class="mb-2"><span class="text-primary font-bold">8. Monitoring</span> — What would you set up differently?</h3>
+      <p class="text-sm text-text-secondary">If this were a real production system, what monitoring would you want? Error alerts? Database size warnings? Email delivery tracking? Uptime checks? What did you wish you had during the first days after launch?</p>
+    </div>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>The key insight:</strong> You didn't just build an app. You defined what to build, designed it, architected it, created the backlog, directed the implementation, and delivered it. That's the director's job. In Projects 1 and 2, you practised directing and verifying. In Project 3, you practised the judgment that comes before implementation — and you delivered the whole thing.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: error tracking</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">You did manual health checks for this project. Professional teams use error tracking tools that catch and report problems automatically.</p>
+      <div class="space-y-3">
+        <div><p class="text-sm"><strong class="text-text">Sentry</strong> — <span class="text-text-secondary">The industry standard for error tracking. Captures exceptions, stack traces, and context automatically. Coming in Project 4 — your first real monitoring tool.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Bugsnag</strong> — <span class="text-text-secondary">Error monitoring with release tracking. Groups errors by root cause and shows which releases introduced them.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Rollbar</strong> — <span class="text-text-secondary">Real-time error tracking with deploy tracking. Automatically links errors to the git commit that introduced them.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">LogRocket</strong> — <span class="text-text-secondary">Session replay + error tracking. Records what the user saw and did before the error occurred. Useful for reproducing frontend bugs.</span></p></div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">The next project introduces Sentry for automatic error capture. Manual health checks don't scale — you need tools that alert you when something breaks, not tools that require you to check.</p>
+    </div>
+  </details>
+
+  <div class="border border-border rounded-lg p-6 my-8 bg-bg-subtle text-center">
+    <h3 class="text-lg font-semibold mb-3">Show someone</h3>
+    <p class="text-text-secondary mb-3">Open the live URL on your phone. Sign up for a class. Show someone the confirmation email that arrives.</p>
+    <p class="text-text-secondary font-medium">"I planned this, directed AI to build it, and delivered it to a client."</p>
+    <p class="text-sm text-text-secondary mt-3">That's different from "I directed AI to build this." You owned the whole process — from client brief to live product. The planning, the scope decisions, the judgment calls. That's what changed.</p>
+  </div>
+</DocsLayout>

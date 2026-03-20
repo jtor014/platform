@@ -1,0 +1,93 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Creating the Backlog" description="Create the entire backlog for Harbour Health. No suggested ordering — you figure it out.">
+  <h1 class="mb-6">Creating the Backlog</h1>
+  <p class="text-text-secondary mb-4">Same process. Architecture in, ordered tickets out. You've done this eight times.</p>
+  <p class="text-text-secondary mb-4">This is the largest backlog yet — expect 20-30 tickets. No suggested ordering. Your P1-P9 experience tells you the order. Infrastructure first. Auth early. Features after the foundation.</p>
+
+  <h2 class="mb-4 mt-8">Estimation</h2>
+  <p class="text-text-secondary mb-4">New for the capstone: estimate each ticket. Use story points or t-shirt sizes (S/M/L/XL). Track velocity across the project — how many points you complete per week. This tells you whether you're on track for the 3-4 week build timeline.</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">S (1-2 points):</strong> Configuration, small UI change, adding an existing pattern to a new page</li>
+    <li><strong class="text-text">M (3-5 points):</strong> New API endpoint with tests, new UI component, straightforward integration</li>
+    <li><strong class="text-text">L (8 points):</strong> Complex feature like the prescription workflow, video integration setup</li>
+    <li><strong class="text-text">XL (13 points):</strong> Infrastructure provisioning, full RBAC implementation, monitoring stack setup</li>
+  </ul>
+
+  <h2 class="mb-4 mt-8">Epics</h2>
+  <p class="text-text-secondary mb-8">Group tickets into epics to track progress by area:</p>
+  <div class="space-y-3 mb-8">
+    <div class="border border-border rounded-lg p-4">
+      <p class="text-sm"><strong class="text-text">Infrastructure</strong> — <span class="text-text-secondary">Terraform modules, networking, compute, database, CI/CD pipeline</span></p>
+    </div>
+    <div class="border border-border rounded-lg p-4">
+      <p class="text-sm"><strong class="text-text">Auth</strong> — <span class="text-text-secondary">JWT authentication, three roles (patient, specialist, admin), data isolation at database level</span></p>
+    </div>
+    <div class="border border-border rounded-lg p-4">
+      <p class="text-sm"><strong class="text-text">Core Features</strong> — <span class="text-text-secondary">Patient registration, specialist directory, appointment booking, consultation notes</span></p>
+    </div>
+    <div class="border border-border rounded-lg p-4">
+      <p class="text-sm"><strong class="text-text">Video</strong> — <span class="text-text-secondary">Video API integration, room creation, join flow, pre-call checks, bandwidth handling, reconnection</span></p>
+    </div>
+    <div class="border border-border rounded-lg p-4">
+      <p class="text-sm"><strong class="text-text">Compliance</strong> — <span class="text-text-secondary">Audit logging, encryption verification, data retention, accessibility audit, WCAG verification</span></p>
+    </div>
+    <div class="border border-border rounded-lg p-4">
+      <p class="text-sm"><strong class="text-text">Ops</strong> — <span class="text-text-secondary">Grafana dashboards, PagerDuty alerting, incident runbooks, handover documentation</span></p>
+    </div>
+  </div>
+
+  <h2 class="mb-4">The prompt</h2>
+  <CodeBlock copy>{`Here is the PRD, design spec, and architecture for Harbour Health:
+
+[Paste your PRD here]
+[Paste your design spec here]
+[Paste your architecture here]
+
+Create a BACKLOG.md with ordered tickets. Each ticket should have a title, description, and acceptance criteria checklist.
+
+This is a telehealth platform with: patient registration, specialist directory, appointment booking, video consultations (via [your chosen video API]), consultation notes, prescription request workflow, role-based access (patient/specialist/admin), WCAG 2.1 AA accessibility, audit logging, and full AWS infrastructure via Terraform.
+
+Order the tickets based on dependency — what must exist before what? Consider:
+- Infrastructure and deployment pipeline
+- Authentication and role-based access
+- Core data models and API
+- Video integration
+- Feature implementation across all three roles
+- Prescription workflow
+- Accessibility verification
+- Monitoring and alerting setup
+
+Every feature ticket must include accessibility acceptance criteria (keyboard navigation, screen reader, contrast) alongside functional criteria. Every ticket touching patient data must include audit logging criteria.`}</CodeBlock>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>The ordering is the test.</strong> If infrastructure comes after features, you'll be deploying untested. If auth comes after the specialist directory, you'll build it without access controls. If video integration comes last, you won't have time to handle the edge cases. The order you choose reveals whether you've internalised the lessons from nine projects.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Review the backlog</h2>
+  <p class="text-text-secondary mb-4">You know what a good backlog looks like. Review it yourself. The questions to ask:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Does the order make sense?</strong> Can every ticket be built with what came before it?</li>
+    <li><strong class="text-text">Are tickets right-sized?</strong> "Implement the telehealth platform" is too big. "Add patient registration endpoint" is right-sized.</li>
+    <li><strong class="text-text">Does every patient-data ticket include audit logging criteria?</strong></li>
+    <li><strong class="text-text">Does every UI ticket include accessibility criteria?</strong></li>
+    <li><strong class="text-text">Is the video integration early enough to allow time for edge case handling?</strong></li>
+    <li><strong class="text-text">Is the prescription workflow broken into separate tickets?</strong> (Specialist creates request, admin reviews, notification sent to GP — these are different tickets.)</li>
+    <li><strong class="text-text">Is monitoring setup a ticket, not an afterthought?</strong></li>
+  </ul>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: setup</h2>
+    <p class="text-text-secondary mb-4">Backlog reviewed. Set up the project.</p>
+    <a
+      href="/web-dev/projects/10/implementation/setup"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Setup →
+    </a>
+  </div>
+</DocsLayout>

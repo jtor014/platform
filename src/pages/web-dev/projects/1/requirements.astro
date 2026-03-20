@@ -141,4 +141,32 @@ const prdRaw = fs.readFileSync('content/projects/project-1/prd-greenscape.md', '
     <li>Accessible — proper heading hierarchy, alt text on images, sufficient colour contrast</li>
     <li>Deployed to a live, publicly accessible URL</li>
   </ul>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: project management tools</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">Requirements need to live somewhere a team can track them. These are the tools teams use to manage backlogs, assign work, and track progress.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Jira</strong> — <span class="text-text-secondary">Atlassian's enterprise tool. Dominant in large companies. Heavier than what we use here, but same concepts: backlog, board, sprints, tickets.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Linear</strong> — <span class="text-text-secondary">Modern, fast, loved by dev teams. We'll use this from Project 3 onwards.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Trello</strong> — <span class="text-text-secondary">Kanban-first, lightweight. Good for small teams and non-technical stakeholders.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Asana</strong> — <span class="text-text-secondary">Popular with cross-functional teams. Bridges project management and task management.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Monday.com</strong> — <span class="text-text-secondary">Visual, flexible. Popular with agencies and creative teams.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Notion</strong> — <span class="text-text-secondary">Documents + databases + boards in one tool. Used for requirements docs, wikis, and lightweight PM.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">Right now your requirements live in a markdown file. In a real team, they'd be tickets on a board with status, assignee, and priority. The format changes — the content doesn't.</p>
+    </div>
+  </details>
 </DocsLayout>

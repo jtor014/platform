@@ -1,0 +1,107 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Architecture" description="Define the tech stack, system structure, data models, and CLAUDE.md for Clay & Co.">
+  <h1 class="mb-6">Architecture</h1>
+  <p class="text-text-secondary mb-4">You have requirements and a design. Now define how to build it. The architecture establishes the tech stack, system structure, data models, and key decisions — plus the CLAUDE.md that will guide your AI developer.</p>
+  <p class="text-text-secondary mb-8">Same process: prompt, template, review, iterate. But architecture review requires different judgment than requirements or design. You're checking for over-engineering, missing dependencies, and whether the technical decisions actually support the PRD.</p>
+
+  <h2 class="mb-4">The prompt</h2>
+  <p class="text-text-secondary mb-4">Open <a href="https://claude.ai">claude.ai</a> and paste this prompt:</p>
+  <CodeBlock copy>{`Here is the PRD and design spec for a pottery studio class booking system:
+
+[Paste your PRD]
+[Paste your design spec]
+
+This project builds on the tech stack from a previous project: React frontend, FastAPI backend, PostgreSQL, Docker, GitHub Actions CI, Gemini PR reviewer, Netlify for frontend hosting.
+
+Using the following architecture template, generate a complete architecture document. Include: tech stack with rationale, component/service structure, database schema, API endpoints, key decisions, and a CLAUDE.md file.
+
+[Paste architecture template from /templates]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Review guidance</h2>
+  <p class="text-text-secondary mb-4">The architecture is the bridge between "what to build" and "how to build it." Every decision here has consequences during implementation. Check carefully.</p>
+
+  <h3 class="mb-3 mt-6">Database schema</h3>
+  <p class="text-text-secondary mb-4">Is it normalised? Classes and signups should be separate tables with a foreign key relationship. Check that the schema supports every feature in the PRD: class capacity, signup count, class dates, attendee information. A common AI mistake is putting everything in one table or creating unnecessary many-to-many relationships.</p>
+
+  <h3 class="mb-3 mt-6">API endpoints</h3>
+  <p class="text-text-secondary mb-4">Does every endpoint map to a feature in the PRD? You should see endpoints for: listing classes, getting class details, creating a signup, and possibly admin views. If there are endpoints for features not in the PRD, remove them. If PRD features are missing endpoints, add them.</p>
+
+  <h3 class="mb-3 mt-6">Over-engineering check</h3>
+  <p class="text-text-secondary mb-4">Did AI add complexity that isn't needed?</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Microservices when a monolith is fine (this is a small app — one backend service is correct)</li>
+    <li>Caching layer when there's no performance problem to solve</li>
+    <li>Message queues when direct function calls work</li>
+    <li>User authentication when Sarah didn't ask for accounts</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">CLAUDE.md check</h3>
+  <p class="text-text-secondary mb-4">The architecture should produce a CLAUDE.md file. Check that its anti-scope section matches the PRD anti-scope. Check that the tech stack, repo structure, and engineering standards are consistent with what you've defined. This file is what Claude Code reads first — if it's wrong, every ticket will be wrong.</p>
+
+  <h2 class="mb-4 mt-10">Key decision: email service</h2>
+  <p class="text-text-secondary mb-4">Sarah needs two types of email: confirmation to the person who signed up, and notification to her when someone books. The architecture should specify which email service and why.</p>
+  <div class="overflow-x-auto mb-8">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Service</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Free tier</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-medium">SendGrid</td>
+          <td class="px-4 py-3 text-text-secondary">100 emails/day</td>
+          <td class="px-4 py-3 text-text-secondary">Most documentation and tutorials. Owned by Twilio.</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-medium">Mailgun</td>
+          <td class="px-4 py-3 text-text-secondary">100 emails/day (first month free)</td>
+          <td class="px-4 py-3 text-text-secondary">Good API, straightforward Python SDK.</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-medium">Resend</td>
+          <td class="px-4 py-3 text-text-secondary">100 emails/day</td>
+          <td class="px-4 py-3 text-text-secondary">Newer, simpler API. Good developer experience.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="text-text-secondary mb-8">Any of these work for this project. The architecture should pick one and explain why. If Claude doesn't pick one, tell it to. "Choose one email service and justify the choice. Don't list options — make the decision."</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Save the architecture and CLAUDE.md as separate files.</strong> The architecture is your reference. The CLAUDE.md goes into the project root when you set up — it's the first file Claude Code reads.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: architecture documentation</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">You wrote the architecture as a text document with AI. Professional teams often use diagrams and structured records to communicate architectural decisions.</p>
+      <div class="space-y-3">
+        <div><p class="text-sm"><strong class="text-text">Excalidraw</strong> — <span class="text-text-secondary">Whiteboard-style diagram tool. Hand-drawn aesthetic, real-time collaboration. Popular for quick architecture sketches and system diagrams.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Draw.io (diagrams.net)</strong> — <span class="text-text-secondary">Free, full-featured diagram editor. Runs in the browser or as a VS Code extension. Good for formal system architecture diagrams.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Miro</strong> — <span class="text-text-secondary">Online whiteboard for team collaboration. Used for architecture workshops, brainstorming, and mapping system boundaries.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">C4 model</strong> — <span class="text-text-secondary">A framework for visualising software architecture at four levels: Context, Containers, Components, Code. Provides a consistent vocabulary for architecture diagrams.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">ADRs (Architecture Decision Records)</strong> — <span class="text-text-secondary">Short documents that capture why a decision was made — the context, options considered, and rationale. Stored in the repo so future developers understand the reasoning.</span></p></div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">From Project 4 onwards, you'll create formal architecture diagrams alongside text documentation. ADRs become standard practice for recording key decisions.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: Implementation</h2>
+    <p class="text-text-secondary mb-4">You have requirements, design, and architecture. Now create the backlog and build.</p>
+    <a
+      href="/web-dev/projects/3/implementation"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Implementation →
+    </a>
+  </div>
+</DocsLayout>

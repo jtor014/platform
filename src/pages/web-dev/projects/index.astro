@@ -3,164 +3,43 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
 import Card from '../../../components/Card.astro';
 ---
 
-<DocsLayout title="Projects" description="The process every project follows: Requirements → Design → Architecture → Implementation → Testing → Deployment → UAT → Monitoring.">
-  <h1 class="mb-6">Projects</h1>
-  <p class="text-text-secondary mb-4">Every project in this course follows the same sequence — the standard software development lifecycle (SDLC). The product gets more complex each time, but the process stays the same. Learn it once, use it forever.</p>
-  <p class="text-text-secondary mb-4">AI changes the <em>how</em>, not the <em>what</em> or the <em>why</em>. You move from maker to director — but you never lose ownership.</p>
-  <p class="text-text-secondary mb-8">In early projects, most steps have been done for you — so you can focus on learning the tools and the build loop. In later projects, you'll own every step.</p>
+<DocsLayout title="Projects" description="Ten projects that build toward agency-level work. The product gets harder, the process stays the same.">
+  <h1 class="mb-4">Projects</h1>
+  <p class="text-text-secondary mb-4">Ten projects from a static website to a production telehealth platform. Each follows the same <a href="/web-dev" class="text-primary hover:underline">8-step development process</a> — what changes is your role and the complexity of the tools.</p>
+  <p class="text-text-secondary mb-8">Early on, the planning is done for you. By the end, you own every step — infrastructure, monitoring, incident response, and handover.</p>
 
-  <!-- The Process -->
-  <h2 class="mb-6 mt-10">The Process</h2>
+  <!-- How your role evolves -->
+  <h2 class="mb-6 mt-10">How your role evolves</h2>
 
-  <div class="space-y-8 mb-12">
-
-    <!-- 1. Requirements -->
+  <div class="space-y-4 mb-8">
     <div class="border border-border rounded-lg p-6">
       <div class="flex items-center gap-3 mb-3">
-        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">1</div>
-        <h3 class="text-lg font-semibold">Requirements & Product Definition</h3>
+        <div class="text-xs font-semibold text-primary bg-primary-bg px-2.5 py-1 rounded-full">P1–P2</div>
+        <h3 class="text-base font-semibold">Learn the tools</h3>
       </div>
-      <p class="text-sm text-text-secondary mb-3">Define <em>what</em> you're building. It starts with a client conversation — "I need a website for my business" — and turns that into structured requirements: features, acceptance criteria, user stories, and crucially, what you're <em>not</em> building (anti-scope).</p>
-      <p class="text-sm text-text-secondary mb-3">A good requirements doc is specific enough that someone could verify the finished product against it. Not "the site should look good" but "the hero image is under 200KB and loads in under 3 seconds."</p>
-      <div class="mt-3 pt-3 border-t border-border grid gap-2 sm:grid-cols-2">
-        <div class="text-xs"><span class="font-semibold text-text">You:</span> <span class="text-text-secondary">Define the problem, user stories, acceptance criteria</span></div>
-        <div class="text-xs"><span class="font-semibold text-text">AI:</span> <span class="text-text-secondary">Refine ambiguous requirements, generate stories from a brief, spot gaps</span></div>
-      </div>
+      <p class="text-sm text-text-secondary">Requirements, design, and architecture are provided. You focus on learning the build loop — branch, direct, verify, merge. Like being a junior on a team: someone else did the planning, you execute and verify.</p>
     </div>
-
-    <!-- Connector -->
-    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
-
-    <!-- 2. Design -->
     <div class="border border-border rounded-lg p-6">
       <div class="flex items-center gap-3 mb-3">
-        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">2</div>
-        <h3 class="text-lg font-semibold">Design</h3>
+        <div class="text-xs font-semibold text-primary bg-primary-bg px-2.5 py-1 rounded-full">P3–P5</div>
+        <h3 class="text-base font-semibold">Own the thinking</h3>
       </div>
-      <p class="text-sm text-text-secondary mb-3">The design defines how the product <em>looks and behaves</em>. In a professional project, this might be wireframes, a Figma file, or a full design system — covering user flows, page layouts, responsive behaviour, interactions, and visual details like colours, typography, and spacing.</p>
-      <div class="mt-3 pt-3 border-t border-border grid gap-2 sm:grid-cols-2">
-        <div class="text-xs"><span class="font-semibold text-text">You:</span> <span class="text-text-secondary">Define UX intent and user flows, validate against user needs</span></div>
-        <div class="text-xs"><span class="font-semibold text-text">AI:</span> <span class="text-text-secondary">Generate wireframe concepts, suggest UI patterns, prototype layouts</span></div>
-      </div>
+      <p class="text-sm text-text-secondary">You write requirements from a client brief. You make architecture decisions. You add auth, payments, and third-party integrations. Like a mid-level dev: you own the thinking, not just the execution.</p>
     </div>
-
-    <!-- Connector -->
-    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
-
-    <!-- 3. Architecture -->
     <div class="border border-border rounded-lg p-6">
       <div class="flex items-center gap-3 mb-3">
-        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">3</div>
-        <h3 class="text-lg font-semibold">Architecture</h3>
+        <div class="text-xs font-semibold text-primary bg-primary-bg px-2.5 py-1 rounded-full">P6–P8</div>
+        <h3 class="text-base font-semibold">Own the infrastructure</h3>
       </div>
-      <p class="text-sm text-text-secondary mb-3">The architecture document defines <em>how to build it</em> technically — what technologies to use, how to structure the code, how data flows through the system, and how the pieces connect.</p>
-      <p class="text-sm text-text-secondary mb-3">The architecture also produces the <strong>CLAUDE.md</strong> — the project memory file that Claude Code reads at the start of every session. It's the architecture distilled into instructions for AI: tech stack, repo structure, anti-scope rules, engineering standards.</p>
-      <div class="mt-3 pt-3 border-t border-border grid gap-2 sm:grid-cols-2">
-        <div class="text-xs"><span class="font-semibold text-text">You:</span> <span class="text-text-secondary">Understand enough to challenge AI's proposals</span></div>
-        <div class="text-xs"><span class="font-semibold text-text">AI:</span> <span class="text-text-secondary">Propose system design, data models, API contracts, tech stack rationale</span></div>
-      </div>
+      <p class="text-sm text-text-secondary">You deploy to your own cloud infrastructure with Terraform. Managed databases, load balancers, blue/green deployment, feature flags, monitoring, and incident response. Like a senior dev: you build it and you run it.</p>
     </div>
-
-    <!-- Connector -->
-    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
-
-    <!-- 4. Implementation -->
     <div class="border border-border rounded-lg p-6">
       <div class="flex items-center gap-3 mb-3">
-        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">4</div>
-        <h3 class="text-lg font-semibold">Implementation</h3>
+        <div class="text-xs font-semibold text-primary bg-primary-bg px-2.5 py-1 rounded-full">P9–P10</div>
+        <h3 class="text-base font-semibold">Run the agency</h3>
       </div>
-      <p class="text-sm text-text-secondary mb-3">This is where you direct AI through the tickets, one at a time. The backlog breaks the architecture into ordered tickets — then each one follows the same loop:</p>
-      <ol class="text-sm text-text-secondary list-decimal list-inside space-y-1">
-        <li>You tell Claude to start the ticket</li>
-        <li>Claude creates a branch, implements, commits, opens a PR</li>
-        <li>Claude and Gemini both review the code</li>
-        <li>You verify against the acceptance criteria — open the product, test it, try to break it</li>
-        <li>You decide: merge it, or direct Claude to fix something</li>
-      </ol>
-      <div class="mt-3 pt-3 border-t border-border grid gap-2 sm:grid-cols-2">
-        <div class="text-xs"><span class="font-semibold text-text">You:</span> <span class="text-text-secondary">Direct, review, iterate on AI output. Work in prompts, specs, code review</span></div>
-        <div class="text-xs"><span class="font-semibold text-text">AI:</span> <span class="text-text-secondary">Write the majority of the code</span></div>
-      </div>
+      <p class="text-sm text-text-secondary">Auto-scaling, CDN, cost monitoring, incident simulation, handover documentation. The client gives you a problem, you deliver a production system that someone else can operate. Like running a small agency.</p>
     </div>
-
-    <!-- Connector -->
-    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
-
-    <!-- 5. Testing -->
-    <div class="border border-border rounded-lg p-6">
-      <div class="flex items-center gap-3 mb-3">
-        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">5</div>
-        <h3 class="text-lg font-semibold">Testing</h3>
-      </div>
-      <p class="text-sm text-text-secondary mb-3">Verify the product works. For a static site, this means Lighthouse audits, DevTools checks, and testing on a real phone. For a dynamic app, it means automated tests — unit, integration, and end-to-end.</p>
-      <div class="mt-3 pt-3 border-t border-border grid gap-2 sm:grid-cols-2">
-        <div class="text-xs"><span class="font-semibold text-text">You:</span> <span class="text-text-secondary">Validate tests cover the acceptance criteria from step 1</span></div>
-        <div class="text-xs"><span class="font-semibold text-text">AI:</span> <span class="text-text-secondary">Generate test cases, write unit/integration tests, identify edge cases</span></div>
-      </div>
-    </div>
-
-    <!-- Connector -->
-    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
-
-    <!-- 6. Deployment -->
-    <div class="border border-border rounded-lg p-6">
-      <div class="flex items-center gap-3 mb-3">
-        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">6</div>
-        <h3 class="text-lg font-semibold">Deployment</h3>
-      </div>
-      <p class="text-sm text-text-secondary mb-3">Ship to a staging URL. You verify it works on a real server — not just on your laptop. Test on a real phone. Check that links work, images load, and performance is acceptable.</p>
-      <div class="mt-3 pt-3 border-t border-border grid gap-2 sm:grid-cols-2">
-        <div class="text-xs"><span class="font-semibold text-text">You:</span> <span class="text-text-secondary">Set up once, then automated</span></div>
-        <div class="text-xs"><span class="font-semibold text-text">AI:</span> <span class="text-text-secondary">Write pipeline configs, Dockerfiles, IaC</span></div>
-      </div>
-    </div>
-
-    <!-- Connector -->
-    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
-
-    <!-- 7. UAT -->
-    <div class="border border-border rounded-lg p-6">
-      <div class="flex items-center gap-3 mb-3">
-        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">7</div>
-        <h3 class="text-lg font-semibold">UAT (User Acceptance Testing)</h3>
-      </div>
-      <p class="text-sm text-text-secondary mb-3">Show the client the staging site. Collect feedback, turn it into tickets, iterate, and get formal sign-off against the acceptance criteria from step 1.</p>
-      <div class="mt-3 pt-3 border-t border-border grid gap-2 sm:grid-cols-2">
-        <div class="text-xs"><span class="font-semibold text-text">You:</span> <span class="text-text-secondary">Show the client, collect feedback, turn it into tickets</span></div>
-        <div class="text-xs"><span class="font-semibold text-text">AI:</span> <span class="text-text-secondary">No change — this is a human step</span></div>
-      </div>
-    </div>
-
-    <!-- Connector -->
-    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
-
-    <!-- 8. Monitoring & Iteration -->
-    <div class="border border-border rounded-lg p-6">
-      <div class="flex items-center gap-3 mb-3">
-        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">8</div>
-        <h3 class="text-lg font-semibold">Monitoring & Iteration</h3>
-      </div>
-      <p class="text-sm text-text-secondary mb-3">The client has signed off. Go live on their domain. Point DNS, verify everything loads, then monitor and iterate. What went well? What did AI get wrong? Lessons feed into the next project.</p>
-      <div class="mt-3 pt-3 border-t border-border grid gap-2 sm:grid-cols-2">
-        <div class="text-xs"><span class="font-semibold text-text">You:</span> <span class="text-text-secondary">Own the feedback loop, decide what to iterate on</span></div>
-        <div class="text-xs"><span class="font-semibold text-text">AI:</span> <span class="text-text-secondary">Interpret logs, suggest fixes, analyse usage patterns</span></div>
-      </div>
-    </div>
-
-  </div>
-
-  <!-- Client feedback thread -->
-  <div class="border-l-4 border-l-primary bg-primary-bg p-6 rounded-r-lg mb-12">
-    <h3 class="text-base font-semibold mb-2">UAT is the formal gate — feedback runs alongside</h3>
-    <p class="text-sm text-text-secondary mb-3">UAT formalises client acceptance, but good teams don't wait until step 7 to show the client. Feedback is a thread that runs alongside the loop:</p>
-    <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
-      <li><strong class="text-text">After Requirements</strong> — "Have we understood what you need?"</li>
-      <li><strong class="text-text">After Design</strong> — "Is this what you envisioned?" (cheapest place to catch misalignment)</li>
-      <li><strong class="text-text">During Implementation</strong> — demos, sprint reviews, work-in-progress previews</li>
-      <li><strong class="text-text">UAT</strong> — formal sign-off against acceptance criteria</li>
-      <li><strong class="text-text">During Monitoring</strong> — ongoing feedback from real usage</li>
-    </ul>
   </div>
 
   <!-- Project cards -->
@@ -168,9 +47,13 @@ import Card from '../../../components/Card.astro';
   <div class="grid gap-4 sm:grid-cols-2">
     <Card title="Project 1: The Static Site" subtitle="GreenScape Landscaping — a business website deployed to a real URL. 8 tickets." href="/web-dev/projects/1" />
     <Card title="Project 2: The Dynamic App" subtitle="FactFeed — database, API, Docker, CI, and automated testing. 11 tickets." href="/web-dev/projects/2" />
-    <Card title="Project 3: The Interactive App" subtitle="Forms, validation, email. You plan it yourself from a client brief." />
-    <Card title="Project 4: The Integrated App" subtitle="Third-party API integration (Stripe, Google Maps, or similar)." />
-    <Card title="Project 5: The Multi-User App" subtitle="Auth, roles, permissions. Different users see different things." />
-    <Card title="Project 6: The Live System" subtitle="Monitoring, backups, security, handover documentation." href="/web-dev/projects/6" />
+    <Card title="Project 3: The Interactive App" subtitle="Clay & Co Pottery Studio — forms, validation, email. You write the PRD yourself." href="/web-dev/projects/3" />
+    <Card title="Project 4: The Integrated App" subtitle="Vinyl Vault Records — Stripe payments, Google Maps. Catch AI hallucinating APIs." href="/web-dev/projects/4" />
+    <Card title="Project 5: The Multi-User App" subtitle="DeskHub Co-working — auth, roles, permissions. Break your own security." href="/web-dev/projects/5" />
+    <Card title="Project 6: The Cloud Deploy" subtitle="Tidal Brewing Co — Terraform, EC2, S3, Nginx. Your first cloud infrastructure." href="/web-dev/projects/6" />
+    <Card title="Project 7: The Managed Database" subtitle="Coastal Physio — RDS, ALB, Alembic, blue/green deployment, Grafana." href="/web-dev/projects/7" />
+    <Card title="Project 8: The Production Pipeline" subtitle="SurfCoast Events — feature flags, Prometheus, PagerDuty, k6 load testing." href="/web-dev/projects/8" />
+    <Card title="Project 9: The Scaled System" subtitle="FreshBox — Auto Scaling Group, CloudFront, Terraform modules, cost monitoring." href="/web-dev/projects/9" />
+    <Card title="Project 10: The Capstone" subtitle="Harbour Health — telehealth, video, accessibility, incident simulation, handover." href="/web-dev/projects/10" />
   </div>
 </DocsLayout>

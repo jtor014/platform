@@ -1,0 +1,136 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+import Callout from '../../../../../components/Callout.astro';
+import Checklist from '../../../../../components/Checklist.astro';
+---
+
+<DocsLayout title="Building" description="The build loop with API hallucination detection for every integration ticket.">
+  <h1 class="mb-6">Building</h1>
+  <p class="text-text-secondary mb-4">Same loop — direct, verify, review, merge. The product catalog, search, and cart tickets work the same as any other feature. But when you hit Stripe and Google Maps tickets, the verification step changes fundamentally.</p>
+  <p class="text-text-secondary mb-8">This is where the P4 skill difference shows.</p>
+
+  <h2 class="mb-4 mt-10">Verifying API integrations</h2>
+  <p class="text-text-secondary mb-4">When Claude writes Stripe code, open the official Stripe docs side by side. Not a tutorial. Not a blog post. The official API reference at <a href="https://docs.stripe.com/api">docs.stripe.com/api</a>.</p>
+
+  <h3 class="mb-3 mt-6">What to check</h3>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Method names:</strong> Does <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">stripe.checkout.sessions.create()</code> exist with those exact parameters?</li>
+    <li><strong class="text-text">Response formats:</strong> Does the response actually have the fields the code expects? Claude might read <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">session.payment_status</code> when the real field is nested differently.</li>
+    <li><strong class="text-text">Webhook event names:</strong> Is <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">checkout.session.completed</code> the real event name? Verify against the <a href="https://docs.stripe.com/api/events/types">Stripe events documentation</a>.</li>
+    <li><strong class="text-text">Deprecated methods:</strong> Claude might use the old Charges API instead of PaymentIntents, or reference an API version from years ago.</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Common hallucination patterns</h3>
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h4 class="text-sm font-semibold mb-2">Invented parameters</h4>
+      <p class="text-sm text-text-secondary">AI adds a parameter that sounds right but doesn't exist — like <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">success_message</code> on a checkout session. The code runs without error (Stripe ignores unknown params) but the feature silently doesn't work.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h4 class="text-sm font-semibold mb-2">Deprecated methods</h4>
+      <p class="text-sm text-text-secondary">Claude uses an endpoint that existed two years ago but has since been replaced. It might work today but will break when Stripe removes it.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h4 class="text-sm font-semibold mb-2">Wrong response fields</h4>
+      <p class="text-sm text-text-secondary">The code reads fields from the API response that aren't returned — or are nested at a different path than expected. This breaks silently until a customer actually tries to pay.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h4 class="text-sm font-semibold mb-2">Mixed product patterns</h4>
+      <p class="text-sm text-text-secondary">Starting with Stripe Checkout (hosted page) but writing webhook handling that assumes PaymentIntents (embedded form). Different products, different events, different response shapes.</p>
+    </div>
+  </div>
+
+  <h3 class="mb-3 mt-6">A concrete example</h3>
+  <p class="text-text-secondary mb-4">Claude generates this Stripe Checkout session:</p>
+
+  <CodeBlock lang="python">{`# Claude's code — looks reasonable
+session = stripe.checkout.Session.create(
+    payment_method_types=["card"],
+    line_items=[{
+        "price_data": {
+            "currency": "aud",
+            "product_data": {"name": item.title},
+            "unit_amount": item.price_cents,
+        },
+        "quantity": item.quantity,
+    }],
+    mode="payment",
+    success_url="http://localhost:3000/order/success?session_id={CHECKOUT_SESSION_ID}",
+    cancel_url="http://localhost:3000/cart",
+    customer_email=customer_email,
+)`}</CodeBlock>
+
+  <p class="text-text-secondary mb-4">Open the <a href="https://docs.stripe.com/api/checkout/sessions/create">Stripe docs for creating a Checkout Session</a> and check every line:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Does <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">stripe.checkout.Session.create()</code> exist? Yes.</li>
+    <li>Is <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">payment_method_types</code> valid? Check the docs — yes, but it's optional.</li>
+    <li>Is <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">line_items</code> structured correctly? Verify <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">price_data</code>, <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">product_data</code>, <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">unit_amount</code> against the docs.</li>
+    <li>Does <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">success_url</code> support <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">{'{CHECKOUT_SESSION_ID}'}</code>? Check — yes.</li>
+    <li>Is <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">customer_email</code> a real parameter? Check — yes.</li>
+  </ul>
+
+  <p class="text-text-secondary mb-4">This example is mostly correct. Next time, one of those parameters might be wrong. The habit of checking is what catches it.</p>
+
+  <h2 class="mb-4 mt-10">Verification checklist for each API ticket</h2>
+  <p class="text-text-secondary mb-4">Run through this for every ticket that touches Stripe or Google Maps:</p>
+
+  <Checklist items={[
+    "Open the official documentation (stripe.com/docs or developers.google.com/maps)",
+    "Find the exact method or endpoint being used",
+    "Compare every parameter name and type against the docs",
+    "Compare the expected response format against the docs",
+    "Check for deprecation warnings",
+    "Test with Stripe test card 4242 4242 4242 4242",
+  ]} />
+
+  <h3 class="mb-3 mt-6">Google Maps verification</h3>
+  <p class="text-text-secondary mb-4">Same process for the Maps embed. Verify the URL format against the <a href="https://developers.google.com/maps/documentation/embed/get-started">Google Maps Embed API documentation</a>:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Is the base URL correct?</li>
+    <li>Are the query parameters in the right format?</li>
+    <li>Is the API key included (if required)?</li>
+    <li>Does the pin show the correct location? (Verify visually on the live map.)</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Testing Stripe in test mode</h2>
+  <p class="text-text-secondary mb-4">After verifying the code against docs, test with real (test-mode) transactions:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Use test card <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">4242 4242 4242 4242</code> (any future expiry, any CVC)</li>
+    <li>Verify the payment appears in your Stripe test dashboard</li>
+    <li>Verify the webhook fires and your backend receives it</li>
+    <li>Verify the order status updates in your database</li>
+  </ul>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>The habit matters more than the specific check.</strong> You won't always find a hallucination. But the one time you do — and you will — it saves you hours of debugging a payment flow that silently fails in production.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">The rest of the build</h2>
+  <p class="text-text-secondary mb-8">Non-API tickets (product catalog, search, cart UI, responsive layout) follow the same loop as P2 and P3. Direct Claude, verify against acceptance criteria, review, merge. The hallucination detection process only applies to tickets that integrate with external services.</p>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: API documentation verification</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">You're verifying AI-generated code against official API docs. Here are the sources you should know about — and trust more than any AI output.</p>
+      <div class="space-y-3">
+        <div><p class="text-sm"><strong class="text-text">Official API docs (Stripe, Google, AWS)</strong> — <span class="text-text-secondary">The source of truth for any third-party integration. Stripe's docs at stripe.com/docs are the gold standard. Always check the API reference, not just the guides.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">MDN Web Docs</strong> — <span class="text-text-secondary">Mozilla's documentation for web standards — HTML, CSS, JavaScript, and browser APIs. The authoritative reference for anything that runs in a browser.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Can I Use</strong> — <span class="text-text-secondary">Browser compatibility tables for web features. Before using a CSS property or JavaScript API, check whether it works in the browsers your users have.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">npm / PyPI package docs</strong> — <span class="text-text-secondary">Package registries with links to documentation, GitHub repos, and changelogs. When AI uses a library method, verify it exists in the version you installed.</span></p></div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">The habit is simple: when AI generates code that calls an external API or library, open the official documentation and verify. Tutorials and blog posts go stale. Official docs are maintained by the people who built the thing.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: testing</h2>
+    <p class="text-text-secondary mb-4">All tickets done. Time to test the full store — including real test payments.</p>
+    <a
+      href="/web-dev/projects/4/testing"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Testing →
+    </a>
+  </div>
+</DocsLayout>

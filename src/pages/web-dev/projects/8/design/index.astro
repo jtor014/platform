@@ -1,0 +1,109 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Design" description="Create the design spec for SurfCoast Events with an event-day dashboard readable in bright sunlight.">
+  <h1 class="mb-6">Design</h1>
+  <p class="text-text-secondary mb-4">Same process — client preferences, prompt, template, review. Liam has a clear visual direction:</p>
+
+  <Callout variant="client">
+    <p>"Outdoor, active, coastal. Think surf culture but professional enough for sponsors. Our brand is teal and sand. The event-day dashboard needs to be readable in bright sunlight on a phone."</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <CodeBlock copy>{`Here is the PRD for SurfCoast Events, an event management and ticketing platform:
+
+[Paste your PRD here]
+
+Using the following design spec template, create a complete design specification. The platform has a public event listing, a ticket purchase flow, a QR code check-in view for staff, and an event-day live dashboard for the organiser.
+
+Key requirements:
+- Outdoor, active, coastal aesthetic — surf culture but professional enough for sponsors
+- Brand colours: teal and sand
+- Event-day dashboard must be readable in BRIGHT SUNLIGHT on a phone screen
+  (high contrast, large numbers, no subtle greys)
+- Ticket purchase flow should feel fast and confident — clear progress, minimal steps
+- QR code check-in view optimised for speed — large scan target, immediate feedback
+  (green check / red X), works on phone browsers
+- Responsive — works on desktop for browsing, phone for event-day operations
+
+[Paste design spec template here]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">The key design challenges</h2>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Event-day dashboard in sunlight</h3>
+      <p class="text-sm text-text-secondary">This is the hardest constraint. Liam will be standing at Bells Beach in full sun, checking the dashboard on his phone. Subtle greys, thin fonts, and low-contrast elements are invisible outdoors. The design needs: dark text on white backgrounds (or white text on dark backgrounds), large numbers for key metrics (tickets sold, check-ins, revenue), and no reliance on colour alone to convey meaning. Think scoreboard at a stadium, not analytics dashboard in an office.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">QR code check-in speed</h3>
+      <p class="text-sm text-text-secondary">Gate staff are scanning hundreds of tickets. The check-in screen needs: a large camera viewfinder, immediate visual feedback (green for valid, red for invalid or already used), and the next scan ready instantly. No confirmation dialogs, no loading spinners. Scan, feedback, done. The design should optimise for throughput, not information density.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Ticket purchase confidence</h3>
+      <p class="text-sm text-text-secondary">Attendees buying tickets need to feel confident the purchase will work. Clear event details, visible pricing, a progress indicator through the purchase flow, and immediate confirmation with QR code delivery. No ambiguity about whether the purchase completed.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Dashboard metrics</h2>
+  <p class="text-text-secondary mb-4">The event-day dashboard is the centrepiece. What Liam needs to see at a glance:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Tickets sold</strong> — total and by ticket type</li>
+    <li><strong class="text-text">Check-ins</strong> — how many of the ticket holders have actually arrived</li>
+    <li><strong class="text-text">Revenue</strong> — total ticket revenue for the event</li>
+    <li><strong class="text-text">Check-in rate</strong> — percentage of ticket holders who've checked in (are we expecting more people?)</li>
+    <li><strong class="text-text">Weather</strong> — current conditions from Bureau of Meteorology</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Review guidance</h2>
+  <p class="text-text-secondary mb-4">When you review the generated design spec:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Test the dashboard design in bright light.</strong> Turn your screen brightness to maximum and view the mockup in sunlight or under bright lights. Can you read the numbers?</li>
+    <li><strong class="text-text">Is the check-in flow optimised for speed?</strong> Minimum taps, maximum scan area, instant feedback.</li>
+    <li><strong class="text-text">Does the ticket purchase feel trustworthy?</strong> Clear pricing, clear progress, clear confirmation.</li>
+    <li><strong class="text-text">Brand consistency:</strong> Teal and sand throughout, but not at the expense of readability on the dashboard.</li>
+  </ul>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Sunlight readability vs brand aesthetics.</strong> If the teal-on-sand colour scheme doesn't have enough contrast for outdoor readability, the dashboard should override the brand palette with high-contrast alternatives. Readability wins over aesthetics on the tool that Liam uses at the event. The public-facing pages can be more branded.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: dashboard & analytics tools</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We build a custom dashboard. Here's what else exists and when teams reach for pre-built analytics tools instead.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Custom dashboard (what we build)</strong> — <span class="text-text-secondary">Built into the app. Full control over design and UX. Best when the dashboard is a core product feature, not an internal tool.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Retool</strong> — <span class="text-text-secondary">Low-code internal tool builder. Connect to your database, drag-and-drop UI components. Fast for admin panels and internal dashboards. Not for public-facing views.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Metabase</strong> — <span class="text-text-secondary">Open-source business intelligence. Point it at your database and build dashboards with SQL or a visual query builder. Good for analytics. Self-hosted or cloud.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Apache Superset</strong> — <span class="text-text-secondary">Open-source data exploration and visualisation. More powerful than Metabase, steeper learning curve. Used by Airbnb, Lyft, and others.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Redash</strong> — <span class="text-text-secondary">Open-source dashboard builder. Write SQL queries, visualise results. Simpler than Superset, less polished than Metabase. Good for data-literate teams.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">We build a custom dashboard because it's a core product feature — Liam uses it on event day. For internal analytics (how many events this month, revenue trends), Metabase or Redash pointed at the same database would be faster to set up.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: architecture</h2>
+    <p class="text-text-secondary mb-4">Design spec is done. Now make the critical architecture decisions around CI/CD, feature flags, and monitoring.</p>
+    <a
+      href="/web-dev/projects/8/architecture"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Architecture →
+    </a>
+  </div>
+</DocsLayout>

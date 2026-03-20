@@ -1,0 +1,152 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="UAT (User Acceptance Testing)" description="Aisha and a test specialist conduct a simulated consultation on staging. Real feedback on video quality, UX, and the handover question.">
+  <h1 class="mb-6">UAT (User Acceptance Testing)</h1>
+  <p class="text-text-secondary mb-4">Dr. Aisha tests the full system. She has three accounts — patient, specialist, and admin — so she can experience the platform from every perspective. Three user types testing simultaneously. This is the most complex UAT in the curriculum.</p>
+
+  <h2 class="mb-4 mt-10">Test scenarios</h2>
+
+  <div class="space-y-6 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">SCENARIO 1</span>
+        <h3 class="text-base font-semibold">Patient in regional NSW books a specialist</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2">Aisha logs in as a patient in Wagga Wagga. Browses the specialist directory, filters by cardiology, sees available slots, books an appointment for next Tuesday at 2pm.</p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Specialist directory loads and is filterable by specialty</li>
+        <li>Available time slots are visible and accurate</li>
+        <li>Booking confirmation shows date, time, specialist name</li>
+        <li>Appointment appears in the patient's upcoming appointments</li>
+      </ul>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">SCENARIO 2</span>
+        <h3 class="text-base font-semibold">Specialist conducts video consultation and writes notes</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2">Switches to specialist account. Sees the consultation on the dashboard. Joins the video call. Patient joins from a different browser.</p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Video and audio work between both participants</li>
+        <li>Specialist sees patient video and notes panel side by side</li>
+        <li>Specialist can type notes during the consultation</li>
+        <li>End call leads to post-consultation summary</li>
+      </ul>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">SCENARIO 3</span>
+        <h3 class="text-base font-semibold">Referring GP views notes and receives prescription request</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2">Specialist submits a prescription request. Admin reviews it in the prescription queue. System sends notification to the patient's local GP.</p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Prescription request shows as "Pending" in admin queue</li>
+        <li>Admin can review and approve</li>
+        <li>On approval, notification sent to GP</li>
+        <li>Patient sees prescription status update</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Bandwidth test</h2>
+  <p class="text-text-secondary mb-4">Simulate the consultation on a throttled connection (5Mbps). Does it degrade gracefully?</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">5 Mbps:</strong> Video should work at reduced resolution. Audio must be clear.</li>
+    <li><strong class="text-text">Connection drop:</strong> Kill network for 10 seconds, then restore. Does the call reconnect?</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Accessibility UAT</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Keyboard only:</strong> Complete Scenario 1 using only the keyboard</li>
+    <li><strong class="text-text">Screen reader:</strong> Navigate the specialist directory with VoiceOver or NVDA</li>
+    <li><strong class="text-text">Video controls:</strong> Mute, unmute, end call using keyboard during consultation</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Aisha's feedback</h2>
+
+  <Callout variant="client">
+    <p>"The video quality dropped but I could still hear the patient clearly. The notes panel was easy to use between consultations. But the prescription workflow has too many clicks — after writing notes, I have to go to a separate page to submit the prescription. Also, a patient called and said they couldn't figure out how to join the video call. And what happens to the data if you stop working with us?"</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Analyse the feedback</h2>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">UAT-1</span>
+        <h3 class="text-base font-semibold">Prescription workflow has too many clicks</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Type:</strong> UX friction. The workflow is functionally correct but the flow has unnecessary steps. After writing consultation notes, the specialist has to navigate to a separate page to submit the prescription request. This breaks the flow.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>After writing consultation notes, specialist can submit a prescription request from the same page</li>
+        <li>Prescription form appears below the notes or in a panel alongside</li>
+        <li>Form is keyboard-accessible and labelled for screen readers</li>
+      </ul>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">UAT-2</span>
+        <h3 class="text-base font-semibold">Video join button not obvious</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Type:</strong> UX issue. The join button exists but isn't prominent enough. Patients — especially elderly or anxious patients — need the action to be unmissable.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Fixes:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Make the join button larger and more prominent on the appointment page</li>
+        <li>Use a contrasting colour and clear label: "Join Video Consultation"</li>
+        <li>Send a reminder email 15 minutes before the appointment with a direct link to the video room</li>
+        <li>On the appointment page, add a countdown: "Your consultation starts in 10 minutes" with the join button below it</li>
+      </ul>
+      <p class="text-sm text-text-secondary mt-2"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Join button is the most prominent element on the appointment page when the consultation time approaches</li>
+        <li>Reminder email sent 15 minutes before with a direct join link</li>
+        <li>Button meets WCAG AA contrast requirements and is keyboard-accessible</li>
+        <li>Button has appropriate ARIA label for screen readers</li>
+      </ul>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">UAT-3</span>
+        <h3 class="text-base font-semibold">"What happens to the data if you stop working with us?"</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Type:</strong> This is not a bug or a feature request. This is the handover conversation. Aisha is asking: "Can someone else operate this system? What happens to my patients' data if you're not available?"</p>
+      <p class="text-sm text-text-secondary mb-2"><strong>Action:</strong> This opens the handover documentation work (covered in the monitoring step). The answer Aisha needs: "All infrastructure is defined in Terraform — anyone with the credentials can manage it. All deployment is automated — push to main and it deploys. All monitoring is configured — Grafana dashboards, PagerDuty alerts, incident runbooks. I'll prepare a complete handover package so anyone can operate this system from the documentation alone."</p>
+      <p class="text-sm text-text-secondary"><strong>The skill here:</strong> Recognising when a client question is about trust, not technology. Aisha isn't asking for a feature — she's asking whether her business is dependent on you personally. The handover documentation is your answer.</p>
+    </div>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Notice the pattern:</strong> UAT-1 is expected behaviour that needs explaining (communication skill). UAT-2 is a genuine UX issue (design and implementation). UAT-3 is a trust question that opens the handover conversation (professional maturity). Three different types of feedback requiring three different responses.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Fix and redeploy</h2>
+  <p class="text-text-secondary mb-4">Fix UAT-2 (the join button UX). Redeploy to staging. Show Aisha the updated flow. The video delay explanation (UAT-1) is a conversation, not a code change. The handover question (UAT-3) is addressed in the monitoring and handover step.</p>
+  <p class="text-text-secondary mb-4">After fixing UAT-2, verify:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>Join button is prominent and accessible (keyboard, screen reader, contrast)</li>
+    <li>Reminder email sends correctly with a working join link</li>
+    <li>The fix doesn't break the existing consultation flow</li>
+    <li>Adversarial check: the join link in the email only works for the correct patient (not a generic link anyone could use)</li>
+  </ul>
+  <p class="text-text-secondary mb-4">Aisha confirms: video join is clear, email reminders work. Sign-off for production.</p>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: monitoring, incident response, and handover</h2>
+    <p class="text-text-secondary mb-4">Feedback resolved. Time to go live — then simulate an incident and prepare the handover.</p>
+    <a
+      href="/web-dev/projects/10/monitoring"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Monitoring & Handover →
+    </a>
+  </div>
+</DocsLayout>

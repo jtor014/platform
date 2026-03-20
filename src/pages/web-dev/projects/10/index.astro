@@ -1,0 +1,87 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import Checklist from '../../../../components/Checklist.astro';
+---
+
+<DocsLayout title="Project 10: The Capstone" description="Build a telehealth consultation platform with full ownership — infrastructure, monitoring, security, incident response, and handover documentation.">
+  <h1 class="mb-2">Project 10: The Capstone</h1>
+  <p class="text-xl text-primary font-medium mb-6">"I can take a complex brief and deliver a production system with the infrastructure, monitoring, security, incident response, and documentation a real business needs."</p>
+
+  <h2 class="mb-4 mt-10">What you'll build</h2>
+  <p class="text-text-secondary mb-4">A telehealth consultation platform for Harbour Health — Dr. Aisha Noor's startup connecting regional Australians with metro specialists. Patient registration and profiles, a specialist directory searchable by specialty and availability, appointment booking with video consultation links, consultation notes, prescription requests routed to local GPs, and role-based access for patients, specialists, and admins. Sensitive health data. Multi-region users across NSW and Victoria. Compliance considerations under the Australian Privacy Act.</p>
+  <p class="text-text-secondary mb-4">This is the project where everything comes together.</p>
+
+  <h2 class="mb-4 mt-10">What's new (the +1)</h2>
+  <p class="text-text-secondary mb-4">Nothing new. Everything from Projects 1 through 9. The challenge is not learning a new tool — it's knowing which tools to reach for and composing them into a coherent system. You've built static sites, full-stack apps, auth systems, payment integrations, cloud infrastructure, auto-scaling pipelines, observability stacks, and feature flag rollouts. Now you do all of it, with no scaffolding.</p>
+  <p class="text-text-secondary mb-4">Plus: incident simulation (things break, you respond), handover documentation (someone else must be able to operate this), accessibility (WCAG 2.1 AA), and a deliberately ambiguous client brief (you ask the right questions before writing a single line of code).</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Full ownership means full responsibility.</strong> No one tells you what to provision, how to structure the backlog, or which video API to choose. You've done each of these things in isolation. The capstone tests whether you can do all of them together, under ambiguity, for a real business with real constraints.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">What success looks like</h2>
+  <Checklist items={[
+    "Working telehealth platform — patients browse specialists, book appointments, and join video consultations",
+    "Video consultations function reliably, including on low-bandwidth regional connections",
+    "Role-based access control across patient, specialist, and admin roles with data isolation",
+    "Consultation notes and prescription request workflow (specialist writes, admin reviews, GP notified)",
+    "Australian Privacy Act compliance — encrypted data at rest and in transit, audit logging, scoped data access",
+    "WCAG 2.1 AA accessibility — colour contrast, keyboard navigation, screen reader compatibility, focus indicators",
+    "Auto-scaling infrastructure on AWS — EC2 ASG behind ALB, RDS multi-AZ, CloudFront, S3, all provisioned via Terraform modules",
+    "Grafana dashboards — consultations (scheduled, completed, no-shows), system health, infrastructure costs, security events",
+    "Incident response capability — runbooks, PagerDuty alerting, post-incident report process",
+    "Complete handover documentation — architecture docs, Terraform guide, deployment runbook, monitoring guide, incident procedures, cost breakdown, known issues",
+  ]} />
+
+  <h2 class="mb-4 mt-10">What you'll learn</h2>
+  <p class="text-text-secondary mb-4">Everything is a composition of P1-P9 skills. There is no single new concept here — only the challenge of applying them all at once.</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-8">
+    <li>Clarify an ambiguous brief before writing a PRD</li>
+    <li>Research and select a video API (Daily.co, Twilio, Zoom SDK) based on technical requirements</li>
+    <li>Design for accessibility from the start, not as an afterthought</li>
+    <li>Enforce data isolation at the database level for sensitive health records</li>
+    <li>Compose Terraform modules from P9 into a full production stack</li>
+    <li>Respond to a simulated production incident under time pressure</li>
+    <li>Produce handover documentation that lets someone else operate the system</li>
+    <li>Deliver a complete system — not just code, but infrastructure, monitoring, security, and documentation</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Tech stack</h2>
+  <p class="text-text-secondary mb-4">Everything from the curriculum:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-8">
+    <li>React + FastAPI + RDS PostgreSQL (multi-AZ)</li>
+    <li>EC2 Auto Scaling Group behind Application Load Balancer</li>
+    <li>CloudFront CDN + S3 for static assets</li>
+    <li>Terraform with modules (reused/adapted from P9)</li>
+    <li>Prometheus + Grafana for monitoring</li>
+    <li>Sentry for error tracking</li>
+    <li>PagerDuty for on-call alerting</li>
+    <li>Feature flags for gradual rollout</li>
+    <li>Playwright for E2E testing + k6 for load testing</li>
+    <li>Linear for project management, Alembic for database migrations</li>
+    <li>Video API (Daily.co free tier recommended)</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Prerequisites</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-8">
+    <li>Completed <a href="/web-dev/projects/9">Project 9</a></li>
+    <li>A video API account — <a href="https://www.daily.co/" class="text-primary hover:underline">Daily.co free tier</a> recommended (you'll evaluate options during architecture)</li>
+    <li>AWS account with free tier (carried over from P6-P9)</li>
+    <li>PagerDuty account (carried over from P9)</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Estimated time</h2>
+  <p class="text-text-secondary mb-8">4-6 weeks. This is the longest project in the curriculum — deliberately so. You are building a production system, not a tutorial exercise. The planning phase alone (clarifying the brief, writing the PRD, designing for accessibility, making architecture decisions) will take a full week. Infrastructure, implementation, incident simulation, and handover documentation fill the rest.</p>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Start with the requirements</h2>
+    <p class="text-text-secondary mb-4">Meet the client. Read the brief. Notice what's missing. Ask the right questions.</p>
+    <a
+      href="/web-dev/projects/10/requirements"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Start with the requirements →
+    </a>
+  </div>
+</DocsLayout>

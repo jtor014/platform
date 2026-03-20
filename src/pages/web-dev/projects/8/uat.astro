@@ -1,0 +1,94 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="UAT (User Acceptance Testing)" description="Show Liam the staging site with feature flags, collect feedback on the dashboard, historical data, and test mode.">
+  <h1 class="mb-6">UAT (User Acceptance Testing)</h1>
+  <p class="text-text-secondary mb-4">Show Liam the staging site. Feature flags let him preview the new ticket purchase flow before it goes public. He tests over the weekend — selling a test ticket, scanning QR codes at a simulated check-in, and watching the live dashboard update during a mock event run-through.</p>
+  <p class="text-text-secondary mb-4">His testing focuses on the event-day experience: sell tickets, scan at the gate, watch the dashboard. The whole flow end to end.</p>
+  <p class="text-text-secondary mb-4">He comes back with notes:</p>
+
+  <Callout variant="client">
+    <p>"This is exactly what I needed. The check-in scanning is fast and the dashboard is great on my phone in the sun. Three things:</p>
+    <ol class="list-decimal list-inside space-y-2 mt-2">
+      <li>The dashboard updates are too slow — right now I have to refresh the page to see new check-ins. On event day I need to see numbers moving.</li>
+      <li>Can I see yesterday's check-in data? After the event ends, the dashboard is empty. I need to review the numbers after the fact.</li>
+      <li>QR scanning needs to work offline — or at least handle bad reception. At Bells Beach the mobile signal is patchy. My staff can't be stuck waiting for a spinner when 500 people are queuing at the gate.</li>
+    </ol>
+    <p class="mt-2">Otherwise, ready to go!"</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Analyse the feedback</h2>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">UAT-1</span>
+        <h3 class="text-base font-semibold">Real-time dashboard updates</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Type:</strong> Enhancement — scope discussion. The current dashboard updates on page refresh. Liam wants live updates. Two approaches: WebSocket connection for true real-time, or polling (fetch data every 10-30 seconds). WebSocket is more complex but gives instant updates. Polling is simpler and "real-time enough" for a dashboard showing aggregate data.</p>
+      <p class="text-sm text-text-secondary mb-2">This is a scope decision. True WebSocket real-time adds significant complexity — connection management, reconnection logic, server-side event broadcasting. Polling at 15-second intervals gives Liam the experience he wants with a fraction of the complexity.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Recommendation:</strong> Implement polling at 15-second intervals. If Liam needs faster updates later, upgrade to WebSocket as a future enhancement. Ship the simpler version first.</p>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">UAT-2</span>
+        <h3 class="text-base font-semibold">Historical event data</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Type:</strong> Missing feature — the dashboard shows live data but doesn't persist it for review. After the event, Liam needs to see: total tickets sold, total check-ins, revenue, check-in rate over time. The data is in the database — the dashboard just needs a "past events" view.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Dashboard shows historical data for past events (not just the current live event)</li>
+        <li>Event selector lets Liam choose which event to view</li>
+        <li>Past event view shows final totals: tickets sold, check-ins, revenue, check-in percentage</li>
+        <li>Current/live events continue to show real-time data</li>
+      </ul>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">UAT-3</span>
+        <h3 class="text-base font-semibold">Offline-resilient QR scanning</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Type:</strong> Scope discussion — a real operational constraint. At Bells Beach, mobile signal is unreliable. Full offline support (service worker, local database sync) is a major feature. But the minimum viable version is resilience: queue scans when offline, sync when connectivity returns, and give visual feedback that the scan was recorded locally.</p>
+      <p class="text-sm text-text-secondary mb-2">This is a scope negotiation. Full offline mode is weeks of work. A retry queue with local feedback is days. Ship the simpler version first.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Recommendation:</strong> Implement a scan queue — when the API is unreachable, store the scan locally, show a "queued" indicator, and sync when connectivity returns. This covers the patchy-signal scenario without building a full offline app.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>QR scan succeeds immediately when online (existing behaviour)</li>
+        <li>When API is unreachable, scan is queued locally with visual feedback ("Queued - will sync")</li>
+        <li>Queued scans sync automatically when connectivity returns</li>
+        <li>Staff see a count of pending (unsynced) scans</li>
+      </ul>
+    </div>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Notice the pattern:</strong> UAT-1 is a scope negotiation — real-time vs good-enough. UAT-2 is a missing view of existing data. UAT-3 is a real operational constraint from the physical environment — patchy mobile signal at Bells Beach. Each project's feedback gets more operationally nuanced.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Fix and redeploy</h2>
+  <p class="text-text-secondary mb-4">Same loop — direct Claude, fix, verify, merge, redeploy. The blue/green pipeline makes this safe: deploy to the idle environment, test, switch.</p>
+
+  <CodeBlock copy>{`Fix the three UAT feedback items:
+
+UAT-1: Add 15-second polling to the event-day dashboard. Every 15 seconds, fetch updated check-in and ticket data without a full page refresh. Show a subtle "last updated" timestamp.
+UAT-2: Add a past events view to the dashboard. Event selector dropdown. Past events show final totals. Current events show live data with polling.
+UAT-3: Add offline-resilient QR scanning. When the check-in API is unreachable (patchy signal), queue the scan locally with a "Queued" indicator. Sync automatically when connectivity returns. Show a count of pending scans.`}</CodeBlock>
+
+  <p class="text-text-secondary mt-4 mb-4">After fixing, verify each item on staging. Then approve the production deployment. Send Liam the updated staging URL. He confirms: dashboard updates automatically, historical data available, scanning works even with patchy signal. Sign-off.</p>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: monitoring</h2>
+    <p class="text-text-secondary mb-4">Feedback resolved. Time to go live, set up production monitoring, and walk through the incident response runbook.</p>
+    <a
+      href="/web-dev/projects/8/monitoring"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Monitoring & Iteration →
+    </a>
+  </div>
+</DocsLayout>

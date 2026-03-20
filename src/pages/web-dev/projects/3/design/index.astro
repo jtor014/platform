@@ -1,0 +1,90 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Design" description="Gather client preferences, generate a design spec with AI, and iterate.">
+  <h1 class="mb-6">Design</h1>
+  <p class="text-text-secondary mb-4">In Project 1, the design spec was written for you — exact colours, typography, spacing. Now you create it. You'll gather Sarah's visual preferences, use AI to generate a design spec, mock it up, and iterate.</p>
+  <p class="text-text-secondary mb-8">The process is the same as writing the PRD: prompt, template, review, iterate. The difference is that design is visual — you can <em>see</em> whether it's right, which makes verification faster.</p>
+
+  <h2 class="mb-4">Client preferences</h2>
+  <p class="text-text-secondary mb-4">After the initial meeting, you follow up with Sarah about the look and feel. She sends you a message:</p>
+
+  <Callout variant="client">
+    <p>"I like earthy tones — terracotta, cream, sage green. Nothing corporate. The studio has exposed brick and plants everywhere. I want the website to feel like walking into the studio. Think of it like the ceramics you see at Mud Australia or Robert Gordon — clean, natural, warm. Keep it simple — I hate cluttered websites."</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <p class="text-text-secondary mb-4">Open <a href="https://claude.ai">claude.ai</a> and paste this prompt:</p>
+  <CodeBlock copy>{`Here is a PRD for a pottery studio class booking system:
+
+[Paste your PRD]
+
+And here are the client's visual preferences:
+
+"I like earthy tones — terracotta, cream, sage green. Nothing corporate. The studio has exposed brick and plants everywhere. I want the website to feel like walking into the studio. Think of it like the ceramics you see at Mud Australia or Robert Gordon — clean, natural, warm. Keep it simple — I hate cluttered websites."
+
+Using the following design spec template, generate a complete design specification. Include specific colour hex values, typography choices with sizes, spacing values, component specifications for forms and cards, and responsive breakpoints.
+
+[Paste design template from /templates]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Review guidance</h2>
+  <p class="text-text-secondary mb-4">Claude will generate a design spec. Before you accept it, check:</p>
+
+  <h3 class="mb-3 mt-6">Colours</h3>
+  <p class="text-text-secondary mb-4">Paste the hex values into a contrast checker (<a href="https://webaim.org/resources/contrastchecker/">WebAIM Contrast Checker</a> works well). Check that text colours have at least 4.5:1 contrast against their backgrounds. Earthy tones can be tricky — terracotta text on cream might not have enough contrast.</p>
+
+  <h3 class="mb-3 mt-6">Form components</h3>
+  <p class="text-text-secondary mb-4">The design spec should include specific component specs for the signup form: input field dimensions, border styles, focus states, error states (colour, icon, message placement), button styles, and disabled states. Forms are the core interaction — vague form specs lead to inconsistent implementation.</p>
+
+  <h3 class="mb-3 mt-6">Class card component</h3>
+  <p class="text-text-secondary mb-4">How does a class listing look? The spec should define: card layout, how date/time/spots are displayed, what a full class looks like vs one with spots, hover and active states.</p>
+
+  <h3 class="mb-3 mt-6">Responsive breakpoints</h3>
+  <p class="text-text-secondary mb-4">Do they make sense for the content? Class cards on mobile should stack. The signup form should be full-width on mobile. Check that the spec addresses how each major component adapts.</p>
+
+  <h3 class="mb-3 mt-6">Try the mockup technique</h3>
+  <p class="text-text-secondary mb-4">This is the same technique from Project 1's design page: paste the PRD and design spec into claude.ai and ask for a React artifact mockup. See the layout, the colours, the class cards, the signup form — a working visual in seconds. Iterate:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>"The terracotta feels too bright — make it more muted"</li>
+    <li>"The class cards need more breathing room"</li>
+    <li>"The signup form feels corporate — soften the edges, use warmer borders"</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Iterate with the client</h2>
+  <p class="text-text-secondary mb-4">Show Sarah the mockup. Does it feel like her studio? In this project, re-read her preferences and check: earthy tones (not corporate blues), clean layout (not cluttered), warm and natural (not sterile).</p>
+  <p class="text-text-secondary mb-8">If it doesn't feel right, iterate. Tell Claude specifically what to change. "The colours feel right but the layout is too grid-heavy. Make it feel more organic — round the corners more, add more whitespace between sections."</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Save your design spec as a markdown file.</strong> Like the PRD, you'll reference this throughout the project. It goes into the architecture prompt next, and you'll use it to verify every visual element Claude Code builds.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: design collaboration</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">In this project you generated a design spec with AI and iterated via mockups. Professional teams use dedicated design tools with handoff workflows.</p>
+      <div class="space-y-3">
+        <div><p class="text-sm"><strong class="text-text">Figma</strong> — <span class="text-text-secondary">Dominant design tool. Browser-based, real-time collaboration, component libraries. From Project 4 onwards, you'll reference Figma files for design handoff.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Sketch</strong> — <span class="text-text-secondary">Mac-only, was the industry standard before Figma. Still used in some agencies and enterprise teams.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Adobe XD</strong> — <span class="text-text-secondary">Adobe's answer to Figma. Integrated with Creative Cloud. Being phased out as Figma dominates.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Zeplin</strong> — <span class="text-text-secondary">Design-to-developer handoff. Extracts spacing, colours, and assets from design files into specs developers can reference.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Figma Dev Mode</strong> — <span class="text-text-secondary">Figma's built-in developer handoff. Shows CSS values, spacing, and component properties directly in the design file.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Storybook</strong> — <span class="text-text-secondary">Component development environment. Build and test UI components in isolation. Bridges design and implementation — designers can review components without running the full app.</span></p></div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">From Project 4 onwards, you'll work with Figma files instead of generating design specs from scratch. The skill shifts from creating specs to interpreting design handoffs.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: Architecture</h2>
+    <p class="text-text-secondary mb-4">You have requirements and a design. Now define how to build it.</p>
+    <a
+      href="/web-dev/projects/3/architecture"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Architecture →
+    </a>
+  </div>
+</DocsLayout>

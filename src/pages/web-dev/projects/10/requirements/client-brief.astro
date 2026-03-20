@@ -1,0 +1,172 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="The Client Brief: Harbour Health" description="Meet Dr. Aisha Noor and her deliberately incomplete brief for a telehealth platform connecting regional Australians with metro specialists.">
+  <h1 class="mb-6">The Client Brief: Harbour Health</h1>
+  <p class="text-text-secondary mb-4"><strong class="text-text">Dr. Aisha Noor</strong> is a GP in Wagga Wagga. She founded Harbour Health to connect regional Australians — people in Dubbo, Orange, Wagga Wagga, Bendigo, Ballarat — with metro specialists via video consultation. Wait times for specialists in regional areas are months. Aisha wants to cut that to days.</p>
+  <p class="text-text-secondary mb-4">You meet Aisha over a video call. She's between patients. She talks fast.</p>
+
+  <Callout variant="client">
+    <p>"I'm a GP in Wagga Wagga. My patients wait months to see specialists. I want to connect them with metro specialists via video. Patient registers, browses specialists by specialty, books a time, has a video consultation. The specialist writes notes that I can see as the referring GP. We need to handle prescriptions somehow. And it needs to work on bad internet — my patients are regional."</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">What's different about this brief</h2>
+  <p class="text-text-secondary mb-4">Every previous client brief gave you enough information to write the PRD. This one doesn't. Aisha gave you the vision and the core workflow, but there are critical gaps. "Handle prescriptions somehow" is vague. She hasn't mentioned compliance. She hasn't mentioned accessibility. She hasn't mentioned data retention policies. If you write the PRD from this brief alone, you'll make assumptions that may be wrong — about scale, about security requirements, about the video platform, about failure cases.</p>
+  <p class="text-text-secondary mb-4">This is normal. Real client briefs are always incomplete. The skill is asking the right questions <strong class="text-text">before</strong> building anything.</p>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>This brief has deliberate gaps.</strong> Part of the capstone exercise is identifying what's NOT said. Before reading further, go back to Aisha's brief and list everything she <em>didn't</em> say. What questions would you need answered before writing a PRD? Write them down. Then compare with the list below.</p>
+  </Callout>
+
+  <h3 class="mb-3 mt-6">What's ambiguous or missing</h3>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Prescription workflow:</strong> "Handle prescriptions somehow" — how, exactly? Who approves? What gets sent to the GP? In what format?</li>
+    <li><strong class="text-text">Compliance:</strong> Not mentioned at all. Medical data in Australia falls under the Privacy Act. What are the encryption, access, and audit requirements?</li>
+    <li><strong class="text-text">Accessibility:</strong> Not mentioned. Patients include elderly and disabled Australians. What standard? WCAG 2.1 AA?</li>
+    <li><strong class="text-text">Data retention:</strong> How long are medical records kept? What happens when a patient requests deletion?</li>
+    <li><strong class="text-text">Scale:</strong> How many patients initially? How many specialists? Growth projections?</li>
+    <li><strong class="text-text">Failure cases:</strong> What if the specialist doesn't show? What if the patient's internet drops mid-call?</li>
+    <li><strong class="text-text">Video platform:</strong> Any preference? What matters most — quality, cost, reliability?</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Clarification questions</h2>
+  <p class="text-text-secondary mb-4">These are the questions a professional developer asks before writing a requirements document. The answers shape the architecture, the infrastructure, the security model, and the scope.</p>
+
+  <div class="space-y-6 mb-8">
+    <div class="border border-border rounded-lg overflow-hidden">
+      <div class="px-6 py-4 bg-bg-muted">
+        <p class="font-semibold text-sm">"How many patients are you expecting initially?"</p>
+      </div>
+      <div class="px-6 py-4">
+        <Callout variant="client">
+          <p>"Maybe 50 in the first month, growing to 500 by year end."</p>
+        </Callout>
+        <p class="text-sm text-text-secondary mt-3"><strong class="text-text">Why this matters:</strong> 50 patients vs 50,000 patients means completely different infrastructure. 50 patients in month one with growth to 500 means the infrastructure needs to scale but doesn't need to start large. Auto-scaling groups make sense here — start small, scale up as needed.</p>
+      </div>
+    </div>
+
+    <div class="border border-border rounded-lg overflow-hidden">
+      <div class="px-6 py-4 bg-bg-muted">
+        <p class="font-semibold text-sm">"How many specialists will be on the platform?"</p>
+      </div>
+      <div class="px-6 py-4">
+        <Callout variant="client">
+          <p>"Starting with 10, across cardiology, dermatology, psychiatry, and endocrinology."</p>
+        </Callout>
+        <p class="text-sm text-text-secondary mt-3"><strong class="text-text">Why this matters:</strong> 10 specialists means manual onboarding is fine. 1,000 specialists would need self-service onboarding with credential verification. The specialist count also affects the directory design — 10 specialists don't need complex search and filtering; 1,000 do.</p>
+      </div>
+    </div>
+
+    <div class="border border-border rounded-lg overflow-hidden">
+      <div class="px-6 py-4 bg-bg-muted">
+        <p class="font-semibold text-sm">"Do you have a preference for the video platform?"</p>
+      </div>
+      <div class="px-6 py-4">
+        <Callout variant="client">
+          <p>"I don't mind, as long as it's reliable and works on bad internet."</p>
+        </Callout>
+        <p class="text-sm text-text-secondary mt-3"><strong class="text-text">Why this matters:</strong> "Works on bad internet" is a hard technical requirement, not a nice-to-have. Regional Australia has variable internet quality. This eliminates some video solutions and favours WebRTC-based platforms that adapt to bandwidth. You'll evaluate options during architecture — but this answer tells you the selection criterion.</p>
+      </div>
+    </div>
+
+    <div class="border border-border rounded-lg overflow-hidden">
+      <div class="px-6 py-4 bg-bg-muted">
+        <p class="font-semibold text-sm">"When you say 'secure,' what does that mean to you?"</p>
+      </div>
+      <div class="px-6 py-4">
+        <Callout variant="client">
+          <p>"Patient data can only be seen by the patient and their specialist. No one else. And we need to comply with the Australian Privacy Act."</p>
+        </Callout>
+        <p class="text-sm text-text-secondary mt-3"><strong class="text-text">Why this matters:</strong> "Secure" means different things to different people. Aisha defined it: data isolation (patient + their specialist only) and compliance (Australian Privacy Act). This shapes the database design (row-level scoping), the access control model, encryption requirements (at rest and in transit), and audit logging (who accessed what, when). Without this question, you might build generic role-based access when what's actually needed is patient-specialist data scoping.</p>
+      </div>
+    </div>
+
+    <div class="border border-border rounded-lg overflow-hidden">
+      <div class="px-6 py-4 bg-bg-muted">
+        <p class="font-semibold text-sm">"What happens if the specialist doesn't show up to the consultation?"</p>
+      </div>
+      <div class="px-6 py-4">
+        <Callout variant="client">
+          <p>"Good question. I hadn't thought about that. Can the patient get a notification and reschedule?"</p>
+        </Callout>
+        <p class="text-sm text-text-secondary mt-3"><strong class="text-text">Why this matters:</strong> This is the question Aisha didn't know she needed to answer. The unhappy path — specialist no-shows, patient internet drops, video service outages — defines the reliability of the platform. A system without failure handling isn't production-ready. The answer ("notification and reschedule") gives you a concrete requirement to design against.</p>
+      </div>
+    </div>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>The lesson:</strong> real client briefs are always incomplete. The skill is not assuming the gaps away — it's surfacing them as questions. Five questions turned a vague brief into a buildable specification. This is a skill you use on every project, forever.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">What she asked for</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Patient registration and profiles:</strong> Patients sign up, manage their profile, view their consultation history</li>
+    <li><strong class="text-text">Specialist directory:</strong> Searchable by specialty (cardiology, dermatology, psychiatry, endocrinology) and availability</li>
+    <li><strong class="text-text">Appointment booking:</strong> Patients book a time slot with a specialist</li>
+    <li><strong class="text-text">Video consultations:</strong> Reliable video call between patient and specialist, including on low-bandwidth connections</li>
+    <li><strong class="text-text">Consultation notes:</strong> Specialist writes notes after the consultation</li>
+    <li><strong class="text-text">Prescription requests:</strong> Specialist flags a prescription request that goes back to the patient's local GP</li>
+    <li><strong class="text-text">Security:</strong> Patient data scoped to patient + specialist. Australian Privacy Act compliance.</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">What she implied</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Three roles:</strong> Patient, Specialist, Admin. Aisha will be the admin initially.</li>
+    <li><strong class="text-text">Regional reliability:</strong> The platform must work on variable internet. This is a non-negotiable — the entire value proposition is serving regional patients.</li>
+    <li><strong class="text-text">Prescription workflow:</strong> Not real-time. Specialist writes a request, it enters a queue, admin reviews, notification goes to the patient's local GP. Async, not instant.</li>
+    <li><strong class="text-text">Growth trajectory:</strong> Starting small but planning for 10x growth within the year. Infrastructure must scale without re-architecture.</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">What she didn't ask for</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">No payment processing</strong> — Harbour Health invoices specialists directly. No Stripe, no patient billing in the app.</li>
+    <li><strong class="text-text">No electronic prescriptions</strong> — prescription requests are text-based notes sent to the patient's GP. Not e-prescribing.</li>
+    <li><strong class="text-text">No medical records storage</strong> — consultation notes are stored, but this is not a full electronic health record (EHR) system.</li>
+    <li><strong class="text-text">No chat or messaging</strong> — communication happens during the video call. No async messaging between consultations.</li>
+    <li><strong class="text-text">No mobile app</strong> — web only, but must work well on mobile browsers (regional patients often use phones).</li>
+    <li><strong class="text-text">No pharmacy integration</strong> — prescriptions go to the local GP, not directly to a pharmacy.</li>
+    <li><strong class="text-text">No insurance or Medicare integration</strong> — billing is handled outside the platform.</li>
+  </ul>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Watch for AI scope creep.</strong> Healthcare is heavily represented in AI training data. When you generate the PRD, AI will try to add electronic prescriptions, Medicare billing, full EHR functionality, patient messaging, pharmacy integrations, and mobile apps. Aisha wants none of that. She wants video consultations, notes, and prescription requests sent to GPs. Keep it tight.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: telehealth video APIs</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">Video consultations are the core of Harbour Health. You'll choose a platform during architecture, but understanding the landscape helps you ask better questions during requirements.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Daily.co</strong> — <span class="text-text-secondary">WebRTC-based. Simple API — create a room, get a join link. Good adaptive quality for low bandwidth. Free tier: 10,000 participant minutes/month. Good documentation. Low barrier to entry.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Twilio Video</strong> — <span class="text-text-secondary">Mature platform. WebRTC. Granular control over quality, topology, and recording. Pay-per-minute pricing. More complex API but more flexibility. Used in production telehealth systems.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Vonage (formerly TokBox)</strong> — <span class="text-text-secondary">WebRTC. Strong in healthcare and telehealth. Good adaptive bitrate for variable connections. Pay-per-minute.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Zoom SDK</strong> — <span class="text-text-secondary">Embedded Zoom experience. Familiar UI for users. Requires Zoom account. SDK is more complex than API-first platforms. Free tier is limited.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">WebRTC native</strong> — <span class="text-text-secondary">Build directly on the WebRTC standard without a third-party platform. Maximum control. Maximum complexity. Requires managing STUN/TURN servers, signalling, and all the edge cases yourself. Not recommended unless you have a specific reason to avoid third-party platforms.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">The key requirement from Aisha: "works on bad internet." This means adaptive bitrate — the video platform must automatically reduce quality on slow connections rather than freezing or disconnecting. WebRTC-based platforms handle this natively. You'll evaluate these during architecture.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: write the PRD</h2>
+    <p class="text-text-secondary mb-4">You have the brief and the clarifications. Now turn it into a requirements document — with compliance, accessibility, and video integration requirements.</p>
+    <a
+      href="/web-dev/projects/10/requirements/writing-the-prd"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Writing the PRD →
+    </a>
+  </div>
+</DocsLayout>

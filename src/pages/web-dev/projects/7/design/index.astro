@@ -1,0 +1,110 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Design" description="Create the design spec for Coastal Physio with three dashboard views and an appointment calendar.">
+  <h1 class="mb-6">Design</h1>
+  <p class="text-text-secondary mb-4">Same process — client preferences, prompt, template, review. Megan has a clear visual direction:</p>
+
+  <Callout variant="client">
+    <p>"Professional, clean, calming. We're a healthcare practice — trust matters. Blue and white, nothing flashy. Think of it like a good medical website — clean, easy to navigate, accessible. Our patients range from teenagers to retirees. It has to be simple."</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <CodeBlock copy>{`Here is the PRD for Coastal Physio, a patient appointment booking and clinical notes system:
+
+[Paste your PRD here]
+
+Using the following design spec template, create a complete design specification. The system has three user types (Patient, Practitioner, Admin/Reception), each with a different dashboard view. Three clinic locations.
+
+Key requirements:
+- Professional, clean, calming — healthcare aesthetic
+- Blue and white colour palette, nothing flashy
+- Trust and accessibility are priorities — patients range from teenagers to retirees
+- Three distinct dashboard views showing only what each user type can access
+- Appointment calendar is the core UI element — used by all three user types differently
+- Location selector/filter prominent in the interface
+- Clinical notes view for practitioners — clean, focused writing interface
+- Responsive — works on laptop and tablet (receptionists use tablets at the front desk)
+
+[Paste design spec template here]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Three dashboard views</h2>
+  <p class="text-text-secondary mb-4">The design needs to handle three fundamentally different workflows, all centered around the same data — appointments.</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Patient view</h3>
+      <p class="text-sm text-text-secondary">The simplest view. Browse available slots (filtered by location and optionally by practitioner), book an appointment, view upcoming appointments, view past appointment notes. The patient doesn't need to understand the system's complexity — they pick a location, pick a time, and book. No admin navigation, no practitioner tools.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Practitioner view</h3>
+      <p class="text-sm text-text-secondary">Schedule-focused. Today's appointments at a glance — who's coming in, at which location, what time. Click an appointment to view the patient's history and write notes. The clinical notes interface needs to be clean and focused — practitioners write notes between sessions, sometimes quickly. Past notes for the patient should be visible for context.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Admin / reception view</h3>
+      <p class="text-sm text-text-secondary">The most complex view. Calendar showing all appointments across all locations — or filtered to one location. Ability to create, reschedule, and cancel appointments for any patient. Manage practitioner schedules (who works where on which days). Manage patient accounts. This is the operational hub that replaces the paper diary.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">The appointment calendar</h2>
+  <p class="text-text-secondary mb-4">The calendar is the core UI element. All three user types interact with it differently:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Patients:</strong> See available slots. Green for available, grey for taken. Select a slot to book.</li>
+    <li><strong class="text-text">Practitioners:</strong> See their own schedule. Appointments with patient names, times, locations. Click to open patient record and notes.</li>
+    <li><strong class="text-text">Admin:</strong> See all appointments across practitioners and locations. Drag to reschedule (optional — click-to-reschedule is fine). Colour-coded by practitioner or by location.</li>
+  </ul>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Calendar UI is hard.</strong> Don't build a calendar component from scratch. The design spec should reference a calendar library — FullCalendar, react-big-calendar, or similar. The design focuses on how data populates the calendar, not on implementing date grid rendering.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Review guidance</h2>
+  <p class="text-text-secondary mb-4">When you review the generated design spec:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Is there a dashboard mockup for each user type?</strong> Three views, three descriptions.</li>
+    <li><strong class="text-text">Does the navigation change per user type?</strong> Patients shouldn't see admin or practitioner links.</li>
+    <li><strong class="text-text">Is the location selector prominent?</strong> Multi-location is the core of this system — switching between clinics should be one click, not buried in settings.</li>
+    <li><strong class="text-text">Is the clinical notes interface clean?</strong> Practitioners write notes quickly between sessions. The interface should minimise friction.</li>
+    <li><strong class="text-text">Check against your permissions matrix.</strong> For every "No" in the matrix, verify the design doesn't show that element to that user type.</li>
+    <li><strong class="text-text">Accessibility:</strong> Megan's patients include retirees. Font sizes, contrast ratios, and touch targets matter more than usual.</li>
+  </ul>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: component libraries</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">You'll use a component library for the UI. Here's what exists and what teams reach for.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Ant Design</strong> — <span class="text-text-secondary">Enterprise-focused React component library. Comprehensive — tables, forms, date pickers, calendars. Opinionated design language. Popular for admin dashboards and internal tools. Large bundle size.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Material UI (MUI)</strong> — <span class="text-text-secondary">Google's Material Design for React. Widely used, large ecosystem. Highly customisable through theming. Good documentation. Can feel "Google-y" without customisation.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Chakra UI</strong> — <span class="text-text-secondary">Accessible-first React component library. Clean defaults, good for building quickly. Less opinionated than Ant Design or MUI. Smaller ecosystem but growing.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Radix UI</strong> — <span class="text-text-secondary">Unstyled, accessible primitives. You bring your own styles. Maximum control over appearance. Often paired with Tailwind CSS. Foundation for shadcn/ui.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">shadcn/ui</strong> — <span class="text-text-secondary">Not a library — a collection of copy-paste components built on Radix UI and Tailwind. You own the code. No dependency to update. Currently very popular in the React ecosystem.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">For a healthcare dashboard with calendar views, Ant Design or MUI give you the most out of the box. shadcn/ui gives you the most control. The choice depends on whether you want speed (Ant Design) or customisation (shadcn/ui).</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: architecture</h2>
+    <p class="text-text-secondary mb-4">Design spec is done. Now make the critical infrastructure decisions — RDS, ALB, Alembic, and blue/green deployment.</p>
+    <a
+      href="/web-dev/projects/7/architecture"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Architecture →
+    </a>
+  </div>
+</DocsLayout>

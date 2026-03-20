@@ -109,6 +109,37 @@ import Callout from '../../../../components/Callout.astro';
     <li>Could I do this again without the guide?</li>
   </ul>
 
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: monitoring & observability</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">Monitoring tools tell you what's happening in production. The more complex your system, the more you need.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Sentry</strong> — <span class="text-text-secondary">Error tracking. Catches JavaScript errors, backend exceptions, unhandled rejections. We'll introduce this in Project 4.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Grafana</strong> — <span class="text-text-secondary">Dashboards and visualisation. Connects to multiple data sources. We'll use this from Project 7 onwards.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Prometheus</strong> — <span class="text-text-secondary">Metrics collection. Scrapes application metrics (request count, latency, error rate). Pairs with Grafana.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Datadog</strong> — <span class="text-text-secondary">Full observability platform (metrics, logs, traces, APM). Enterprise-grade. Expensive but comprehensive.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">New Relic</strong> — <span class="text-text-secondary">Similar to Datadog. Application performance monitoring with deep code-level visibility.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">CloudWatch</strong> — <span class="text-text-secondary">AWS's built-in monitoring. Metrics for EC2, RDS, Lambda. We'll use this from Project 6 onwards.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">PagerDuty / OpsGenie</strong> — <span class="text-text-secondary">Alert routing. "Who gets woken up at 2am when the site goes down?" We'll use this from Project 8 onwards.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">For a static site on Netlify, monitoring is lightweight — Lighthouse scores and checking the live URL. As you add backends, databases, and cloud infrastructure, monitoring becomes the difference between "the site is down and we don't know" and "we got an alert, diagnosed it, and fixed it in 10 minutes."</p>
+    </div>
+  </details>
+
   <div class="border border-border rounded-lg p-6 my-8 bg-bg-subtle text-center">
     <h3 class="text-lg font-semibold mb-3">Show someone</h3>
     <p class="text-text-secondary mb-3">Open the live URL on your phone. Show it to a friend, a classmate, or a family member.</p>

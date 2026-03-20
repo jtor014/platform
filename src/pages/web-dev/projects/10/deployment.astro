@@ -1,0 +1,119 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import Checklist from '../../../../components/Checklist.astro';
+---
+
+<DocsLayout title="Deployment" description="Deploy Harbour Health with blue/green via ASG, feature flags, zero-downtime, and healthcare-grade security configuration.">
+  <h1 class="mb-6">Deployment</h1>
+  <p class="text-text-secondary mb-4">Full pipeline from P8. You've done blue/green deployments, feature flags, and zero-downtime deploys before. The new dimension: this is medical data, and the security configuration is non-negotiable.</p>
+
+  <h2 class="mb-4 mt-10">Deployment strategy</h2>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Blue/green via ASG</h3>
+      <p class="text-sm text-text-secondary">Same pattern from P8. Deploy to the green environment, verify, switch traffic. The ALB routes traffic to the healthy target group. If something goes wrong, switch back to blue. For a healthcare platform, this instant rollback is critical — a broken deployment during a consultation is unacceptable.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Feature flags for gradual rollout</h3>
+      <p class="text-sm text-text-secondary">New features (especially the video consultation flow) should roll out gradually. Start with a small percentage of patients, monitor for issues, then increase. Feature flags let you deploy code to production without exposing it to all users. If something breaks, disable the flag — no redeploy needed.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Zero-downtime deployment</h3>
+      <p class="text-sm text-text-secondary">Verify under load. Run a k6 test during deployment — are requests dropped? Do response times spike? A healthcare platform cannot have "planned downtime" during business hours. Zero-downtime is verified, not assumed.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Security configuration</h2>
+  <p class="text-text-secondary mb-4">Every item here is a requirement, not a recommendation:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">All secrets in AWS Secrets Manager</h3>
+      <p class="text-sm text-text-secondary">JWT signing key, database credentials, video API key, email service credentials. Nothing in environment variables on the instance. Nothing in the codebase. Secrets Manager with rotation enabled.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">HTTPS everywhere</h3>
+      <p class="text-sm text-text-secondary">CloudFront handles TLS termination. ALB to EC2 traffic is within the VPC but should also use HTTPS. No HTTP endpoints. Force HTTPS redirect at the ALB level.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">CORS restricted</h3>
+      <p class="text-sm text-text-secondary">Only the frontend domain is allowed. No wildcards. No <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">*</code> in production. Verify with a curl request from an unauthorized origin.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">CSP headers</h3>
+      <p class="text-sm text-text-secondary">Content Security Policy headers configured to prevent XSS. Allow scripts only from your domain and the video API's domain. Block inline scripts unless explicitly needed. This is especially important for a healthcare platform — XSS on a page that displays patient data is a data breach.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">RDS encryption at rest</h3>
+      <p class="text-sm text-text-secondary">Enabled in the Terraform configuration. Patient data is encrypted on disk. This is a compliance requirement, not a performance optimisation.</p>
+    </div>
+  </div>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Pre-deployment checklist.</strong> Before promoting to production, verify every item:</p>
+    <ul class="text-sm space-y-1 mt-2">
+      <li>All secrets in Secrets Manager (none hardcoded, none in .env files on instances)</li>
+      <li>HTTPS on all endpoints (check with curl — no HTTP responses)</li>
+      <li>CORS restricted to frontend domain (verify with cross-origin request)</li>
+      <li>CSP headers present (check response headers in browser DevTools)</li>
+      <li>RDS encryption enabled (check Terraform state or AWS console)</li>
+      <li>Audit logging active (create a test patient record, verify audit entry appears)</li>
+      <li>Blue/green switch tested (can you roll back instantly?)</li>
+    </ul>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Accessibility verification in production</h2>
+  <p class="text-text-secondary mb-4">Run a Lighthouse accessibility audit on every user-facing page in the production environment. The production build may differ from local — minification, CDN-served assets, different font loading can affect accessibility.</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Patient pages:</strong> Registration, specialist directory, appointment booking, consultation view, prescription status</li>
+    <li><strong class="text-text">Specialist pages:</strong> Dashboard, consultation view, notes editor, prescription request form</li>
+    <li><strong class="text-text">Admin pages:</strong> Overview dashboard, prescription queue, specialist management</li>
+    <li><strong class="text-text">Shared pages:</strong> Login, profile, error pages (404, 500)</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Compliance checklist</h2>
+  <p class="text-text-secondary mb-4">Before going live, verify every compliance requirement from the PRD is met on the production system.</p>
+
+  <Checklist items={[
+    "Data encrypted at rest — RDS encryption enabled, verified in AWS console or Terraform state",
+    "Data encrypted in transit — HTTPS on all endpoints, SSL on database connections",
+    "Audit logging active — patient data access logged with user, timestamp, action, and resource",
+    "Access controls verified — RBAC tested on production (patient, specialist, admin boundaries hold)",
+    "Data isolation verified — Patient A cannot access Patient B's records on the live system",
+    "Backup and recovery tested — RDS automated backups configured, tested a restore to verify",
+  ]} />
+
+  <h2 class="mb-4 mt-10">Feature flag rollout</h2>
+  <p class="text-text-secondary mb-4">Use feature flags to control the gradual rollout:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Phase 1:</strong> All features enabled for test accounts only. Aisha and the development team verify in production.</li>
+    <li><strong class="text-text">Phase 2:</strong> Enable for the first 2-3 specialists. Monitor video quality, prescription workflow, system load.</li>
+    <li><strong class="text-text">Phase 3:</strong> All specialists. Full prescription workflow enabled.</li>
+    <li><strong class="text-text">Phase 4:</strong> Open to patients. Start with Aisha's existing referrals.</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Deploy and verify</h2>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>Deploy to staging. Run the full test suite against staging.</li>
+    <li>Run adversarial security tests on staging (token tampering, IDOR, endpoint probing).</li>
+    <li>Run OWASP ZAP scan on staging.</li>
+    <li>Run axe-core accessibility audit on all pages.</li>
+    <li>Verify video consultations work on staging — create a test appointment, join from two browsers.</li>
+    <li>Promote to production via blue/green switch.</li>
+    <li>Run k6 load test during switch to verify zero-downtime.</li>
+    <li>Verify production: login as each role, test core flows, check HTTPS, check headers.</li>
+  </ul>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: UAT</h2>
+    <p class="text-text-secondary mb-4">Deployed and verified. Time to show Aisha.</p>
+    <a
+      href="/web-dev/projects/10/uat"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      UAT →
+    </a>
+  </div>
+</DocsLayout>

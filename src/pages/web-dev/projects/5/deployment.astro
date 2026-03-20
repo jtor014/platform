@@ -1,0 +1,137 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Deployment" description="Deploy DeskHub with secure JWT secrets, HTTPS, and CORS — then run adversarial tests on the live site.">
+  <h1 class="mb-6">Deployment</h1>
+  <p class="text-text-secondary mb-4">Same deployment process as previous projects — frontend, backend, database. The new concerns are all about security. A deployed auth system has requirements that don't exist in local development.</p>
+
+  <h2 class="mb-4 mt-10">Security in production</h2>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">JWT secret key</h3>
+      <p class="text-sm text-text-secondary">The secret key used to sign JWTs must be strong and stored as an environment variable. Not <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">secret123</code>. Not <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">my-jwt-secret</code>. A long, random string. If it's hardcoded or committed to git, anyone who reads the code can forge valid tokens for any role — including owner.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">HTTPS only</h3>
+      <p class="text-sm text-text-secondary">All auth traffic must be encrypted. JWTs sent over plain HTTP are interceptable — anyone on the same network could read the token and impersonate the user. Most hosting platforms provide HTTPS automatically, but verify it's active. Check the browser bar shows the lock icon.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">CORS configuration</h3>
+      <p class="text-sm text-text-secondary">The backend should only accept requests from the frontend domain. In local development, CORS is often permissive (accept all origins). In production, a wildcard CORS policy means any website could make authenticated requests to your API if a user has a valid token.</p>
+    </div>
+  </div>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Environment variables checklist.</strong> Before deploying, verify these are all set in your hosting platform — not hardcoded in the app:</p>
+    <ul class="text-sm space-y-1 mt-2">
+      <li><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">JWT_SECRET</code> — a strong, random string (at least 32 characters)</li>
+      <li><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">DATABASE_URL</code> — production database connection string</li>
+      <li><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">CORS_ORIGINS</code> — the frontend domain only (not *)</li>
+    </ul>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Staging/production pipeline</h2>
+  <p class="text-text-secondary mb-4">Until now, you deployed to one place. Real teams have at least two environments: staging (test new changes) and production (what users see). Your CI/CD pipeline enforces this split.</p>
+
+  <div class="space-y-4 mb-6">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">How it works</h3>
+      <p class="text-sm text-text-secondary mb-3">GitHub Actions manages both environments through branch-based deployment:</p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-2">
+        <li><strong class="text-text">Feature branch → develop:</strong> You merge feature branches into <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">develop</code>. GitHub Actions automatically deploys to staging. No approval needed — staging is for testing.</li>
+        <li><strong class="text-text">develop → main:</strong> After testing on staging, you create a PR from <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">develop</code> to <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">main</code>. This requires manual approval. Once approved and merged, GitHub Actions deploys to production.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="bg-bg-muted rounded-lg p-6 mb-6 font-mono text-xs text-text-secondary">
+    <p class="mb-2 text-text font-semibold font-sans text-sm">Pipeline flow</p>
+    <p>feature/auth-fix → PR → develop → <span class="text-primary">auto-deploy to staging</span></p>
+    <p class="mt-1">develop → PR (manual approval) → main → <span class="text-primary">deploy to production</span></p>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Why two environments?</strong> Staging catches deployment-specific bugs before they reach users. A CORS misconfiguration, a missing environment variable, a database migration that breaks existing data — you want to find these on staging, not production. The manual approval gate on production is a forcing function: someone has to verify staging works before promoting.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Deploy and verify</h2>
+  <p class="text-text-secondary mb-2">Direct Claude to deploy:</p>
+  <CodeBlock copy>{`Deploy DeskHub to staging. All environment variables are configured. Frontend, backend, and database need to be running and connected.`}</CodeBlock>
+
+  <h3 class="mb-3 mt-6">Staging verification</h3>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>Login works for all three roles</li>
+    <li>Role-based views work — member, admin, and owner see different things</li>
+    <li>The URL bar shows HTTPS (not HTTP)</li>
+    <li>Bookings work — create, view, cancel</li>
+    <li>Admin can manage members and see all bookings</li>
+    <li>Owner can see revenue data</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Run adversarial tests on the live site</h2>
+  <p class="text-text-secondary mb-4">This is the step most people skip. After deploying, run your adversarial tests again on the live URL — not just locally.</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>Direct API access from curl without a token — returns 401</li>
+    <li>Direct API access with a member token to admin endpoints — returns 403</li>
+    <li>IDOR check on the live site — member A can't see member B's data</li>
+    <li>Tampered token — rejected with 401</li>
+  </ul>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Why test again in production?</strong> Different environment, different configuration. CORS settings might be different. HTTPS might change how cookies work. The JWT secret might be misconfigured. Running the adversarial tests on the live site catches deployment-specific issues that don't exist locally.</p>
+  </Callout>
+
+  <details class="mb-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-4 py-3 cursor-pointer font-semibold text-sm bg-bg-muted">Troubleshooting: "Login works locally but fails on staging"</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary mb-2">Common causes:</p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>JWT_SECRET environment variable not set — the backend can't sign tokens</li>
+        <li>CORS blocking the frontend domain — check the browser console for CORS errors</li>
+        <li>Database not seeded — no users to log in with. Run the seed script in production.</li>
+        <li>Cookie settings — if using HttpOnly cookies, the domain and secure flags may need updating for the production domain</li>
+      </ul>
+      <p class="text-sm text-text-secondary mt-2">Copy the error, paste it to Claude, and direct the fix.</p>
+    </div>
+  </details>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: deployment strategies</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use a basic staging/production split. Here's what else exists and when teams reach for each strategy.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Staging/production split</strong> — <span class="text-text-secondary">What we use. Two environments, manual approval to promote. Simple and effective for small teams.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Blue/green deployment</strong> — <span class="text-text-secondary">Two identical production environments. Deploy to the idle one, test it, then switch traffic. Instant rollback by switching back. We'll do this from Project 7.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Canary deployment</strong> — <span class="text-text-secondary">Route a small percentage of traffic (e.g., 5%) to the new version. Monitor for errors. Gradually increase to 100% if healthy. Reduces blast radius of bad deploys.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Rolling deployment</strong> — <span class="text-text-secondary">Replace instances one at a time. The old and new versions run simultaneously during the rollout. Standard on Kubernetes.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Feature flags</strong> — <span class="text-text-secondary">Deploy new code to everyone but enable it for specific users or percentages. Decouple deployment from release. We'll introduce feature flags from Project 8.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">The progression: staging/production (what we do now) → blue/green (Project 7) → feature flags (Project 8). Each strategy adds control over how changes reach users.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: UAT</h2>
+    <p class="text-text-secondary mb-4">Deployed and verified. Time to show Priya.</p>
+    <a
+      href="/web-dev/projects/5/uat"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      UAT →
+    </a>
+  </div>
+</DocsLayout>

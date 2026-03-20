@@ -1,0 +1,117 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="UAT (User Acceptance Testing)" description="Show Emma the ordering system, collect feedback on revenue visibility, holiday scheduling, and image quality.">
+  <h1 class="mb-6">UAT (User Acceptance Testing)</h1>
+  <p class="text-text-secondary mb-4">Show Emma the live system. She tests the ordering flow end-to-end, updates stock levels, checks delivery scheduling, and reviews the admin dashboard.</p>
+  <p class="text-text-secondary mb-8">She tests over a full week — placing orders as a customer, managing inventory as admin, checking delivery schedules by suburb. She comes back with notes:</p>
+
+  <Callout variant="client">
+    <p>"The ordering system is brilliant — so much better than the Google Form. Three things:</p>
+    <ol class="list-decimal list-inside space-y-2 mt-2">
+      <li>The ordering is great but I can't see total revenue for the week without adding it up myself. Can there be a summary? Like total orders, total revenue, maybe a chart showing which products sell best?</li>
+      <li>Delivery scheduling works but I want to block out days when I'm on holiday. Right now it still shows delivery days even when I'm not operating. I need to be able to turn off a suburb's delivery for a week.</li>
+      <li>The photos of produce look pixelated on my phone. They're fine on my laptop but blurry when I check on the iPhone. Can we fix that?</li>
+    </ol>
+    <p class="mt-2">Otherwise, this is exactly what I needed!"</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Analyse the feedback</h2>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">UAT-1</span>
+        <h3 class="text-base font-semibold">Business metrics dashboard</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Type:</strong> Enhancement. The admin dashboard shows orders and stock but doesn't aggregate them into business metrics. Emma wants to see total revenue for the week, order count, and product popularity — without manually adding rows.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Admin dashboard shows weekly revenue total</li>
+        <li>Admin dashboard shows order count (daily and weekly)</li>
+        <li>Product popularity chart — which items sell most</li>
+        <li>Data updates in real time as orders come in</li>
+      </ul>
+      <p class="text-sm text-text-secondary mt-2"><strong>Note:</strong> This aligns with the monitoring work — business metrics in Grafana. But Emma needs them in the admin dashboard too, not just in Grafana. Grafana is for you (the developer). The admin dashboard is for Emma.</p>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">UAT-2</span>
+        <h3 class="text-base font-semibold">Holiday delivery scheduling</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Type:</strong> Missing admin feature. The delivery scheduling works for normal weeks but doesn't handle exceptions. Emma needs to block delivery days when she's on holiday or when a suburb isn't being serviced for a week.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Admin can block a specific suburb's delivery for a date range</li>
+        <li>Blocked days don't appear as delivery options for customers in that suburb</li>
+        <li>Existing subscriptions for blocked days are paused and customers notified (or handled manually — check with Emma)</li>
+        <li>Blocked days visible in the admin calendar view</li>
+      </ul>
+      <p class="text-sm text-text-secondary mt-2"><strong>Note:</strong> This is a new feature — add it to the backlog. It doesn't block launch. Emma can manage holidays manually for now by communicating with customers directly.</p>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">UAT-3</span>
+        <h3 class="text-base font-semibold">Image optimisation</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Type:</strong> Performance / quality issue. Product images are stored in S3 and served via CloudFront, but they're not optimised for different screen sizes. A high-resolution image looks fine on a laptop but is being scaled down on mobile, causing pixelation or unnecessary bandwidth usage.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Product images served in multiple resolutions (thumbnail, medium, full)</li>
+        <li>Responsive images using <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">srcset</code> — browser loads the appropriate size</li>
+        <li>Images converted to WebP format for smaller file sizes</li>
+        <li>CloudFront caches all image variants</li>
+        <li>Produce photos look sharp on Emma's iPhone</li>
+      </ul>
+      <p class="text-sm text-text-secondary mt-2"><strong>Note:</strong> This is a CloudFront + S3 + responsive images fix. The images in S3 might be fine — the issue could be that only one size is being served. Responsive images with <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">srcset</code> solve this at the HTML level. Image resizing can happen at upload time (generate multiple sizes) or at request time (CloudFront Functions or Lambda@Edge).</p>
+    </div>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Notice the pattern:</strong> UAT-1 is a data visibility gap — the data exists but isn't surfaced to Emma. UAT-2 is a missing admin feature the PRD might not have considered. UAT-3 is a performance issue that involves the CDN layer. Good feedback from Emma because she's testing on real devices in real conditions.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Focus areas for Emma's testing</h2>
+  <p class="text-text-secondary mb-4">Beyond the general UAT, make sure Emma specifically tests these:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Stock accuracy:</strong> Does the "Low stock" indicator update in real-time? Ask Emma to watch the product page while you decrement stock from the admin panel. The indicator should change without a page refresh.</li>
+    <li><strong class="text-text">Suburb delivery day correctness:</strong> Does each suburb show the correct delivery days? Fitzroy on Tuesday, Brunswick on Wednesday, Collingwood on Thursday. Ask Emma to verify each suburb.</li>
+    <li><strong class="text-text">Subscription management:</strong> Can Emma's customers view, pause, modify, and cancel subscriptions? Do paused subscriptions stop generating orders?</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Stress test with Emma</h2>
+  <p class="text-text-secondary mb-4">Ask Emma to place rapid orders to verify no overselling. Set a product to "3 in stock." Ask Emma to submit 5 orders for that product in quick succession from her phone. Three should succeed. Two should see "Out of stock." If all five succeed, the concurrency handling is broken.</p>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>This is the real-world race condition test.</strong> k6 simulated it in testing. Now a real user on a real phone over a real network is trying it. If the locking strategy works under k6 but fails under real user conditions, something is wrong with the implementation — possibly a caching layer between the client and the database returning stale stock data.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Fix and redeploy</h2>
+  <p class="text-text-secondary mb-4">Same loop — direct Claude, fix, verify, merge, redeploy. UAT-1 (business metrics) is likely a quick win. UAT-2 (holiday scheduling) is a new feature for the backlog. UAT-3 (image optimisation) requires changes to both the S3 upload pipeline and the frontend HTML.</p>
+
+  <CodeBlock copy>{`Fix the UAT feedback items:
+
+UAT-1: Add a business metrics section to the admin dashboard: weekly revenue total, daily/weekly order count, product popularity chart. Use existing order data — no new data collection needed.
+
+UAT-3: Implement responsive images for product photos. Generate multiple sizes at upload time (thumbnail 200px, medium 600px, full 1200px). Use srcset in the frontend. Convert to WebP. Ensure CloudFront caches all variants.
+
+UAT-2: Add to backlog as a post-launch feature — holiday delivery scheduling with suburb-level blocking.`}</CodeBlock>
+
+  <p class="text-text-secondary mt-4 mb-4">Redeploy. CloudFront invalidation for the image changes. Send Emma the updated URL. She confirms: revenue summary works, images are sharp on her phone, holiday scheduling is noted for later. Sign-off.</p>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: monitoring</h2>
+    <p class="text-text-secondary mb-4">Feedback resolved. Time to go live, monitor, handle the TV feature, and reflect.</p>
+    <a
+      href="/web-dev/projects/9/monitoring"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Monitoring & Iteration →
+    </a>
+  </div>
+</DocsLayout>

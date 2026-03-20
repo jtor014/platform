@@ -1,0 +1,191 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Writing the PRD" description="Write the PRD for Harbour Health — with compliance requirements, accessibility standards, and video integration.">
+  <h1 class="mb-6">Writing the PRD</h1>
+  <p class="text-text-secondary mb-4">You've written 8 PRDs. You know the process. Prompt plus template plus client brief, generate with Claude (the chat interface), review, iterate.</p>
+  <p class="text-text-secondary mb-8">The guidance here is minimal. The new elements are the sections you haven't written before: compliance requirements, accessibility requirements, and video integration requirements.</p>
+
+  <h2 class="mb-4">Resolving the ambiguities</h2>
+  <p class="text-text-secondary mb-4">Before writing the PRD, you must resolve the gaps in the brief. You've asked the clarifying questions. Here are Aisha's answers:</p>
+
+  <div class="space-y-6 mb-8">
+    <div class="border border-border rounded-lg overflow-hidden">
+      <div class="px-6 py-4 bg-bg-muted">
+        <p class="font-semibold text-sm">"How exactly does the prescription workflow work?"</p>
+      </div>
+      <div class="px-6 py-4">
+        <Callout variant="client">
+          <p>"The specialist submits a prescription request after the consultation. Someone on our admin team reviews it. Then we send a notification to the patient's local GP via email with the prescription details. The GP handles it from there."</p>
+        </Callout>
+        <p class="text-sm text-text-secondary mt-3"><strong class="text-text">Resolved:</strong> Three-step async workflow. Specialist submits, admin reviews, system emails GP. Not real-time e-prescribing.</p>
+      </div>
+    </div>
+
+    <div class="border border-border rounded-lg overflow-hidden">
+      <div class="px-6 py-4 bg-bg-muted">
+        <p class="font-semibold text-sm">"What compliance requirements apply?"</p>
+      </div>
+      <div class="px-6 py-4">
+        <Callout variant="client">
+          <p>"We're under the Australian Privacy Act. All patient data must be encrypted — at rest and in transit. Every access to patient data needs to be logged. Only the patient and their specialist should see consultation records."</p>
+        </Callout>
+        <p class="text-sm text-text-secondary mt-3"><strong class="text-text">Resolved:</strong> Australian Privacy Act compliance. Encryption at rest and in transit. Audit logging for all data access. Data isolation between patients and between specialists.</p>
+      </div>
+    </div>
+
+    <div class="border border-border rounded-lg overflow-hidden">
+      <div class="px-6 py-4 bg-bg-muted">
+        <p class="font-semibold text-sm">"Does accessibility matter for your users?"</p>
+      </div>
+      <div class="px-6 py-4">
+        <Callout variant="client">
+          <p>"Absolutely. Some of my patients are elderly. Some have disabilities. It has to be accessible. What's the standard — WCAG? Yes, WCAG 2.1 AA minimum."</p>
+        </Callout>
+        <p class="text-sm text-text-secondary mt-3"><strong class="text-text">Resolved:</strong> WCAG 2.1 AA minimum. Colour contrast, keyboard navigation, screen reader compatibility, focus indicators. Not optional.</p>
+      </div>
+    </div>
+
+    <div class="border border-border rounded-lg overflow-hidden">
+      <div class="px-6 py-4 bg-bg-muted">
+        <p class="font-semibold text-sm">"How long do you need to keep medical records?"</p>
+      </div>
+      <div class="px-6 py-4">
+        <Callout variant="client">
+          <p>"Seven years for medical records. That's the standard in Australia."</p>
+        </Callout>
+        <p class="text-sm text-text-secondary mt-3"><strong class="text-text">Resolved:</strong> 7-year retention for consultation records. The PRD must specify the retention policy and what happens when a patient requests deletion (records may need to be retained for compliance even after deletion request).</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="mb-4">The new sections</h2>
+
+  <h3 class="mb-3 mt-6">Compliance requirements</h3>
+  <p class="text-text-secondary mb-4">This is medical data. The PRD must specify what "secure" means in concrete, verifiable terms:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Data encryption at rest:</strong> RDS encryption enabled. Patient records encrypted in the database.</li>
+    <li><strong class="text-text">Data encryption in transit:</strong> HTTPS everywhere. No unencrypted connections.</li>
+    <li><strong class="text-text">Data isolation:</strong> Patient data scoped to patient + their specialist. Database-level enforcement, not just application-level.</li>
+    <li><strong class="text-text">Audit logging:</strong> Every access to patient data logged — who, when, what record, what action. Immutable log.</li>
+    <li><strong class="text-text">Access control:</strong> Role-based (patient, specialist, admin) with the principle of least privilege.</li>
+    <li><strong class="text-text">Data retention:</strong> Define how long consultation records are kept and what happens when a patient requests deletion.</li>
+  </ul>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>You don't need to be a lawyer.</strong> But you need to know these regulations exist and ask the right questions. The Australian Privacy Act governs how personal information (including health data) is collected, used, and disclosed. You're building to the spirit of these requirements — data isolation, encryption, audit trails, access controls — which are good engineering practices regardless of jurisdiction.</p>
+  </Callout>
+
+  <h3 class="mb-3 mt-6">Accessibility requirements (WCAG 2.1 AA)</h3>
+  <p class="text-text-secondary mb-4">Telehealth users may have vision, hearing, or motor disabilities. Some patients are elderly. Accessibility is not optional — it's a core requirement.</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Colour contrast:</strong> WCAG AA minimum 4.5:1 ratio for normal text, 3:1 for large text</li>
+    <li><strong class="text-text">Keyboard navigation:</strong> Every interactive element reachable and operable via keyboard</li>
+    <li><strong class="text-text">Screen reader compatibility:</strong> Semantic HTML, ARIA labels where needed, meaningful alt text</li>
+    <li><strong class="text-text">Focus indicators:</strong> Visible focus state on all interactive elements</li>
+    <li><strong class="text-text">Form labels:</strong> Every form input has an associated label, error messages are announced to screen readers</li>
+    <li><strong class="text-text">Video controls:</strong> Video consultation UI must be keyboard-accessible (mute, unmute, end call)</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Video integration requirements</h3>
+  <p class="text-text-secondary mb-4">The PRD should specify what the video integration needs to do — not which platform to use (that's an architecture decision):</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>One-to-one video between patient and specialist</li>
+    <li>Adaptive quality for low-bandwidth connections (critical for regional users)</li>
+    <li>Join via browser — no app download required</li>
+    <li>Simple join flow — one click from the appointment page</li>
+    <li>Specialist can see patient video and consultation notes side by side</li>
+    <li>Graceful handling when connection drops (reconnect, notification)</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Non-functional requirements</h3>
+  <p class="text-text-secondary mb-4">The PRD must include measurable non-functional requirements. Not "the system should be fast" — specific numbers tied to the user context:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Latency:</strong> Video must work on 5Mbps connections (typical regional broadband). Audio must remain clear. Video may degrade.</li>
+    <li><strong class="text-text">Availability:</strong> 99.5% uptime. Downtime during a scheduled consultation is a broken promise to a patient who has waited months.</li>
+    <li><strong class="text-text">Security:</strong> Encryption at rest (RDS), encryption in transit (TLS), audit logging, RBAC with data isolation at the database level.</li>
+    <li><strong class="text-text">Accessibility:</strong> WCAG 2.1 AA compliance on every user-facing page, including video controls.</li>
+    <li><strong class="text-text">Data retention:</strong> 7 years for medical records. Backup and recovery tested.</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Anti-scope</h3>
+  <Callout variant="warning">
+    <p class="text-sm"><strong>These are out of scope.</strong> When you generate the PRD, make sure none of these sneak in:</p>
+    <ul class="text-sm space-y-1 mt-2">
+      <li><strong>No payment processing</strong> — Harbour Health is bulk-billed through Medicare. No Stripe, no patient billing.</li>
+      <li><strong>No pharmacy integration</strong> — prescription requests go to the patient's local GP, not directly to a pharmacy.</li>
+      <li><strong>No AI diagnosis</strong> — specialists make diagnoses, not algorithms.</li>
+      <li><strong>No chat or messaging outside video consultations</strong> — communication happens during the video call.</li>
+      <li><strong>No mobile app</strong> — web only (must work well on mobile browsers).</li>
+      <li><strong>No electronic prescriptions (e-prescribing)</strong> — text-based requests sent to GP.</li>
+      <li><strong>No full electronic health record (EHR)</strong> — consultation notes, not complete medical records.</li>
+    </ul>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <CodeBlock copy>{`Here is the client brief and clarification answers for Harbour Health, a telehealth consultation platform:
+
+[Paste Aisha's brief and your clarification Q&A here]
+
+Using the following PRD template, generate a complete Product Requirements Document. Include:
+
+1. Core features: patient registration, specialist directory, appointment booking, video consultation, consultation notes, prescription requests, role-based access (patient, specialist, admin)
+2. Compliance requirements section: Australian Privacy Act, data encryption (at rest and in transit), data isolation (patient + specialist scoping), audit logging, data retention policy
+3. Accessibility requirements section: WCAG 2.1 AA — colour contrast, keyboard navigation, screen reader compatibility, focus indicators, accessible video controls
+4. Video integration requirements: adaptive quality, browser-based, one-click join, reconnection handling
+5. Infrastructure requirements: 50 initial patients growing to 500, auto-scaling needed, multi-AZ for reliability, regional users with variable internet
+6. Specific acceptance criteria for every requirement
+7. Anti-scope: no payment processing, no e-prescribing, no full EHR, no messaging, no mobile app, no pharmacy integration, no Medicare/insurance integration
+
+[Paste PRD template here]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Review guidance</h2>
+  <p class="text-text-secondary mb-4">You've reviewed 8 PRDs. You know what to look for. The new checks:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Compliance section exists?</strong> Not just "data must be secure" — specific requirements for encryption, isolation, audit logging, and data retention.</li>
+    <li><strong class="text-text">Accessibility section exists?</strong> Specific WCAG 2.1 AA criteria, not vague "should be accessible."</li>
+    <li><strong class="text-text">Video requirements are functional, not prescriptive?</strong> The PRD says what the video must do, not which platform to use.</li>
+    <li><strong class="text-text">Data isolation is explicit?</strong> Patient A's data is not visible to Patient B or to specialists other than their assigned specialist.</li>
+    <li><strong class="text-text">Anti-scope holds?</strong> AI will try to add e-prescribing, messaging, Medicare billing, and mobile apps. Cut them.</li>
+    <li><strong class="text-text">Failure cases are covered?</strong> Specialist no-show, patient internet drop, video service outage. These should be in the requirements, not discovered during implementation.</li>
+  </ul>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: compliance & regulations</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">Healthcare data is regulated in every jurisdiction. You don't need to memorise these, but you need to know they exist and understand what kind of technical controls they require.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Australian Privacy Act 1988</strong> — <span class="text-text-secondary">Governs collection, use, and disclosure of personal information in Australia. The Australian Privacy Principles (APPs) apply. Health data is "sensitive information" with additional protections.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">HIPAA (US)</strong> — <span class="text-text-secondary">Health Insurance Portability and Accountability Act. The US standard for health data. Requires encryption, access controls, audit trails, and breach notification. Doesn't apply to Harbour Health directly, but the technical controls overlap significantly.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">GDPR (EU)</strong> — <span class="text-text-secondary">General Data Protection Regulation. The EU's data privacy law. Right to access, right to deletion, data portability. Applies if you have EU users. Good engineering practice regardless.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">SOC 2</strong> — <span class="text-text-secondary">Service Organization Control 2. An audit standard for SaaS companies covering security, availability, processing integrity, confidentiality, and privacy. Not a law — a certification that proves your controls work.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">My Health Records Act 2012 (AU)</strong> — <span class="text-text-secondary">Governs Australia's national digital health record system. Harbour Health doesn't integrate with My Health Record, but the existence of this regulation affects how health data is handled in Australia.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">The common thread: encryption (at rest and in transit), access controls (who can see what), audit logging (who did see what), and data retention policies (how long you keep it). Build these controls well, and you satisfy the technical requirements of most jurisdictions.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: design</h2>
+    <p class="text-text-secondary mb-4">PRD is done. Now design a telehealth platform that's trustworthy, accessible, and works on bad internet.</p>
+    <a
+      href="/web-dev/projects/10/design"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Design →
+    </a>
+  </div>
+</DocsLayout>

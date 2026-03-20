@@ -1,0 +1,148 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Deployment" description="Blue/green deployment with GitHub Actions, environment approvals, smoke tests, and rollback capability.">
+  <h1 class="mb-6">Deployment</h1>
+  <p class="text-text-secondary mb-4">Blue/green deployment automated in GitHub Actions. Two identical production environments. Deploy to the idle one, test it, switch traffic. If something goes wrong, switch back. Zero downtime.</p>
+
+  <h2 class="mb-4 mt-10">The pipeline</h2>
+  <p class="text-text-secondary mb-4">Every push triggers the full pipeline. The critical difference from previous projects: production requires manual approval, and the deployment itself is blue/green — no downtime, instant rollback.</p>
+
+  <div class="bg-bg-muted rounded-lg p-6 mb-6 font-mono text-xs text-text-secondary">
+    <p class="mb-2 text-text font-semibold font-sans text-sm">Full pipeline</p>
+    <p>push → <span class="text-primary">build</span> → <span class="text-primary">run tests</span> → <span class="text-primary">deploy to staging (auto)</span></p>
+    <p class="mt-1">→ <span class="text-primary">run smoke tests on staging</span> → <span class="text-text font-semibold">request production approval</span></p>
+    <p class="mt-1">→ <span class="text-primary">deploy to production (blue/green)</span> → <span class="text-primary">smoke test production</span> → done</p>
+  </div>
+
+  <h2 class="mb-4 mt-10">Blue/green deployment</h2>
+  <p class="text-text-secondary mb-4">Two target groups behind the ALB (Application Load Balancer). One is "live" (receiving traffic), the other is "idle" (not receiving traffic). Deployment goes to the idle target group. After smoke tests pass, the ALB switches traffic to the newly deployed target group.</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Deploy</h3>
+      <p class="text-sm text-text-secondary">GitHub Actions deploys the new version to the idle target group. The live target group continues serving traffic — users see nothing. The new version starts up and passes health checks.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Smoke test</h3>
+      <p class="text-sm text-text-secondary">Automated smoke tests hit the new deployment directly (bypassing the ALB or hitting a test URL). Verify: health check passes, key endpoints return 200, database connection works, Stripe test charge succeeds.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Switch</h3>
+      <p class="text-sm text-text-secondary">If smoke tests pass, the ALB switches traffic to the new target group. The old target group becomes idle. The switch is instant — no downtime, no connection drops.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Rollback</h3>
+      <p class="text-sm text-text-secondary">If something goes wrong after the switch, point the ALB back to the old target group. The previous version is still running, still warm. Rollback is a single ALB configuration change — faster than redeploying.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Environment approvals in GitHub Actions</h2>
+  <p class="text-text-secondary mb-4">GitHub Actions supports environment protection rules. The production environment requires manual approval before any deployment job runs. This is the gate between "tested on staging" and "live for users."</p>
+  <p class="text-text-secondary mb-4">In your GitHub repository settings, create a "production" environment with required reviewers. When the pipeline reaches the production deployment step, it pauses and sends a notification. You review, approve, and the deployment proceeds.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Why manual approval matters:</strong> Automated tests catch known failure modes. Manual approval catches everything else — "the tests pass but the feature doesn't make sense," "the tests pass but we don't want to deploy on a Friday before the Bells Beach Classic," "the tests pass but the load test results from yesterday were concerning." The human gate is intentional.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Smoke tests</h2>
+  <p class="text-text-secondary mb-4">Smoke tests verify the deployment works in the target environment. They're not comprehensive — they check the critical path:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Health check endpoint returns 200</li>
+    <li>Event listing endpoint returns data</li>
+    <li>Database connection is alive</li>
+    <li>Prometheus metrics endpoint responds</li>
+    <li>Feature flag service is reachable (or defaults work)</li>
+    <li>Stripe test charge succeeds</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Deploy and verify</h2>
+  <p class="text-text-secondary mb-2">Direct Claude to set up the pipeline:</p>
+  <CodeBlock copy>{`Set up the GitHub Actions CI/CD pipeline for SurfCoast Events:
+
+1. Build and test on every push
+2. Auto-deploy to staging on push to main
+3. Run smoke tests against staging
+4. Require manual approval for production deployment (GitHub environment protection)
+5. Blue/green deploy to production via ALB target group switching
+6. Run smoke tests against production after deployment
+7. Document the rollback procedure (switch ALB back to previous target group)`}</CodeBlock>
+
+  <h3 class="mb-3 mt-6">Staging verification</h3>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>Event listings load correctly</li>
+    <li>Ticket purchase completes through Stripe</li>
+    <li>QR code generates and displays on the ticket</li>
+    <li>QR code check-in works (scan, validate, record)</li>
+    <li>Event-day dashboard shows correct aggregated data</li>
+    <li>Feature flags work — toggling a flag changes the experience without redeployment</li>
+    <li>Prometheus metrics endpoint returns data</li>
+    <li>Grafana dashboards show metrics from the staging environment</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Feature flag deployment</h2>
+  <p class="text-text-secondary mb-4">Feature flags add a layer on top of blue/green deployment. The workflow:</p>
+  <ol class="list-decimal list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Deploy code with flag OFF.</strong> The feature is in the codebase, deployed to production, but invisible. The flag default is "off."</li>
+    <li><strong class="text-text">Verify on staging.</strong> Enable the flag on staging. Test the feature. Everything works.</li>
+    <li><strong class="text-text">Enable on production for staff.</strong> In Unleash or LaunchDarkly, enable the flag for users with the "staff" role. Liam's team sees the feature. The public doesn't.</li>
+    <li><strong class="text-text">Verify in production with staff.</strong> Staff test the feature with real production data. No simulations.</li>
+    <li><strong class="text-text">Enable for everyone.</strong> Flip the flag to 100%. All users see the feature.</li>
+  </ol>
+
+  <h2 class="mb-4 mt-10">Rollback strategy</h2>
+  <p class="text-text-secondary mb-4">Two levels of rollback, depending on the severity:</p>
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Feature rollback (instant)</h3>
+      <p class="text-sm text-text-secondary">Disable the feature flag. The feature disappears immediately for all users. No deployment needed. The code is still in production but invisible. Use this when the feature has a bug but the rest of the system is healthy.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Deployment rollback (fast)</h3>
+      <p class="text-sm text-text-secondary">Switch the ALB back to the previous target group. The entire deployment is rolled back. Use this when the deployment itself caused problems — a bad migration, a configuration issue, a dependency failure.</p>
+    </div>
+  </div>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Test the rollback before you need it.</strong> Deploy a version to production, then deliberately roll back. Verify the old version is serving traffic. Also test feature flag rollback — enable a flag, then disable it and verify the feature disappears cleanly. You don't want the first time you try either rollback to be during an incident at the Bells Beach Classic.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: release management</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use conventional commits and manual releases. Here's how teams manage releases at scale.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Semantic versioning (SemVer)</strong> — <span class="text-text-secondary">MAJOR.MINOR.PATCH (e.g., 2.1.0). Major for breaking changes, minor for new features, patch for bug fixes. The standard for communicating the nature of changes. Every team should follow it.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Conventional Commits</strong> — <span class="text-text-secondary">Structured commit messages: feat:, fix:, chore:, docs:. Machines can read them to auto-generate changelogs and determine version bumps. What we use across all projects.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">release-please (Google)</strong> — <span class="text-text-secondary">GitHub Action that reads conventional commits, creates release PRs with changelogs, and publishes releases. Fully automated version management. Good for open-source projects and teams with frequent releases.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Changesets</strong> — <span class="text-text-secondary">Developer-driven changelog entries. Each PR includes a changeset file describing the change. At release time, changesets are combined into a changelog. Popular in monorepos and the JavaScript ecosystem.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">GitHub Releases</strong> — <span class="text-text-secondary">Built into GitHub. Tag a commit, write release notes, publish. Simple for small teams. Can be automated with release-please or manually managed.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">Conventional commits are the foundation. release-please automates what most teams do manually. For this project, conventional commits plus GitHub Releases is enough. Larger teams with monorepos often adopt Changesets.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: UAT</h2>
+    <p class="text-text-secondary mb-4">Pipeline is live. Time to show Liam the staging site with feature flags.</p>
+    <a
+      href="/web-dev/projects/8/uat"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      UAT →
+    </a>
+  </div>
+</DocsLayout>

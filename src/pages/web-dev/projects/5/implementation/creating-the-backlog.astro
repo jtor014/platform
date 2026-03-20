@@ -1,0 +1,57 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Creating the Backlog" description="Generate an ordered backlog for DeskHub with auth infrastructure first.">
+  <h1 class="mb-6">Creating the Backlog</h1>
+  <p class="text-text-secondary mb-4">Same process. Architecture in, ordered tickets out. You've done this twice. The critical ordering decision: auth infrastructure goes first.</p>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <CodeBlock copy>{`Here is the PRD, design spec, and architecture for DeskHub:
+
+[Paste your PRD here]
+[Paste your design spec here]
+[Paste your architecture here]
+
+Create a BACKLOG.md with ordered tickets. Each ticket should have a title, description, and acceptance criteria checklist.
+
+Critical ordering:
+1. Project setup (Docker, database, CI, Gemini reviewer)
+2. Auth infrastructure (user model, password hashing, login endpoint, JWT generation, auth middleware)
+3. Role-based middleware (member/admin/owner permission checks)
+4. Member features (desk booking, room booking, own bookings view, profile)
+5. Admin features (all bookings view, member management, room/pricing config)
+6. Owner features (revenue reports, occupancy data)
+7. Frontend route guards and role-based navigation
+8. Deploy
+
+Auth infrastructure MUST come before any feature tickets. Every feature ticket after auth should include an acceptance criterion for access control — not just "member can book a desk" but also "non-authenticated user cannot book a desk" and "the booking endpoint returns 401 without a token."
+
+Keep auth tickets separate from feature tickets. "Add JWT authentication" is NOT bundled with "Build desk booking." They are different tickets.`}</CodeBlock>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Why auth first:</strong> If you build the booking feature before auth exists, you'll build it without access controls and bolt them on later. That's how permission bugs happen. Build the auth skeleton first, then every feature plugs into it from the start.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Review the backlog</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Auth tickets come first</strong> — before any booking or dashboard features</li>
+    <li><strong class="text-text">Auth tickets are separate from feature tickets</strong> — "Add JWT authentication" is not bundled with "Build desk booking"</li>
+    <li><strong class="text-text">Every feature ticket includes access control criteria</strong> — not just "works for the right role" but "blocked for the wrong role"</li>
+    <li><strong class="text-text">Owner features are separate from admin features</strong> — revenue reports in their own tickets, not bundled with admin management</li>
+    <li><strong class="text-text">No ticket is too large</strong> — "implement all member features" is too big. Break it down.</li>
+  </ul>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: setup</h2>
+    <p class="text-text-secondary mb-4">Backlog reviewed. Set up the project.</p>
+    <a
+      href="/web-dev/projects/5/implementation/setup"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Setup →
+    </a>
+  </div>
+</DocsLayout>

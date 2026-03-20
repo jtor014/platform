@@ -1,0 +1,145 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import Checklist from '../../../../../components/Checklist.astro';
+---
+
+<DocsLayout title="Building" description="Build Harbour Health — video integration, continuous accessibility testing, audit logging, and designing for failure.">
+  <h1 class="mb-6">Building</h1>
+  <p class="text-text-secondary mb-4">The build loop is routine. Direct, verify, review, merge. The capstone challenges are not about the loop — they're about the unique concerns that run through every ticket.</p>
+
+  <h2 class="mb-4 mt-10">Video integration</h2>
+  <p class="text-text-secondary mb-4">WebRTC is complex. AI will generate the integration code. Your job: verify every line against the video platform's official documentation. This is the same skill you used in P4 when verifying Stripe integration code.</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Room creation:</strong> Verify the API call matches the docs. Check the response format. Confirm the room URL works in a browser.</li>
+    <li><strong class="text-text">Join flow:</strong> Patient clicks a button, enters the video room. No extra steps. Test on different browsers.</li>
+    <li><strong class="text-text">Low-bandwidth behaviour:</strong> Throttle your network in DevTools (Chrome → Network → Slow 3G). Does the video degrade gracefully or crash?</li>
+    <li><strong class="text-text">Reconnection:</strong> Disconnect your network briefly. Does the video reconnect automatically, or does the patient see a blank screen?</li>
+  </ul>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Test video early and often.</strong> Video integration has more edge cases than any other feature in this project. Connection drops, browser permissions (camera/microphone access), firewall issues, bandwidth adaptation. Don't save video testing for the end — test it as soon as the integration ticket is complete.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Accessibility: every ticket, not just at the end</h2>
+  <p class="text-text-secondary mb-4">After every ticket that touches the UI, run this check:</p>
+
+  <Checklist items={[
+    "Tab through the page — can you reach every interactive element with keyboard alone?",
+    "Is the focus indicator visible on every focused element?",
+    "Run axe DevTools on the page — zero errors?",
+    "Check colour contrast on any new text or UI elements (4.5:1 minimum for normal text)",
+    "If there are new form inputs, do they have associated labels?",
+    "If there are icon-only buttons (mute, unmute, end call), do they have ARIA labels?",
+  ]} />
+
+  <p class="text-text-secondary mb-4">Do not batch accessibility fixes at the end. Fix them per ticket. An inaccessible feature is an incomplete feature.</p>
+
+  <h2 class="mb-4 mt-10">Audit logging</h2>
+  <p class="text-text-secondary mb-4">Every access to patient data must be logged. This is not optional for a healthcare platform.</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">What gets logged</h3>
+      <p class="text-sm text-text-secondary">Who accessed the data (user_id, role), when (timestamp), what record (patient_id, record type), and what action (view, create, update). Every API endpoint that reads or writes patient data adds a row to the audit log.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Where it's stored</h3>
+      <p class="text-sm text-text-secondary">Separate audit_log table. Append-only — no updates, no deletes. This table is the answer to "who saw this patient's data?" If the table allows deletions, the audit trail is meaningless.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Verification</h3>
+      <p class="text-sm text-text-secondary">After every ticket that touches patient data, check the audit log. Did the action get recorded? Is the data correct? Missing audit entries are bugs — treat them with the same severity as missing access controls.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">The unhappy path</h2>
+  <p class="text-text-secondary mb-4">Production systems fail. The question is not "will it fail?" but "what happens when it does?" Design these failure cases explicitly:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Video fails</h3>
+      <p class="text-sm text-text-secondary">The video service is down. What does the patient see? A helpful error message with instructions to reschedule, or a broken page? The UI must handle video service outages gracefully.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Specialist is late</h3>
+      <p class="text-sm text-text-secondary">The appointment was at 2:00pm. It's 2:10pm. The specialist hasn't joined. What does the patient see? A countdown? A message? At what point does the system notify the admin and offer rescheduling?</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Patient's internet drops</h3>
+      <p class="text-sm text-text-secondary">Mid-consultation, the patient loses connection. Does the video room stay open for reconnection? How long? Does the specialist get notified? Is there a "waiting for patient to reconnect" state?</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Specialist doesn't show at all</h3>
+      <p class="text-sm text-text-secondary">Aisha's answer: "Can the patient get a notification and reschedule?" Implement this — after a configurable timeout, the patient is notified and can rebook. The no-show is logged for admin review.</p>
+    </div>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>The unhappy path is where trust is built or broken.</strong> A patient waiting in an empty video room with no feedback will not use the platform again. A patient who gets a clear message, a notification, and a one-click reschedule will. Error handling is a feature.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Extension scenario: expanding to Queensland</h2>
+  <p class="text-text-secondary mb-4">Midway through building, Aisha calls.</p>
+
+  <Callout variant="client">
+    <p>"Great news — we've had interest from GPs in Townsville and Cairns. They want to refer patients to specialists in Brisbane. Can we expand to Queensland?"</p>
+  </Callout>
+
+  <p class="text-text-secondary mb-4">Walk through what this means:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Data model:</strong> Does your specialist directory support filtering by state or region? If not, how hard is it to add?</li>
+    <li><strong class="text-text">Infrastructure:</strong> Your AWS resources are in ap-southeast-2 (Sydney). Queensland users are fine — latency within Australia is acceptable. Multi-region is not needed yet.</li>
+    <li><strong class="text-text">Video quality:</strong> Cairns and Townsville have similar connectivity challenges. Your low-bandwidth handling already covers this.</li>
+    <li><strong class="text-text">Compliance:</strong> Same Australian Privacy Act. No additional state-level regulations that change the technical controls.</li>
+    <li><strong class="text-text">Operational:</strong> More patients, more specialists, more consultations. Does the ASG handle the increase?</li>
+  </ul>
+
+  <p class="text-text-secondary mb-4">The question isn't whether you can expand. It's whether your architecture <em>absorbs</em> the expansion without structural changes. If adding Queensland requires database schema changes, that's a sign the data model was too rigid. If it requires only adding specialists and updating a filter, the architecture is working.</p>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: documentation tools</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">You'll produce handover documentation at the end of this project. Here's what teams use.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Docusaurus</strong> — <span class="text-text-secondary">React-based documentation site generator by Meta. Markdown content, versioned docs, search built in. Popular for open-source projects and developer documentation.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">mkdocs</strong> — <span class="text-text-secondary">Python-based static site generator for docs. mkdocs-material theme is clean, searchable, well-structured. Simpler than Docusaurus.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Notion</strong> — <span class="text-text-secondary">Wiki-style documentation. Good for internal teams. Real-time collaboration. Not version-controlled like git-based tools.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Confluence</strong> — <span class="text-text-secondary">Atlassian's wiki platform. Enterprise standard. Collaborative editing, page hierarchy, templates. Can become a graveyard of outdated docs without discipline.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">GitBook</strong> — <span class="text-text-secondary">Documentation platform with git sync. Markdown or WYSIWYG editing. Good for public-facing docs and API documentation.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">For Harbour Health: Markdown files in a docs/ directory, committed alongside the code. Architecture decisions, deployment runbook, monitoring guide, incident procedures — all version-controlled alongside the code they describe.</p>
+    </div>
+  </details>
+
+  <h2 class="mb-4 mt-10">The rhythm</h2>
+  <ol class="text-sm text-text-secondary list-decimal list-inside space-y-2 mb-8">
+    <li>Direct Claude to implement the ticket</li>
+    <li>Verify against acceptance criteria (functional test)</li>
+    <li>Check accessibility (keyboard, focus, contrast, screen reader)</li>
+    <li>Check audit logging (if the ticket touches patient data)</li>
+    <li>Run adversarial checks (access control, data isolation)</li>
+    <li>Review, merge, next ticket</li>
+  </ol>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: testing</h2>
+    <p class="text-text-secondary mb-4">Implementation complete. Time for the full test pyramid — unit, integration, E2E, load, security, and accessibility.</p>
+    <a
+      href="/web-dev/projects/10/testing"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Testing →
+    </a>
+  </div>
+</DocsLayout>

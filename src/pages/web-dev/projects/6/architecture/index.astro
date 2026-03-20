@@ -1,0 +1,235 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Architecture" description="Architecture decisions for Tidal Brewing — introducing Terraform, AWS infrastructure, and Infrastructure as Code.">
+  <h1 class="mb-6">Architecture</h1>
+  <p class="text-text-secondary mb-4">Same process — prompt, template, review. But this architecture document has a new section that dwarfs the others: <strong class="text-text">infrastructure</strong>. For the first time, the architecture covers not just what the application does, but what it runs on and how that infrastructure is created.</p>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <CodeBlock copy>{`Here is the PRD and design spec for Tidal Brewing, a brewery and taproom management system:
+
+[Paste your PRD here]
+[Paste your design spec here]
+
+Using the following architecture template, create a complete technical architecture document.
+
+Tech stack: React frontend, FastAPI backend, PostgreSQL, Docker, Nginx reverse proxy.
+Infrastructure: AWS (EC2 t2.micro, S3, VPC, security groups), Terraform for provisioning.
+Secrets: AWS Secrets Manager (not .env files).
+Monitoring: CloudWatch for EC2 metrics, CloudWatch Logs for application logs.
+
+Key architecture decisions to address:
+1. Terraform configuration — what resources to create and why
+2. VPC and security group setup — which ports are open and to whom
+3. EC2 instance configuration — Docker, Nginx, application containers
+4. S3 for static assets — images, event photos
+5. AWS Secrets Manager for production secrets
+6. CloudWatch monitoring — which metrics, what alarms
+7. Database backup strategy
+8. Application architecture (React + FastAPI + PostgreSQL — same as previous projects)
+
+[Paste architecture template here]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Infrastructure as Code</h2>
+  <p class="text-text-secondary mb-4">This is the headline concept for Project 6. Until now, you clicked buttons in a hosting dashboard or ran a deploy command. Terraform changes that fundamentally.</p>
+
+  <h3 class="mb-3 mt-6">What Terraform is</h3>
+  <p class="text-text-secondary mb-4">You write <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.tf</code> files describing the infrastructure you want. An EC2 instance with this size. An S3 bucket with this name. A security group allowing traffic on these ports. Terraform reads those files, compares them to what currently exists in AWS, and creates, updates, or destroys resources to match.</p>
+  <p class="text-text-secondary mb-4">The infrastructure is <strong class="text-text">declared</strong>, not <strong class="text-text">clicked</strong>. Instead of navigating the AWS console and clicking "Launch Instance," you write a file that says "I want an instance with these properties." The file lives in git, gets reviewed in PRs, and can be reproduced exactly on any AWS account.</p>
+
+  <h3 class="mb-3 mt-6">Why IaC</h3>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Reproducible:</strong> Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform apply</code> on a fresh AWS account and get the exact same infrastructure. No "I think I set that up manually last time."</li>
+    <li><strong class="text-text">Version controlled:</strong> Infrastructure changes tracked in git. You can see who changed what, when, and why — just like application code.</li>
+    <li><strong class="text-text">Reviewable in PRs:</strong> Infrastructure changes go through the same PR review process as code changes. "This PR adds a new security group rule opening port 8080" — visible, reviewable, approvable.</li>
+    <li><strong class="text-text">Destroyable:</strong> <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform destroy</code> tears down everything cleanly. No orphaned resources charging you money because you forgot to delete them in the console.</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">The plan/apply cycle</h3>
+  <p class="text-text-secondary mb-4">Terraform has a two-step process that acts as a safety net:</p>
+  <ol class="list-decimal list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text"><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform plan</code></strong> — Shows what Terraform will do. "I'm going to create 1 EC2 instance, 1 S3 bucket, 1 security group." Nothing happens yet. This is the preview.</li>
+    <li><strong class="text-text"><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform apply</code></strong> — Actually creates the resources. Terraform asks for confirmation before proceeding.</li>
+  </ol>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Treat <code>terraform plan</code> like a PR review.</strong> Before you apply, read the plan. What's being created? What's being destroyed? Any surprises? A plan that says "destroy 1 EC2 instance" when you expected "create 1 S3 bucket" means something is wrong. Don't apply until the plan matches your expectations.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Key infrastructure decisions</h2>
+  <p class="text-text-secondary mb-4">These decisions flow directly from Jake's infrastructure requirements in the PRD:</p>
+
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Decision</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Choice</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Why</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">EC2 instance size</td>
+          <td class="px-4 py-3 text-text-secondary">t2.micro</td>
+          <td class="px-4 py-3 text-text-secondary">Free tier eligible. Handles 200 concurrent users. Can resize later if needed.</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Static assets</td>
+          <td class="px-4 py-3 text-text-secondary">S3 bucket</td>
+          <td class="px-4 py-3 text-text-secondary">Beer images, event photos. Cheaper and faster than serving from EC2.</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Networking</td>
+          <td class="px-4 py-3 text-text-secondary">VPC with public subnet</td>
+          <td class="px-4 py-3 text-text-secondary">Single public subnet. The EC2 instance needs to be internet-accessible.</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Firewall</td>
+          <td class="px-4 py-3 text-text-secondary">Security group</td>
+          <td class="px-4 py-3 text-text-secondary">Port 80 (HTTP), 443 (HTTPS), 22 (SSH — restricted to your IP).</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Reverse proxy</td>
+          <td class="px-4 py-3 text-text-secondary">Nginx</td>
+          <td class="px-4 py-3 text-text-secondary">Routes traffic to the correct container. Handles SSL termination.</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Secrets</td>
+          <td class="px-4 py-3 text-text-secondary">AWS Secrets Manager</td>
+          <td class="px-4 py-3 text-text-secondary">Database password, API keys. Not in .env files on the server.</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Monitoring</td>
+          <td class="px-4 py-3 text-text-secondary">CloudWatch</td>
+          <td class="px-4 py-3 text-text-secondary">EC2 metrics (CPU, disk). Alarms for anomalies. Application logs.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="mb-4 mt-10">AWS Secrets Manager</h2>
+  <p class="text-text-secondary mb-4">In previous projects, production secrets lived in environment variables set through the hosting platform's dashboard. That works on PaaS. On your own EC2 instance, you need a better approach.</p>
+  <p class="text-text-secondary mb-4">AWS Secrets Manager stores secrets (database password, API keys) encrypted in AWS. Your application retrieves them at startup. The secrets are never in <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.env</code> files on the server, never in your git repository, never visible in a process listing.</p>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>No .env files on the server.</strong> In development, <code>.env</code> is fine. In production on your own infrastructure, secrets belong in AWS Secrets Manager (or a similar vault). If someone gains access to the server, <code>.env</code> files are the first thing they read. Secrets Manager adds a layer of protection — the application authenticates to AWS to retrieve them.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Security groups</h2>
+  <p class="text-text-secondary mb-4">A security group is a firewall for your EC2 instance. It defines which traffic is allowed in and out. The architecture should specify:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Port 80 (HTTP):</strong> Open to all — public web traffic. Nginx will redirect to HTTPS.</li>
+    <li><strong class="text-text">Port 443 (HTTPS):</strong> Open to all — encrypted web traffic.</li>
+    <li><strong class="text-text">Port 22 (SSH):</strong> Restricted to your IP address only. Do not open SSH to the world. This is how you access the server for maintenance, and it should only be accessible from your known location.</li>
+    <li><strong class="text-text">All other ports:</strong> Blocked by default. The database (port 5432) is not exposed to the internet — it only accepts connections from within the instance.</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Database schema</h2>
+  <p class="text-text-secondary mb-4">The architecture should include the key tables. At minimum:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">beers</strong> — id, name, style, abv, description, status (on_tap / cellar / kicked), image_url, created_at</li>
+    <li><strong class="text-text">taps</strong> — id, tap_number, beer_id (nullable — empty tap), updated_at</li>
+    <li><strong class="text-text">events</strong> — id, title, description, event_date, event_time, type (trivia / music / tap_takeover)</li>
+    <li><strong class="text-text">pickup_orders</strong> — id, customer_name, customer_phone, pickup_time, status (pending / packed / picked_up), created_at</li>
+    <li><strong class="text-text">order_items</strong> — id, order_id, beer_id, quantity</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Review guidance</h2>
+  <p class="text-text-secondary mb-4">When you review the generated architecture:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Is the Terraform section present? Does it list what resources will be created?</li>
+    <li>Is the security group configuration explicit? Which ports, open to whom?</li>
+    <li>Does it specify AWS Secrets Manager for production secrets, not .env files?</li>
+    <li>Is the EC2 instance t2.micro (free tier) or has AI suggested something larger?</li>
+    <li>Is CloudWatch monitoring specified with specific metrics and alarm thresholds?</li>
+    <li>Is SSH restricted to a specific IP, not open to the world?</li>
+  </ul>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Watch for AI adding a load balancer.</strong> With 200 peak users, a single EC2 instance behind Nginx is sufficient. AI may suggest an Application Load Balancer, auto-scaling group, or multi-AZ deployment. These are appropriate for high-traffic production systems — not a brewery website. Cut them.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: Infrastructure as Code</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use Terraform. Here's what else exists and when teams reach for each tool.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Terraform (HashiCorp)</strong> — <span class="text-text-secondary">What we use. Cloud-agnostic — works with AWS, GCP, Azure, and dozens of other providers. HCL (HashiCorp Configuration Language). The most widely adopted IaC tool.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Pulumi</strong> — <span class="text-text-secondary">Infrastructure as Code using real programming languages (Python, TypeScript, Go). No custom DSL — write infrastructure in the same language as your application. Growing adoption, especially among developers who dislike HCL.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">AWS CDK (Cloud Development Kit)</strong> — <span class="text-text-secondary">AWS-specific. Define infrastructure in TypeScript, Python, or Java. Generates CloudFormation under the hood. Tight AWS integration, but locked to AWS.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">AWS CloudFormation</strong> — <span class="text-text-secondary">AWS-native IaC. YAML or JSON templates. Verbose but deeply integrated with AWS. Free to use (you pay for the resources, not the tool).</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Ansible</strong> — <span class="text-text-secondary">Configuration management and provisioning. More procedural than declarative. Strong for server configuration (install packages, configure services). Often used alongside Terraform — Terraform creates the server, Ansible configures it.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">Terraform is the default choice for multi-cloud IaC. Pulumi is gaining ground for teams that prefer real programming languages. CloudFormation and CDK are the choice when you're all-in on AWS.</p>
+    </div>
+  </details>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: cloud platforms</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use AWS. Here's the broader cloud landscape.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">AWS (Amazon Web Services)</strong> — <span class="text-text-secondary">What we use. The largest cloud provider. Most services, most regions, most documentation. The free tier is generous for learning. The console is overwhelming — hundreds of services, most of which you'll never use.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">GCP (Google Cloud Platform)</strong> — <span class="text-text-secondary">Strong in data, ML, and Kubernetes (GKE). Simpler console than AWS. Competitive free tier. Fewer services overall but growing.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Azure (Microsoft)</strong> — <span class="text-text-secondary">Dominant in enterprise, especially organisations already using Microsoft products. Strong identity (Active Directory) and hybrid cloud. The console is complex.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">DigitalOcean</strong> — <span class="text-text-secondary">Simpler than the big three. Droplets (VMs), managed databases, app platform. Developer-friendly documentation. Good for small-to-medium projects. No free tier comparable to AWS.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">AWS is the industry standard. Learning it transfers well — the concepts (VPCs, security groups, IAM) exist in every cloud provider, just with different names. We use AWS because the free tier is ideal for learning without cost risk.</p>
+    </div>
+  </details>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: reverse proxies</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use Nginx. Here's what else is available.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Nginx</strong> — <span class="text-text-secondary">What we use. The most widely deployed reverse proxy and web server. Handles SSL termination, load balancing, static file serving. Configuration is file-based. Battle-tested at massive scale.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Caddy</strong> — <span class="text-text-secondary">Automatic HTTPS out of the box (no certbot setup). Simpler configuration than Nginx. Written in Go. Great for projects where you want HTTPS without the ceremony. Newer, less widespread.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Traefik</strong> — <span class="text-text-secondary">Designed for containerised environments. Auto-discovers services via Docker labels. Built-in Let's Encrypt. Popular in Docker and Kubernetes setups. More complex initial setup, but powerful for dynamic environments.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">HAProxy</strong> — <span class="text-text-secondary">High-performance load balancer. Excels at TCP/HTTP load balancing. Often used in front of web servers for high-traffic sites. More specialised than Nginx.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">Nginx is the safe default for most projects. Caddy is worth considering when you want automatic HTTPS without extra tooling. Traefik is the choice for heavily containerised environments.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: implementation</h2>
+    <p class="text-text-secondary mb-4">Architecture reviewed. Time to create the backlog and start building — infrastructure first.</p>
+    <a
+      href="/web-dev/projects/6/implementation"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Implementation →
+    </a>
+  </div>
+</DocsLayout>

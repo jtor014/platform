@@ -1,0 +1,138 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+import Checklist from '../../../../../components/Checklist.astro';
+---
+
+<DocsLayout title="Building" description="Build FreshBox with Terraform modules incrementally and solve the stock consistency race condition.">
+  <h1 class="mb-6">Building</h1>
+  <p class="text-text-secondary mb-4">The build loop is routine by now. Direct, verify, review, merge. Two new disciplines: infrastructure changes are incremental (module by module), and the stock system demands race condition handling.</p>
+
+  <h2 class="mb-4 mt-10">Building with Terraform modules</h2>
+  <p class="text-text-secondary mb-4">The key principle: make infrastructure changes incrementally. Don't try to provision everything at once. Module by module, plan, review the plan, apply, verify.</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Phase 1: VPC module</h3>
+      <p class="text-sm text-text-secondary">Networking foundation. VPC, public and private subnets across two AZs, internet gateway, NAT gateway, route tables. Plan it, review the plan output, apply it. Verify: can you see the VPC and subnets in the AWS console?</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Phase 2: Compute module</h3>
+      <p class="text-sm text-text-secondary">ASG + ALB. Launch template with a basic AMI, auto scaling group with min 2 instances, ALB with target group. Plan, review, apply. Verify: do two instances appear in the EC2 console? Does the ALB health check pass? Can you hit the ALB DNS name and get a response?</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Phase 3: Database module</h3>
+      <p class="text-sm text-text-secondary">RDS PostgreSQL with multi-AZ. Subnet group, parameter group, the instance itself. Plan, review, apply. Verify: can the EC2 instances connect to the RDS endpoint? Are automated backups enabled?</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Phase 4: CDN module</h3>
+      <p class="text-sm text-text-secondary">CloudFront distribution. Origin configuration pointing to the ALB, cache behaviours for static assets vs API, S3 origin for product images. Plan, review, apply. Verify: can you access the site through the CloudFront domain? Are static assets being served from the edge?</p>
+    </div>
+  </div>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Plan before apply. Always.</strong> <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform plan</code> shows exactly what will be created, modified, or destroyed. Read it. Every line. A misconfigured security group could expose the database to the internet. A wrong subnet configuration could put instances in the wrong AZ. The plan is your PR review for infrastructure.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Stock consistency: the race condition</h2>
+  <p class="text-text-secondary mb-4">This is the hardest technical problem in this project. Two users ordering the last avocado at the same time — only one should succeed. There are two main approaches:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Option 1: Pessimistic locking (SELECT FOR UPDATE)</h3>
+      <p class="text-sm text-text-secondary mb-3">Lock the inventory row when reading it. No other transaction can read or modify the row until the lock is released. Guarantees consistency but reduces throughput — concurrent requests queue up behind the lock.</p>
+      <CodeBlock lang="sql">{`BEGIN;
+SELECT quantity FROM inventory WHERE product_id = 42 FOR UPDATE;
+-- If quantity > 0:
+UPDATE inventory SET quantity = quantity - 1 WHERE product_id = 42;
+INSERT INTO order_items (order_id, product_id, quantity) VALUES (...);
+COMMIT;`}</CodeBlock>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Option 2: Optimistic concurrency (conditional update)</h3>
+      <p class="text-sm text-text-secondary mb-3">Read the current quantity, then update only if the quantity hasn't changed since you read it. If it has changed (someone else ordered), the update affects zero rows — retry or fail gracefully. Better throughput under low contention.</p>
+      <CodeBlock lang="sql">{`-- Read current quantity
+SELECT quantity FROM inventory WHERE product_id = 42;
+-- Returns quantity = 1
+
+-- Conditional update: only succeeds if quantity is still 1
+UPDATE inventory
+SET quantity = quantity - 1
+WHERE product_id = 42 AND quantity >= 1;
+
+-- Check rows affected: if 0, someone else got the last one`}</CodeBlock>
+    </div>
+  </div>
+
+  <p class="text-text-secondary mb-4">Either approach works. The architecture should specify which one and why. Pessimistic locking is simpler to reason about. Optimistic concurrency scales better. For FreshBox's volume (hundreds of orders, not millions), either is fine.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>The canonical test case:</strong> Two users, one avocado, simultaneous orders. This is the test you write first, before implementing the ordering flow. Write the test, watch it fail (both users get the avocado), implement the locking, watch it pass (only one succeeds). Test-driven development for the critical path.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Verification for each phase</h2>
+  <Checklist items={[
+    "VPC module: subnets visible in AWS console, route tables configured, NAT gateway operational",
+    "Compute module: 2 EC2 instances running, ALB health checks passing, response from ALB DNS",
+    "Database module: RDS instance available, EC2 can connect, automated backups enabled",
+    "CDN module: CloudFront distribution deployed, static assets served from edge",
+    "Stock system: race condition test passes — two simultaneous requests for last item, only one succeeds",
+    "Ordering flow: end-to-end from browse to submit, stock decremented correctly",
+  ]} />
+
+  <h2 class="mb-4 mt-10">Extension scenario: Emma's corporate deal closes</h2>
+  <p class="text-text-secondary mb-4">Halfway through the build, Emma calls:</p>
+
+  <Callout variant="client">
+    <p>"The corporate deal closed. Starting next Monday, 200 extra weekly orders. Will the system handle it?"</p>
+  </Callout>
+
+  <p class="text-text-secondary mb-4">The ASG handles the load automatically — that's the point. But the question isn't just "can the servers handle more traffic?" The real question: are there race conditions? With 200 corporate orders hitting on Monday morning alongside the regular 300, that's peak concurrency you haven't tested yet.</p>
+  <p class="text-text-secondary mb-4">Run the test: 10 simultaneous requests for the last avocado. Does exactly one succeed? If yes, the stock system is solid. If two succeed, you have an overselling bug under load. Fix it before Monday.</p>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: database concurrency patterns</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use pessimistic or optimistic locking. Here's the full landscape of concurrency control patterns.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Pessimistic locking (SELECT FOR UPDATE)</strong> — <span class="text-text-secondary">Lock the row when reading. No other transaction can modify it until you commit. Simple to reason about. Reduces throughput under high contention. Best when conflicts are frequent (last item scenarios).</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Optimistic locking (version column)</strong> — <span class="text-text-secondary">Read the row with a version number. Update only if the version hasn't changed. If it has, retry or fail. Better throughput under low contention. More complex retry logic. Best when conflicts are rare.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">MVCC (Multi-Version Concurrency Control)</strong> — <span class="text-text-secondary">PostgreSQL's default isolation. Each transaction sees a snapshot of the database. Writers don't block readers. Handles most concurrency automatically. But doesn't prevent the two-avocado problem without explicit locking.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Queuing (serialise writes)</strong> — <span class="text-text-secondary">Route all inventory updates through a single queue (Redis, SQS). Orders are processed one at a time. Eliminates race conditions entirely. Adds latency. Best for high-contention scenarios at scale (concert ticket sales, flash sales).</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Atomic conditional update</strong> — <span class="text-text-secondary">Single SQL statement: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">UPDATE SET qty = qty - 1 WHERE qty >= 1</code>. The database handles atomicity. Check affected rows. No explicit locks needed. Simple and effective for decrement-style operations.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">For FreshBox's scale (hundreds of orders, not millions), pessimistic locking or atomic conditional updates are the pragmatic choices. Queuing is overkill. MVCC alone isn't enough — you need explicit concurrency control for inventory.</p>
+    </div>
+  </details>
+
+  <h2 class="mb-4 mt-10">The rhythm</h2>
+  <ol class="text-sm text-text-secondary list-decimal list-inside space-y-2 mb-8">
+    <li>Direct Claude to implement the ticket</li>
+    <li>For infrastructure tickets: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform plan</code>, review, <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform apply</code>, verify in AWS console</li>
+    <li>For application tickets: verify against acceptance criteria, test edge cases</li>
+    <li>For the stock system: run the race condition test after every change to ordering or inventory</li>
+    <li>Review, merge, next ticket</li>
+  </ol>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: testing</h2>
+    <p class="text-text-secondary mb-4">Implementation complete. Now load test the system and verify it scales.</p>
+    <a
+      href="/web-dev/projects/9/testing"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Testing →
+    </a>
+  </div>
+</DocsLayout>

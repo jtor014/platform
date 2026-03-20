@@ -1,0 +1,194 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+import Checklist from '../../../../../components/Checklist.astro';
+---
+
+<DocsLayout title="Building" description="Infrastructure first with Terraform, then application — the build loop with two types of tickets.">
+  <h1 class="mb-6">Building</h1>
+  <p class="text-text-secondary mb-4">The build loop is routine by now — direct, verify, review, merge. The new dimension: there are two types of tickets with different workflows. Infrastructure tickets use Terraform. Application tickets use code. Both follow the same principle — make a change, verify it, review it — but the tools and verification methods are different.</p>
+  <p class="text-text-secondary mb-8">Infrastructure comes first. You can't deploy Docker containers to an EC2 instance that doesn't exist.</p>
+
+  <h2 class="mb-4 mt-10">Infrastructure tickets first</h2>
+  <p class="text-text-secondary mb-4">The first block of tickets creates the foundation. Each one follows the same Terraform cycle:</p>
+
+  <div class="space-y-3 mb-8">
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">1</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Write the .tf file</strong> — describe the resource you want (VPC, security group, EC2 instance, S3 bucket)</p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">2</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text"><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform plan</code></strong> — review what Terraform will create, change, or destroy</p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">3</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Review the plan</strong> — does it match your expectations? Any surprises? Any resources being destroyed?</p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">4</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text"><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform apply</code></strong> — create the resources</p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">5</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Verify in AWS console</strong> — does the resource exist? Is it configured correctly?</p>
+    </div>
+  </div>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Always review the plan.</strong> <code>terraform plan</code> is your safety net. A plan that says "destroy 1 EC2 instance, create 1 EC2 instance" might mean your data is gone. A plan that says "create 1 m5.xlarge" instead of "create 1 t2.micro" means you're about to spend money. Read the plan before you apply. Every time.</p>
+  </Callout>
+
+  <h3 class="mb-3 mt-6">The infrastructure ticket order</h3>
+  <p class="text-text-secondary mb-4">Work through these in sequence. Each depends on the one before it:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h4 class="text-base font-semibold mb-2">1. VPC and networking</h4>
+      <p class="text-sm text-text-secondary mb-2">VPC, public subnet, internet gateway, route table. This is the network your EC2 instance will live in. Without it, nothing is reachable from the internet.</p>
+      <p class="text-sm text-text-secondary"><strong>Verify:</strong> VPC appears in the AWS console with the correct CIDR block. The subnet is associated with the route table and internet gateway.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h4 class="text-base font-semibold mb-2">2. Security groups</h4>
+      <p class="text-sm text-text-secondary mb-2">The firewall rules. Port 80 (HTTP) and 443 (HTTPS) open to the world. Port 22 (SSH) restricted to your IP address only. All other ports blocked.</p>
+      <p class="text-sm text-text-secondary"><strong>Verify:</strong> In the AWS console, check the inbound rules. SSH should show your IP, not <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">0.0.0.0/0</code>.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h4 class="text-base font-semibold mb-2">3. EC2 instance</h4>
+      <p class="text-sm text-text-secondary mb-2">t2.micro, Amazon Linux, in your VPC, with your security group, and a key pair for SSH access. This is the server everything runs on.</p>
+      <p class="text-sm text-text-secondary"><strong>Verify:</strong> SSH into the instance. If you can connect, the instance is running, the security group allows port 22, and the key pair is correct.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h4 class="text-base font-semibold mb-2">4. S3 bucket</h4>
+      <p class="text-sm text-text-secondary mb-2">For static assets — beer images, event photos. Cheaper and faster than serving images from the EC2 instance.</p>
+      <p class="text-sm text-text-secondary"><strong>Verify:</strong> Upload a test image to the bucket and retrieve it via the public URL.</p>
+    </div>
+  </div>
+
+  <Checklist items={[
+    "terraform plan shows only expected resources — no surprises",
+    "terraform apply completes without errors",
+    "VPC, subnet, internet gateway, and route table exist in AWS console",
+    "Security group has correct inbound rules (80, 443 open; 22 restricted to your IP)",
+    "EC2 instance is running and you can SSH into it",
+    "S3 bucket exists and you can upload/retrieve a test file",
+  ]} />
+
+  <h2 class="mb-4 mt-10">Application deployment on EC2</h2>
+  <p class="text-text-secondary mb-4">With the infrastructure provisioned, the next block of tickets sets up the application layer on the EC2 instance:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Docker + Docker Compose on EC2</h3>
+      <p class="text-sm text-text-secondary">SSH into the instance and install Docker. The application runs as containers: React frontend, FastAPI backend, PostgreSQL database. Docker Compose orchestrates them. This is the same setup as local development, but on a remote server.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Nginx reverse proxy</h3>
+      <p class="text-sm text-text-secondary">Nginx sits in front of everything. <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/api/*</code> requests go to FastAPI. Everything else goes to the React frontend. Nginx handles SSL termination — HTTPS stops at Nginx, containers communicate over HTTP internally.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Application code</h3>
+      <p class="text-sm text-text-secondary">The same ticket loop as previous projects — direct Claude to implement the feature, verify locally, review, merge. Then deploy to EC2: push the code, rebuild the containers on the server, verify the feature works on the live URL.</p>
+    </div>
+  </div>
+
+  <CodeBlock terminal copy>{`# SSH into the EC2 instance
+$ ssh -i ~/.ssh/your-key.pem ec2-user@<ec2-public-ip>
+
+# On the server: start the application
+$ docker compose up -d
+
+# Verify containers are running
+$ docker ps
+# Should show frontend, backend, database, and nginx containers
+
+# Back on your local machine: verify the site loads
+$ curl http://<ec2-public-ip>
+# Should return HTML`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">The <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform plan</code> review habit</h2>
+  <p class="text-text-secondary mb-4">Every time you change a <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.tf</code> file, run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform plan</code> before <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform apply</code>. Read the plan output like you read a PR diff:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">+ (create)</strong> — a new resource. Expected when adding infrastructure.</li>
+    <li><strong class="text-text">~ (update in-place)</strong> — modifying an existing resource without destroying it. Usually safe.</li>
+    <li><strong class="text-text">-/+ (destroy and recreate)</strong> — the resource will be destroyed and a new one created. This can mean data loss. If your EC2 instance is being recreated, anything stored on it is gone.</li>
+    <li><strong class="text-text">- (destroy)</strong> — removing a resource entirely. Make sure you intended this.</li>
+  </ul>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Treat <code>terraform plan</code> like a PR review.</strong> You wouldn't merge a PR without reading the diff. Don't apply a plan without reading the output. The plan tells you exactly what will happen. If anything surprises you, stop and investigate before applying.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Common Terraform mistakes</h2>
+  <p class="text-text-secondary mb-4">Watch for these when reviewing Claude's Terraform code:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Security group too open</h3>
+      <p class="text-sm text-text-secondary">SSH (port 22) open to <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">0.0.0.0/0</code> means anyone on the internet can attempt to SSH into your server. Restrict it to your IP address. Check the security group in the AWS console after applying.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Wrong instance type</h3>
+      <p class="text-sm text-text-secondary">AI might suggest a larger instance (t2.small, t3.medium) for "production." For 200 peak users, t2.micro is sufficient and stays within the free tier. Check the plan — the instance type is visible.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Missing state backend</h3>
+      <p class="text-sm text-text-secondary">Terraform stores state in a local file by default. For a learning project this is fine, but be aware: if you lose the state file, Terraform doesn't know what it created and can't manage those resources. Don't delete <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform.tfstate</code>.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Extension scenario: the beer magazine feature</h2>
+  <Callout variant="client">
+    <p>"Hey, Tidal Brewing just got featured in Time Out Melbourne's 'Best Craft Breweries' list. We're getting way more traffic than usual — the site was a bit slow this afternoon during the lunch rush."</p>
+  </Callout>
+
+  <p class="text-text-secondary mb-4">Jake's brewery gets featured in a local beer magazine. Traffic doubles for two weeks. Your single t2.micro is handling it, but CPU spikes during peak hours. This is the scenario where monitoring becomes real — not theoretical.</p>
+  <p class="text-text-secondary mb-4">What do you do?</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Check CloudWatch:</strong> Is CPU consistently above 80%? Is it spiking at specific times (lunch, after work)?</li>
+    <li><strong class="text-text">Quick fix:</strong> Resize the instance — change t2.micro to t2.small in Terraform, run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform plan</code> (note: this will recreate the instance), then apply. Costs a few dollars more per month.</li>
+    <li><strong class="text-text">If it's temporary:</strong> Wait it out. Magazine features generate a spike that fades. Monitor CloudWatch daily. If CPU stays elevated after two weeks, then resize.</li>
+    <li><strong class="text-text">Don't over-engineer:</strong> You don't need auto-scaling, a load balancer, or a CDN for a Brunswick brewery website. A slightly larger instance solves the problem.</li>
+  </ul>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Right-size, don't over-provision.</strong> The instinct is to throw more infrastructure at the problem. For 400 users instead of 200, a t2.small handles it. You don't need Kubernetes. You don't need a multi-AZ deployment. Match the solution to the problem.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: container orchestration</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use Docker Compose on a single EC2 instance. Here's what exists when you need more.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Docker Compose</strong> — <span class="text-text-secondary">What we use. Defines multi-container applications in a YAML file. Perfect for single-server deployments. No clustering, no auto-scaling — just "run these containers together on this machine."</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Docker Swarm</strong> — <span class="text-text-secondary">Docker's built-in orchestration. Turns multiple Docker hosts into a cluster. Uses the same Compose file format. Simpler than Kubernetes, but limited. Less adopted in industry — most teams jump straight to Kubernetes.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Kubernetes (K8s)</strong> — <span class="text-text-secondary">The industry standard for container orchestration. Auto-scaling, self-healing, rolling deployments, service discovery. Powerful but complex — significant operational overhead. Overkill for a brewery website, essential for large-scale systems.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Amazon ECS (Elastic Container Service)</strong> — <span class="text-text-secondary">AWS-native container orchestration. Simpler than Kubernetes, tightly integrated with AWS services (ALB, CloudWatch, IAM). Good middle ground — more capable than Compose, less complex than Kubernetes.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Amazon EKS (Elastic Kubernetes Service)</strong> — <span class="text-text-secondary">Managed Kubernetes on AWS. AWS handles the control plane; you manage the worker nodes. The choice when you want Kubernetes but don't want to run the control plane yourself. Expensive for small workloads.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">Docker Compose is the right choice for a single-server deployment. When the application outgrows one server, ECS is the natural next step on AWS. Kubernetes is for when you need multi-service, multi-team, auto-scaling infrastructure.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: testing</h2>
+    <p class="text-text-secondary mb-4">Implementation complete. Time to test — both the application and the infrastructure.</p>
+    <a
+      href="/web-dev/projects/6/testing"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Testing →
+    </a>
+  </div>
+</DocsLayout>

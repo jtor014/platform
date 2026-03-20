@@ -1,0 +1,201 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import Checklist from '../../../../components/Checklist.astro';
+---
+
+<DocsLayout title="Testing" description="Load testing with k6 — verify auto-scaling, stock consistency under concurrent load, and end-to-end ordering with Playwright.">
+  <h1 class="mb-6">Testing</h1>
+  <p class="text-text-secondary mb-4">Load testing is mandatory. This is the first project where you prove the system scales — not by reading the ASG configuration, but by throwing traffic at it and watching it respond.</p>
+
+  <h2 class="mb-4 mt-10">k6 load test: scaling verification</h2>
+  <p class="text-text-secondary mb-4">k6 simulates concurrent users making real HTTP requests. The script below ramps up to 100 virtual users, sustains the load, then ramps down. During the test, the ASG should scale out. After the test, it should scale back in.</p>
+
+  <CodeBlock lang="javascript" copy>{`import http from 'k6/http';
+import { check, sleep } from 'k6';
+
+export const options = {
+  stages: [
+    { duration: '2m', target: 50 },   // Ramp up to 50 users
+    { duration: '3m', target: 100 },  // Ramp to 100 users
+    { duration: '5m', target: 100 },  // Sustain 100 users
+    { duration: '2m', target: 0 },    // Ramp down
+  ],
+  thresholds: {
+    http_req_duration: ['p(95)<500'],  // 95% of requests under 500ms
+    http_req_failed: ['rate<0.01'],    // Less than 1% failure rate
+  },
+};
+
+export default function () {
+  // Browse products
+  const products = http.get('https://your-cloudfront-domain.com/api/products');
+  check(products, {
+    'product list returns 200': (r) => r.status === 200,
+  });
+
+  sleep(1);
+
+  // Place an order
+  const order = http.post(
+    'https://your-cloudfront-domain.com/api/orders',
+    JSON.stringify({
+      items: [{ product_id: 1, quantity: 1 }],
+      suburb: 'fitzroy',
+      delivery_day: 'tuesday',
+    }),
+    { headers: { 'Content-Type': 'application/json' } }
+  );
+  check(order, {
+    'order returns 200 or 409': (r) => r.status === 200 || r.status === 409,
+  });
+
+  sleep(2);
+}`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">What to verify during the load test</h2>
+  <Checklist items={[
+    "ASG scales out: watch the EC2 console or Grafana — instance count increases during peak load",
+    "All requests complete: k6 reports less than 1% failure rate",
+    "No inventory overselling: check the database after the test — no product has negative stock",
+    "Response times remain acceptable: p95 under 500ms even at peak load",
+    "ASG scales back in: after the test ends, instance count drops back to the minimum (2)",
+  ]} />
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Watch the scaling in real time.</strong> Run the k6 test and simultaneously watch the AWS console (EC2 > Auto Scaling Groups > Activity) or your Grafana dashboard. You should see new instances launching 3-5 minutes after CPU or request count exceeds the threshold. After the test ends, instances terminate after the scale-in cooldown period.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Race condition test</h2>
+  <p class="text-text-secondary mb-4">The canonical test case: 10 simultaneous requests for the last item. Only one should succeed. The other 9 should get a 409 (conflict) or equivalent error — not a 200 with an oversold item.</p>
+
+  <CodeBlock lang="javascript" copy>{`import http from 'k6/http';
+import { check } from 'k6';
+
+export const options = {
+  vus: 10,        // 10 virtual users
+  iterations: 10, // Each runs exactly once — simultaneously
+};
+
+export default function () {
+  const res = http.post(
+    'https://your-cloudfront-domain.com/api/orders',
+    JSON.stringify({
+      items: [{ product_id: 42, quantity: 1 }], // Product with 1 in stock
+      suburb: 'fitzroy',
+      delivery_day: 'tuesday',
+    }),
+    { headers: { 'Content-Type': 'application/json' } }
+  );
+
+  check(res, {
+    'response is 200 or 409': (r) => r.status === 200 || r.status === 409,
+  });
+}`}</CodeBlock>
+
+  <p class="text-text-secondary mb-4">After the test, query the database:</p>
+  <CodeBlock lang="sql">{`SELECT quantity FROM inventory WHERE product_id = 42;
+-- Must be 0, not negative
+
+SELECT COUNT(*) FROM order_items WHERE product_id = 42;
+-- Must be exactly 1`}</CodeBlock>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>If this test fails, the system is broken.</strong> Overselling under concurrent load is exactly the problem Emma's spreadsheet had. If 10 simultaneous requests for the last avocado produce 2 successful orders, the locking strategy is wrong. Fix it before proceeding.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">CloudFront cache testing</h2>
+  <p class="text-text-secondary mb-4">Verify CloudFront is caching correctly. Static assets should be served from the edge. Product listing API should be cached with a short TTL. Order submissions should never be cached.</p>
+
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Request</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Expected behaviour</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Verification</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 text-sm">Static assets (CSS, JS, images)</td>
+          <td class="px-4 py-3 text-text-secondary">Served from edge, long TTL</td>
+          <td class="px-4 py-3 text-text-secondary"><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">X-Cache: Hit from cloudfront</code></td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 text-sm">Product listings API</td>
+          <td class="px-4 py-3 text-text-secondary">Cached with 60s TTL</td>
+          <td class="px-4 py-3 text-text-secondary">First request: Miss. Second within 60s: Hit</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 text-sm">Order submissions (POST)</td>
+          <td class="px-4 py-3 text-text-secondary">Never cached</td>
+          <td class="px-4 py-3 text-text-secondary">Every request: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">X-Cache: Miss</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <CodeBlock lang="bash" copy>{`# Check CloudFront cache headers on static assets
+curl -I https://your-cloudfront-domain.cloudfront.net/static/style.css
+# Look for: X-Cache: Hit from cloudfront
+
+# Check product API caching
+curl -I https://your-cloudfront-domain.cloudfront.net/api/products
+# First request: X-Cache: Miss from cloudfront
+# Second request (within 60s): X-Cache: Hit from cloudfront`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Cost verification</h2>
+  <p class="text-text-secondary mb-4">After the infrastructure has been running for a few days, compare the Infracost estimate to actual spend in AWS Cost Explorer. They should be within 20% of each other. If they're wildly different, investigate — either the estimate was wrong or the infrastructure is provisioned differently than expected.</p>
+  <p class="text-text-secondary mb-4">Check that the AWS Budget alarm is configured: $100/month threshold, email notification. Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">infracost breakdown --path terraform/environments/production</code> and compare against Cost Explorer. No surprises.</p>
+
+  <h2 class="mb-4 mt-10">Playwright E2E</h2>
+  <p class="text-text-secondary mb-4">End-to-end test for the full ordering flow. A Playwright script that simulates a real customer:</p>
+  <ol class="list-decimal list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Navigate to the product listing page</li>
+    <li>Verify stock indicators are visible</li>
+    <li>Add items to the order</li>
+    <li>Select suburb and delivery day</li>
+    <li>Submit the order</li>
+    <li>Verify order confirmation</li>
+    <li>Check order appears in order history</li>
+    <li>Verify stock was decremented</li>
+  </ol>
+
+  <h2 class="mb-4 mt-10">Lighthouse audit</h2>
+  <p class="text-text-secondary mb-8">Run a Lighthouse audit on the product listing page and the ordering flow. Performance matters especially on mobile — Emma's customers are busy parents ordering from their phones. CloudFront should improve performance scores compared to hitting the ALB directly.</p>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: chaos engineering</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">Load testing verifies scaling works. Chaos engineering verifies the system recovers from failure. These tools intentionally break things to test resilience.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">AWS Fault Injection Simulator</strong> — <span class="text-text-secondary">AWS-native chaos engineering. Inject faults into AWS resources: terminate EC2 instances, throttle API calls, disrupt network connectivity. Controlled experiments with safety guardrails. Integrates with CloudWatch for monitoring during tests.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Chaos Monkey (Netflix)</strong> — <span class="text-text-secondary">The original chaos engineering tool. Randomly terminates instances in production. Forces teams to build systems that tolerate failure. Part of the Simian Army suite. Netflix runs this continuously in production.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Gremlin</strong> — <span class="text-text-secondary">SaaS chaos engineering platform. Inject CPU, memory, disk, and network faults. Shut down processes, corrupt data, simulate latency. Provides a safe, controlled way to run chaos experiments with automatic rollback.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">LitmusChaos</strong> — <span class="text-text-secondary">Open-source chaos engineering for Kubernetes. Provides pre-built chaos experiments (pod kill, network loss, disk fill). Integrates with CI/CD for automated chaos testing.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">We verify scaling with load tests. Chaos engineering goes further — what happens when an instance dies mid-request? When the database becomes unreachable for 30 seconds? When network latency spikes to 5 seconds? These are the failures that happen in production. AWS Fault Injection Simulator is the lowest-friction starting point if you're on AWS.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: deployment</h2>
+    <p class="text-text-secondary mb-4">Tests pass. Time to deploy with zero-downtime verification.</p>
+    <a
+      href="/web-dev/projects/9/deployment"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Deployment →
+    </a>
+  </div>
+</DocsLayout>

@@ -1,0 +1,364 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Architecture" description="Architecture decisions for FreshBox — Auto Scaling Groups, CloudFront CDN, Terraform modules, cost estimation, and Architecture Decision Records.">
+  <h1 class="mb-6">Architecture</h1>
+  <p class="text-text-secondary mb-4">Same process — prompt, template, review. This is the biggest architecture page yet. The decisions span auto-scaling, CDN, infrastructure organisation, cost estimation, and formal decision records. Take your time.</p>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <CodeBlock copy>{`Here is the PRD and design spec for FreshBox, an organic produce ordering platform:
+
+[Paste your PRD here]
+[Paste your design spec here]
+
+Using the following architecture template, create a complete technical architecture document.
+
+Tech stack: React frontend, FastAPI backend, RDS PostgreSQL (multi-AZ), EC2 Auto Scaling Group behind ALB, CloudFront for static assets and API caching, S3 with lifecycle policies, Terraform with modules, Prometheus + Grafana, k6 for load testing.
+
+Key architecture decisions to address:
+1. Auto Scaling Group — launch template, scaling policies, instance sizing
+2. CloudFront — CDN distribution, caching strategy, cache invalidation
+3. Terraform modules — VPC, compute, database, CDN modules with inputs/outputs
+4. S3 lifecycle policies — product images, old order data
+5. Stock consistency — database-level locking or optimistic concurrency
+6. Cost estimation — monthly cost breakdown before terraform apply
+7. Architecture Decision Records for key decisions
+
+[Paste architecture template here]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Auto Scaling Group</h2>
+  <p class="text-text-secondary mb-4">An Auto Scaling Group (ASG) automatically adjusts the number of EC2 instances based on demand. When traffic increases, the ASG launches new instances. When traffic drops, it terminates them. You define the rules — the ASG executes them.</p>
+
+  <h3 class="mb-3 mt-6">Launch template</h3>
+  <p class="text-text-secondary mb-4">The launch template defines what each instance looks like: AMI (Amazon Machine Image), instance type, security groups, user data script (what runs on boot). Every instance the ASG creates is identical — same configuration, same application code, same environment.</p>
+  <CodeBlock lang="hcl">{`resource "aws_launch_template" "freshbox" {
+  name_prefix   = "freshbox-"
+  image_id      = "ami-xxxx"  # Your application AMI
+  instance_type = "t3.small"
+
+  user_data = base64encode(templatefile("userdata.sh", {
+    db_host = aws_db_instance.freshbox.address
+  }))
+
+  vpc_security_group_ids = [aws_security_group.app.id]
+}`}</CodeBlock>
+
+  <h3 class="mb-3 mt-6">Scaling policies</h3>
+  <p class="text-text-secondary mb-4">Two scaling triggers, either of which causes scale-out:</p>
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Trigger</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Scale out</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Scale in</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Cooldown</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">CPU utilisation</td>
+          <td class="px-4 py-3 text-text-secondary">Above 70% for 3 minutes</td>
+          <td class="px-4 py-3 text-text-secondary">Below 30% for 10 minutes</td>
+          <td class="px-4 py-3 text-text-secondary">5 minutes</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Request count</td>
+          <td class="px-4 py-3 text-text-secondary">Above 1,000/min per target</td>
+          <td class="px-4 py-3 text-text-secondary">Below 200/min per target</td>
+          <td class="px-4 py-3 text-text-secondary">5 minutes</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="text-text-secondary mb-4">ASG capacity settings:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Minimum:</strong> 2 instances — high availability. If one fails a health check, the other keeps serving.</li>
+    <li><strong class="text-text">Desired:</strong> 2 instances — normal operating state.</li>
+    <li><strong class="text-text">Maximum:</strong> 10 instances — cap for cost control. Even during the TV feature spike, 10 instances is the ceiling.</li>
+  </ul>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Why minimum 2?</strong> A single instance means a single point of failure. If that instance dies, the site goes down until the ASG launches a replacement (1-3 minutes). With minimum 2, one instance can fail and the other handles traffic while the replacement launches. This is high availability at the most basic level.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">CloudFront CDN</h2>
+  <p class="text-text-secondary mb-4">CloudFront is a Content Delivery Network — a global network of edge locations that cache your content close to users. Instead of every request hitting your ALB in ap-southeast-2, static assets and cacheable API responses are served from the nearest edge location.</p>
+
+  <h3 class="mb-3 mt-6">What gets cached</h3>
+  <div class="space-y-4 mb-6">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Static assets (long TTL)</h3>
+      <p class="text-sm text-text-secondary">Images, CSS, JavaScript — cached at edge locations for 24 hours or more. These don't change between deployments. Product photos of avocados and tomatoes are the same for every user. Serve them from the edge, not from your EC2 instances.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Product listings API (short TTL)</h3>
+      <p class="text-sm text-text-secondary">The product catalogue changes throughout the day (stock updates), but not on every request. A 60-second TTL on product listing responses means CloudFront serves the cached response for up to a minute before fetching fresh data. This dramatically reduces backend load during a traffic spike — 1,000 users loading the product page in the same minute generates 1 backend request, not 1,000.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Order submissions (no caching)</h3>
+      <p class="text-sm text-text-secondary">POST requests to place orders must always reach the backend. These are never cached. Every order must go through the stock consistency logic on the server.</p>
+    </div>
+  </div>
+
+  <h3 class="mb-3 mt-6">Cache invalidation</h3>
+  <p class="text-text-secondary mb-4">When you deploy a new version, the old static assets are still cached at edge locations. The deployment pipeline must include a CloudFront cache invalidation step — telling CloudFront to discard cached assets and fetch fresh ones from the origin. Without this, users see the old version until the cache TTL expires.</p>
+
+  <h2 class="mb-4 mt-10">Terraform modules</h2>
+  <p class="text-text-secondary mb-4">Until now, your Terraform was a collection of <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.tf</code> files in one directory. That works for small projects. FreshBox's infrastructure is complex enough that it needs organisation. Terraform modules are the solution — reusable, composable units of infrastructure.</p>
+
+  <h3 class="mb-3 mt-6">Module structure</h3>
+  <CodeBlock lang="text">{`terraform/
+  modules/
+    vpc/
+      main.tf        # VPC, subnets, internet gateway, NAT gateway
+      variables.tf   # Inputs: CIDR block, AZs, project name
+      outputs.tf     # Outputs: VPC ID, subnet IDs, security group IDs
+    compute/
+      main.tf        # ASG, launch template, ALB, target group
+      variables.tf   # Inputs: instance type, min/max capacity, VPC/subnet IDs
+      outputs.tf     # Outputs: ALB DNS name, ASG name
+    database/
+      main.tf        # RDS instance, subnet group, parameter group
+      variables.tf   # Inputs: instance class, storage, VPC/subnet IDs
+      outputs.tf     # Outputs: RDS endpoint, database name
+    cdn/
+      main.tf        # CloudFront distribution, origin config, cache behaviours
+      variables.tf   # Inputs: ALB DNS name, S3 bucket domain
+      outputs.tf     # Outputs: CloudFront domain name, distribution ID
+  environments/
+    production/
+      main.tf        # Calls modules with production values
+      variables.tf
+      terraform.tfvars`}</CodeBlock>
+
+  <p class="text-text-secondary mb-4">Each module has inputs (variables) and outputs. The production environment calls each module and passes values. The VPC module outputs subnet IDs that the compute and database modules consume. The compute module outputs the ALB DNS name that the CDN module consumes. This is how real Terraform codebases are organised.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Why modules?</strong> Three reasons. First, organisation — 200 lines of Terraform in one file is hard to read. Split by concern (networking, compute, database, CDN) and each module is manageable. Second, reusability — the VPC module works for any project, not just FreshBox. Third, isolation — you can plan and apply changes to the CDN without touching the database.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">S3 lifecycle policies</h2>
+  <p class="text-text-secondary mb-4">Not all data has the same access pattern. Product images need fast access. Order data from last year doesn't. S3 lifecycle policies automatically move data between storage tiers based on age.</p>
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Data</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Storage class</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Transition rule</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Product images</td>
+          <td class="px-4 py-3 text-text-secondary">S3 Standard</td>
+          <td class="px-4 py-3 text-text-secondary">Stays in Standard (frequent access via CloudFront)</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Order data (recent)</td>
+          <td class="px-4 py-3 text-text-secondary">S3 Standard</td>
+          <td class="px-4 py-3 text-text-secondary">Moves to S3 Infrequent Access after 90 days</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Order data (old)</td>
+          <td class="px-4 py-3 text-text-secondary">S3 Infrequent Access</td>
+          <td class="px-4 py-3 text-text-secondary">Moves to Glacier after 1 year</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="text-text-secondary mb-4">This reduces storage costs automatically. Emma doesn't need instant access to order data from January 2024 — Glacier retrieval takes minutes to hours, but costs a fraction of Standard.</p>
+
+  <h2 class="mb-4 mt-10">Architecture Decision Records (ADRs)</h2>
+  <p class="text-text-secondary mb-4">An ADR is a formal document recording a significant architecture decision. Not every decision needs one — just the ones where you had meaningful alternatives and the choice has lasting consequences. The format is standardised:</p>
+
+  <CodeBlock lang="markdown">{`# ADR-001: Use Auto Scaling Group over ECS/Fargate
+
+## Status
+Accepted
+
+## Context
+FreshBox needs to handle variable traffic — 300 orders/week normally, up to 2,000
+during a media spike. The application runs on EC2 behind an ALB. We need automatic
+scaling based on demand.
+
+Options considered:
+1. EC2 Auto Scaling Group — launch template + scaling policies
+2. ECS with Fargate — containerised tasks, AWS manages the instances
+3. ECS with EC2 — containerised tasks on self-managed instances
+
+## Decision
+Use EC2 Auto Scaling Group.
+
+## Consequences
+- Positive: simpler mental model (scaling instances, not containers), builds directly
+  on existing EC2 and Terraform knowledge from P6-P8
+- Positive: full control over instance configuration and AMI
+- Negative: less granular than container-based scaling (scaling whole instances, not
+  individual containers)
+- Negative: AMI management required — bake new AMIs for each deployment
+- Accepted tradeoff: ECS/Fargate would be more efficient for container workloads but
+  adds container orchestration complexity that isn't justified at this scale`}</CodeBlock>
+
+  <p class="text-text-secondary mb-4">Write ADRs for three key decisions:</p>
+  <ol class="list-decimal list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">ASG over ECS/Fargate</strong> — why scaling instances, not containers?</li>
+    <li><strong class="text-text">CloudFront over Cloudflare</strong> — why AWS-native CDN over a third-party provider?</li>
+    <li><strong class="text-text">Multi-AZ RDS</strong> — why pay for multi-AZ at this scale?</li>
+  </ol>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>ADRs are documentation you'll actually use.</strong> Six months from now, someone (including future you) will ask "why didn't we use Fargate?" Instead of guessing or re-researching, you point to the ADR. The context is preserved. The reasoning is recorded. The tradeoffs are explicit.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Cost estimation</h2>
+  <p class="text-text-secondary mb-4">Before <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform apply</code>, estimate the monthly cost. This is a new discipline — knowing what your infrastructure costs before you provision it.</p>
+
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Resource</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Configuration</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Estimated monthly cost</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">EC2 (ASG min 2)</td>
+          <td class="px-4 py-3 text-text-secondary">2x t3.small, on-demand</td>
+          <td class="px-4 py-3 text-text-secondary">~$30/month</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">RDS PostgreSQL</td>
+          <td class="px-4 py-3 text-text-secondary">db.t3.small, multi-AZ</td>
+          <td class="px-4 py-3 text-text-secondary">~$25/month</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">ALB</td>
+          <td class="px-4 py-3 text-text-secondary">Application Load Balancer</td>
+          <td class="px-4 py-3 text-text-secondary">~$16/month + data transfer</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">CloudFront</td>
+          <td class="px-4 py-3 text-text-secondary">CDN distribution</td>
+          <td class="px-4 py-3 text-text-secondary">$0 for first 1TB/month</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">S3</td>
+          <td class="px-4 py-3 text-text-secondary">Standard storage</td>
+          <td class="px-4 py-3 text-text-secondary">$0.023/GB (minimal at FreshBox scale)</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-semibold">Total (baseline)</td>
+          <td class="px-4 py-3 text-text-secondary"></td>
+          <td class="px-4 py-3 text-text-secondary font-semibold">~$70-100/month</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="text-text-secondary mb-4">Is this within Emma's budget? That's a conversation to have before provisioning. $70-100/month for a system that handles 300-2,000 orders per week and scales automatically is reasonable for a growing business — but Emma needs to know the number. No surprises.</p>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Cost scales with traffic.</strong> The baseline is $70-100/month with 2 instances. During the TV feature spike, the ASG could scale to 10 instances — that's $150/month in EC2 alone. Plus increased data transfer, more RDS connections, more CloudFront requests. The architecture must include a cost ceiling (the ASG max of 10) and budget alarms (alert at $100/month).</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: container orchestration</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use EC2 ASG for scaling. Here's what else exists for running and scaling applications.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">ECS (Elastic Container Service)</strong> — <span class="text-text-secondary">AWS-native container orchestration. Run Docker containers as "tasks" with auto-scaling. Simpler than Kubernetes. Two launch types: EC2 (you manage instances) or Fargate (AWS manages instances).</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">EKS / Kubernetes</strong> — <span class="text-text-secondary">Managed Kubernetes on AWS. Industry standard for container orchestration. Extremely powerful and extremely complex. Overkill for most projects under 50 services.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Fargate</strong> — <span class="text-text-secondary">Serverless compute for containers. No instances to manage — you define CPU and memory per task, AWS handles the rest. Higher per-unit cost but zero infrastructure management. Works with both ECS and EKS.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Cloud Run (GCP)</strong> — <span class="text-text-secondary">Google's serverless container platform. Deploy a Docker image, get a URL. Auto-scales to zero (pay nothing when idle). Simple and cost-effective for variable traffic.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">App Runner (AWS)</strong> — <span class="text-text-secondary">AWS's simplest container deployment. Point it at a container image or source code, it handles building, deploying, and scaling. Less control than ECS but dramatically simpler.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">We use EC2 ASG because it builds directly on the EC2 knowledge from previous projects. The progression: single EC2 (P6) → EC2 behind ALB (P7-P8) → EC2 ASG behind ALB (P9). In production, ECS with Fargate is often the better choice — container-level scaling without instance management. But understanding ASG first makes the jump to containers clearer.</p>
+    </div>
+  </details>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: CDN providers</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use CloudFront because we're on AWS. Here's how CDN providers compare.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">CloudFront (AWS)</strong> — <span class="text-text-secondary">AWS-native CDN. Tight integration with S3, ALB, and ACM. 1TB free tier. Pricing based on data transfer and requests. Best choice when your infrastructure is already on AWS.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Cloudflare</strong> — <span class="text-text-secondary">Generous free tier with unlimited bandwidth. CDN, DDoS protection, DNS, and edge compute (Workers). Often the default choice for web projects. Not tied to any cloud provider.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Fastly</strong> — <span class="text-text-secondary">Developer-focused CDN with instant purging (cache invalidation in ~150ms). VCL configuration language for custom caching logic. Popular with media companies and API-heavy applications.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Akamai</strong> — <span class="text-text-secondary">The largest CDN by network size. Enterprise-focused. Complex pricing. Used by banks, media companies, and large e-commerce. Overkill for most projects.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Bunny CDN</strong> — <span class="text-text-secondary">Simple, affordable CDN. Pay-per-use pricing starting at $0.01/GB. Easy to set up. Good for small to medium projects where CloudFront or Cloudflare feel like overkill.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">CloudFront integrates seamlessly with our AWS infrastructure. Cloudflare would also work well and has a better free tier. The ADR for this decision should weigh integration simplicity (CloudFront) against cost and vendor independence (Cloudflare).</p>
+    </div>
+  </details>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: cost management</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">Estimating and monitoring cloud costs is a discipline. These tools help.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">AWS Cost Explorer</strong> — <span class="text-text-secondary">Built-in AWS tool. Visualises spending by service, tag, or time period. Shows trends and forecasts. Free to use. The starting point for any AWS cost analysis.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Infracost</strong> — <span class="text-text-secondary">Open-source tool that estimates costs from Terraform code before you apply. Runs in CI — shows cost impact of infrastructure changes in PR comments. "This change adds $23/month."</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Kubecost</strong> — <span class="text-text-secondary">Cost monitoring for Kubernetes. Attributes cloud costs to specific workloads, namespaces, and teams. Useful when multiple teams share a cluster.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Vantage</strong> — <span class="text-text-secondary">Multi-cloud cost management platform. Aggregates costs across AWS, GCP, Azure, and SaaS tools. Provides cost reports, budgets, and anomaly detection.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">Start with AWS Cost Explorer and Budgets (free, built-in). Add Infracost to your CI pipeline to catch cost surprises before they're provisioned. The rest matters more at scale.</p>
+    </div>
+  </details>
+
+  <h2 class="mb-4 mt-10">Review guidance</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">ASG configuration:</strong> Are the scaling policies defined with specific thresholds? Not "scale when busy" — 70% CPU for 3 minutes, 1,000 requests/min.</li>
+    <li><strong class="text-text">CloudFront:</strong> Is the caching strategy differentiated by content type? Static assets (long TTL), product listings (short TTL), order submissions (no cache).</li>
+    <li><strong class="text-text">Terraform modules:</strong> Is the infrastructure split into logical modules with clear inputs and outputs?</li>
+    <li><strong class="text-text">Stock consistency:</strong> Does the architecture specify database-level locking or optimistic concurrency for inventory updates?</li>
+    <li><strong class="text-text">Cost estimation:</strong> Is there a line-item cost breakdown? Does it include the ASG max scenario?</li>
+    <li><strong class="text-text">ADRs:</strong> Are three ADRs written with the full format — Status, Context, Decision, Consequences?</li>
+  </ul>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: implementation</h2>
+    <p class="text-text-secondary mb-4">Architecture reviewed. Time to create the backlog and start building.</p>
+    <a
+      href="/web-dev/projects/9/implementation"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Implementation →
+    </a>
+  </div>
+</DocsLayout>

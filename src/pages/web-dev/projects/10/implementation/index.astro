@@ -1,0 +1,37 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Card from '../../../../../components/Card.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Implementation" description="Create the backlog, set up the project, and build Harbour Health — with full ownership over every decision.">
+  <h1 class="mb-6">Implementation</h1>
+  <p class="text-text-secondary mb-4">This is the biggest implementation in the curriculum. Estimate 3-4 weeks of building. No step-by-step hand-holding. No one tells you what order to build things in. No suggested ticket structure. No guided setup beyond the essentials. You decide.</p>
+
+  <p class="text-text-secondary mb-4">A rough build order to consider (not prescriptive — you decide):</p>
+  <ol class="text-sm text-text-secondary list-decimal list-inside space-y-2 mb-6">
+    <li>Infrastructure (Terraform, networking, compute, database)</li>
+    <li>Auth + RBAC (JWT, three roles, data isolation)</li>
+    <li>Specialist directory (browse, filter by specialty)</li>
+    <li>Appointment booking (time slots, confirmation)</li>
+    <li>Video integration (room creation, join flow, bandwidth handling)</li>
+    <li>Consultation notes (specialist writes, patient views)</li>
+    <li>Prescription workflow (submit, review, notify GP)</li>
+    <li>Accessibility audit (axe-core, keyboard, screen reader)</li>
+    <li>Monitoring (Grafana dashboards, PagerDuty alerts)</li>
+    <li>Incident runbooks</li>
+    <li>Handover documentation</li>
+  </ol>
+
+  <p class="text-text-secondary mb-8">Work through these in order:</p>
+
+  <div class="grid gap-4">
+    <Card title="1. Creating the backlog" subtitle="You create the entire backlog — ordering is yours to figure out" href="/web-dev/projects/10/implementation/creating-the-backlog" />
+    <Card title="2. Setup" subtitle="Project folder, video API account, PagerDuty, Grafana — you know what to do" href="/web-dev/projects/10/implementation/setup" />
+    <Card title="3. Building" subtitle="Video integration, accessibility, audit logging, and the unhappy path" href="/web-dev/projects/10/implementation/building" />
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Full ownership starts here.</strong> In previous projects, the implementation section told you what to prioritise. This time, you decide. Your experience from P1-P9 is the guide. Trust it.</p>
+  </Callout>
+</DocsLayout>

@@ -1,0 +1,95 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Design" description="Create the design spec for Tidal Brewing with a craft brewery aesthetic and an admin interface for tap list management.">
+  <h1 class="mb-6">Design</h1>
+  <p class="text-text-secondary mb-4">Same process — client preferences, prompt, template, review. Jake has a clear visual direction:</p>
+
+  <Callout variant="client">
+    <p>"Think craft brewery, not corporate. Dark backgrounds, warm lighting feel. Our brand colours are deep amber and charcoal. Look at breweries like Moon Dog or Balter — that industrial-but-warm vibe."</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <CodeBlock copy>{`Here is the PRD for Tidal Brewing, a brewery and taproom management system:
+
+[Paste your PRD here]
+
+Using the following design spec template, create a complete design specification.
+
+Key requirements:
+- Craft brewery aesthetic — dark backgrounds, warm lighting feel, industrial-but-warm
+- Brand colours: deep amber and charcoal
+- References: Moon Dog, Balter brewery vibes
+- Public pages: tap list (the hero), events, pickup ordering
+- Admin interface: simple, functional — Jake updates taps and manages orders
+- Mobile-friendly — people check the tap list on their phones walking to the brewery
+- The tap list is the centrepiece — it should feel like looking at the chalkboard behind the bar
+
+[Paste design spec template here]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">The key design challenge</h2>
+  <p class="text-text-secondary mb-4">Two very different interfaces in one system. The public site needs to feel like a brewery — warm, inviting, a bit rough around the edges in a good way. The admin panel needs to be functional and fast — Jake is updating the tap list between pulling pints, not sitting at a desk.</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Public site</h3>
+      <p class="text-sm text-text-secondary">The tap list is the hero — front and centre, always current. Events listed with date, time, and description. Pickup ordering is a simple form, not a shopping cart. The whole thing should feel like walking into the taproom.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Admin interface</h3>
+      <p class="text-sm text-text-secondary">Functional, not fancy. Jake adds a beer to the tap list, marks a keg as kicked, creates an event, views pickup orders. Quick actions — he's doing this on a tablet behind the bar between customers.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Review guidance</h2>
+  <p class="text-text-secondary mb-4">When you review the generated design spec:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Does the tap list feel like the centrepiece?</strong> It should dominate the homepage, not be buried in a sidebar.</li>
+    <li><strong class="text-text">Is the admin interface simple?</strong> Jake isn't a power user. Add beer, remove beer, update event, view orders. That's it.</li>
+    <li><strong class="text-text">Does it feel like a brewery?</strong> Dark backgrounds, warm tones, industrial typography. Not a SaaS dashboard.</li>
+    <li><strong class="text-text">Is ordering simple?</strong> A form with name, phone, beers, pickup time. Not a multi-step checkout.</li>
+  </ul>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Mobile is critical.</strong> People check the tap list on their phones while walking to the brewery or deciding where to go on Friday night. The tap list page needs to be fast and readable on a phone screen.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: CMS & content management</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">Jake wants to update the tap list himself. This is fundamentally a content management need. We solve it with a custom admin interface, but in agency work, a headless CMS might be the right answer for content-heavy sites.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">WordPress</strong> — <span class="text-text-secondary">The original CMS. Powers ~40% of the web. Full-featured, plugin ecosystem, but heavy. Overkill for a tap list, but common for restaurant/brewery sites.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Contentful</strong> — <span class="text-text-secondary">Headless CMS. Content via API, you build the frontend. Good for structured content (like a beer list). Free tier available.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Sanity</strong> — <span class="text-text-secondary">Headless CMS with a real-time editing studio. Flexible content modelling. Popular with agencies. Generous free tier.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Strapi</strong> — <span class="text-text-secondary">Open-source headless CMS. Self-hosted. Full control over the content API. More setup, but no vendor lock-in.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Custom admin (what we build)</strong> — <span class="text-text-secondary">A simple admin panel in the app. Maximum control, no external dependencies, but you build and maintain it yourself.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">For a tap list that changes every few days, a custom admin is the right call — Jake's content model is simple and specific. If the site had dozens of pages, blog posts, and complex content relationships, a headless CMS would save significant time.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: architecture</h2>
+    <p class="text-text-secondary mb-4">Design spec is done. Now make the critical architecture decisions — including Terraform and AWS infrastructure.</p>
+    <a
+      href="/web-dev/projects/6/architecture"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Architecture →
+    </a>
+  </div>
+</DocsLayout>

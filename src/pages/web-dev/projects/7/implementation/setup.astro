@@ -1,0 +1,127 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Setup" description="Set up the Coastal Physio project with Terraform infra directory, Alembic configuration, and Grafana Cloud account.">
+  <h1 class="mb-6">Setup</h1>
+  <p class="text-text-secondary mb-4">Seventh time. You know this. Create the folder, open VS Code, launch Claude Code, hand over the files. The new setup steps: Terraform infrastructure directory, Alembic configuration, and Grafana Cloud account.</p>
+
+  <h2 class="mb-3">Create the project</h2>
+  <CodeBlock terminal copy>{`$ mkdir -p ~/dev && cd ~/dev
+$ mkdir coastal-physio && cd coastal-physio
+$ code .`}</CodeBlock>
+
+  <h2 class="mb-3 mt-8">Set up the branching strategy</h2>
+  <p class="text-text-secondary mb-4">Same staging/production pipeline as P5, with blue/green deployment on production.</p>
+  <CodeBlock terminal copy>{`$ cd ~/dev/coastal-physio
+$ git init
+$ git checkout -b main
+$ git checkout -b develop`}</CodeBlock>
+
+  <h2 class="mb-3 mt-8">Launch Claude Code and hand over the files</h2>
+  <p class="text-text-secondary mb-4">Open the terminal in VS Code, run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">claude</code>, and give it everything:</p>
+  <CodeBlock copy>{`Here's the CLAUDE.md for the project:
+
+[Paste CLAUDE.md here]
+
+And here's the BACKLOG.md:
+
+[Paste BACKLOG.md here]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Terraform infrastructure directory</h2>
+  <p class="text-text-secondary mb-4">Like P6, create an <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/infra</code> directory for Terraform files. This project has more resources to provision — RDS, ALB, target groups, ACM certificate — so the Terraform configuration is more complex.</p>
+  <CodeBlock copy>{`Set up the Terraform infrastructure directory at /infra with:
+- VPC with public and private subnets
+- ALB in public subnet with HTTPS listener
+- ACM certificate for the domain
+- EC2 instance in private subnet
+- RDS PostgreSQL (db.t3.micro, single-AZ, automated backups, 7-day retention)
+- Security groups: ALB (443 from internet), EC2 (from ALB only), RDS (5432 from EC2 only)
+- S3 bucket for Terraform state
+
+Use variables for: region, instance type, DB instance class, DB name, DB username.
+Use secrets manager for: DB password.`}</CodeBlock>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Don't apply yet.</strong> Create the Terraform files, run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform plan</code>, and review the output. The plan shows exactly what will be created. Review it like a PR — check instance types, security group rules, RDS configuration. Only <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">terraform apply</code> after you've reviewed the plan.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Alembic configuration</h2>
+  <p class="text-text-secondary mb-4">Configure Alembic to work with your SQLAlchemy models. This is a one-time setup — after this, every schema change flows through Alembic.</p>
+  <CodeBlock copy>{`Set up Alembic for database migrations:
+1. Install alembic and configure it with our SQLAlchemy models
+2. Set the database URL from environment variable DATABASE_URL
+3. Create the initial migration with the core tables: users, locations, practitioner_availability, appointments, clinical_notes
+4. The migration should be reviewable — I want to see the SQL it generates before applying it
+
+Do NOT apply the migration to production. Generate the migration file so I can review it.`}</CodeBlock>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Review the initial migration carefully.</strong> This is the foundation schema. Check column types, constraints, foreign keys, indexes. Are the relationships correct? Does <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">appointments</code> have foreign keys to <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">patients</code>, <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">practitioners</code>, and <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">locations</code>? Is <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">clinical_notes.content</code> a text field (not varchar)? Does the downgrade function actually reverse the upgrade?</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Grafana Cloud account</h2>
+  <p class="text-text-secondary mb-4">Two options:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Grafana Cloud free tier:</strong> Sign up at grafana.com. Managed — no infrastructure to maintain. Limited dashboards on the free tier but enough for this project. Simpler to set up.</li>
+    <li><strong class="text-text">Self-hosted on EC2:</strong> Install Grafana on your EC2 instance. No limitations. You manage it yourself — updates, configuration, storage. More control, more work.</li>
+  </ul>
+  <p class="text-text-secondary mb-4">Either works. If you choose Grafana Cloud, create the account now. If self-hosted, you'll install it during the Grafana ticket later in the build. Both options connect to CloudWatch as a data source.</p>
+
+  <h2 class="mb-4 mt-10">Seed data</h2>
+  <p class="text-text-secondary mb-4">Like P5, create test users for each role. You'll switch between these during development and testing.</p>
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Email</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Role</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-sm">patient@test.com</td>
+          <td class="px-4 py-3 text-text-secondary">Patient</td>
+          <td class="px-4 py-3 text-text-secondary">Has upcoming and past appointments</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono text-sm">patient2@test.com</td>
+          <td class="px-4 py-3 text-text-secondary">Patient</td>
+          <td class="px-4 py-3 text-text-secondary">For data isolation testing</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-sm">physio@test.com</td>
+          <td class="px-4 py-3 text-text-secondary">Practitioner</td>
+          <td class="px-4 py-3 text-text-secondary">Works at Mornington and Rosebud</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono text-sm">physio2@test.com</td>
+          <td class="px-4 py-3 text-text-secondary">Practitioner</td>
+          <td class="px-4 py-3 text-text-secondary">Works at Dromana — for cross-practitioner isolation</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-sm">admin@test.com</td>
+          <td class="px-4 py-3 text-text-secondary">Admin</td>
+          <td class="px-4 py-3 text-text-secondary">Full access across all locations</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="text-text-secondary mb-4">Two patient accounts for data isolation testing. Two practitioner accounts at different locations for cross-practitioner isolation testing. Seed data should include the three locations (Mornington, Rosebud, Dromana) and practitioner availability schedules.</p>
+
+  <p class="text-text-secondary mt-6 mb-4">Start Ticket 1 — the Terraform infrastructure. You know what to do.</p>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: building</h2>
+    <p class="text-text-secondary mb-4">Project set up. Time to build — with three types of work running in parallel.</p>
+    <a
+      href="/web-dev/projects/7/implementation/building"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Building →
+    </a>
+  </div>
+</DocsLayout>

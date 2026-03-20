@@ -1,0 +1,104 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Writing the PRD" description="Use a prompt and template to generate a PRD from Sarah's brief, then review it critically.">
+  <h1 class="mb-6">Writing the PRD</h1>
+  <p class="text-text-secondary mb-4">You have the client brief. Now turn it into a structured PRD. You'll use Claude (the chat interface, not Claude Code) to generate a first draft, then review it critically.</p>
+  <p class="text-text-secondary mb-8">This is the new skill in Project 3. The loop — direct, verify, review, merge — still applies to implementation. But now you also apply judgment to the planning artifacts that come before code.</p>
+
+  <h2 class="mb-4">Step 1: Get the template</h2>
+  <p class="text-text-secondary mb-4">Go to <a href="/templates">/templates</a> and copy the PRD template. This template gives Claude a structure to follow — sections, acceptance criteria format, anti-scope. Without it, Claude will generate something, but it won't be structured enough to build from.</p>
+
+  <h2 class="mb-4 mt-10">Step 2: The prompt</h2>
+  <p class="text-text-secondary mb-4">Open <a href="https://claude.ai">claude.ai</a> in your browser (the chat interface, not Claude Code). Paste this prompt:</p>
+  <CodeBlock copy>{`Here is a client brief for a pottery studio class booking system:
+
+[Paste Sarah's brief here]
+
+Using the following PRD template, generate a complete Product Requirements Document. Be specific with acceptance criteria — every requirement should be verifiable. Include an anti-scope section listing things that should NOT be built.
+
+[Paste PRD template here]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Step 3: Review the output</h2>
+  <p class="text-text-secondary mb-4">This is the critical skill. Claude will give you a complete-looking PRD. Your job is to check it against what Sarah actually said — and what she didn't say.</p>
+
+  <h3 class="mb-3 mt-6">Check for scope creep</h3>
+  <p class="text-text-secondary mb-4">Did Claude add features Sarah didn't ask for? This is the number one issue. Common AI additions that aren't in the brief:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>User accounts or login (Sarah didn't mention this)</li>
+    <li>Payment processing (she said signup, not payment)</li>
+    <li>A blog or gallery section</li>
+    <li>Social media integration</li>
+    <li>Analytics dashboard</li>
+    <li>Waitlist management (maybe — depends on how you read "how many spots are left")</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Check acceptance criteria</h3>
+  <p class="text-text-secondary mb-4">Are they specific and testable? Not "the form should work well" but "form shows inline validation errors within 200ms of the user leaving a field." Every acceptance criterion should have a clear pass/fail — you'll use these to verify Claude Code's implementation later.</p>
+
+  <h3 class="mb-3 mt-6">Check the anti-scope</h3>
+  <p class="text-text-secondary mb-4">Is there an anti-scope section? Does it match what Sarah said she doesn't want? It should explicitly exclude: product sales, stock management, payment, user accounts, blog, gallery, and anything else that wasn't in the brief.</p>
+
+  <h3 class="mb-3 mt-6">Check for implied requirements</h3>
+  <p class="text-text-secondary mb-4">Did Claude miss anything Sarah implied?</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>"8-12 people per class" — there should be a max capacity feature</li>
+    <li>What happens when a class is full? The listing should show it's full and prevent signup</li>
+    <li>What if someone signs up twice with the same email? Edge case the PRD should address</li>
+    <li>Do past classes still appear? The brief implies only upcoming classes should show</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Check for edge cases</h3>
+  <p class="text-text-secondary mb-4">A good PRD addresses what happens at the boundaries: class is full, duplicate signup, invalid email, empty form submission, class with zero signups. If the PRD doesn't mention these, add them.</p>
+
+  <h2 class="mb-4 mt-10">Step 4: Iterate</h2>
+  <p class="text-text-secondary mb-4">If something's wrong, tell Claude to fix it. Be specific:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>"Remove the blog section — Sarah didn't ask for that."</li>
+    <li>"Add a max capacity per class — she mentioned 8-12 people. What happens when it's full?"</li>
+    <li>"The acceptance criteria for the signup form are too vague. Make them specific: what validation errors appear, when do they appear, what fields are required."</li>
+    <li>"Add an edge case for duplicate email signup — what should happen?"</li>
+  </ul>
+  <p class="text-text-secondary mb-8">Iterate until the PRD captures Sarah's intent — no more, no less.</p>
+
+  <h2 class="mb-4 mt-10">Step 5: Client check-in</h2>
+  <p class="text-text-secondary mb-4">In a real project, you'd send the PRD to the client and ask: "Does this capture what you need?" For this project, re-read Sarah's brief and verify the PRD captures her intent. Check:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Every explicit request from Sarah is in the PRD</li>
+    <li>Every implied requirement is addressed</li>
+    <li>Nothing in the PRD contradicts what she said</li>
+    <li>The anti-scope matches what she excluded</li>
+  </ul>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Save your PRD as a markdown file.</strong> You'll reference it in every subsequent step — design, architecture, implementation, testing, and UAT. It's the single source of truth for what you're building.</p>
+  </Callout>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: AI tools for planning</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">You used Claude's chat interface to generate the PRD. Other tools can do similar work — and you may prefer one over another for different tasks.</p>
+      <div class="space-y-3">
+        <div><p class="text-sm"><strong class="text-text">Claude (chat)</strong> — <span class="text-text-secondary">Strong at structured documents, follows templates well, good at reasoning about scope and edge cases. Used in this project for PRD, design, and architecture generation.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">ChatGPT</strong> — <span class="text-text-secondary">Broad knowledge base, good at brainstorming and generating alternatives. Tends to be more verbose — you may need to trim output more aggressively.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Gemini</strong> — <span class="text-text-secondary">Google's model. Good at research-heavy tasks and can access current information. Useful when you need to compare technologies or check current best practices.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">v0</strong> — <span class="text-text-secondary">Vercel's AI tool focused on UI generation. Produces React components from prompts. Useful for quickly visualising a design concept or generating a starting point for UI work.</span></p></div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">The tool matters less than the judgment you apply to its output. All of them can generate a PRD — your job is to review it critically, catch scope creep, and ensure it matches the client's intent.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: Design</h2>
+    <p class="text-text-secondary mb-4">You have a PRD. Now create the design spec.</p>
+    <a
+      href="/web-dev/projects/3/design"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Design →
+    </a>
+  </div>
+</DocsLayout>

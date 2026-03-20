@@ -1,0 +1,109 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="UAT (User Acceptance Testing)" description="Show Jake the deployed Tidal Brewing site — tap list updates, event management, and pickup ordering on the live system.">
+  <h1 class="mb-6">UAT (User Acceptance Testing)</h1>
+  <p class="text-text-secondary mb-4">Show Jake the live site. Not a staging environment, not a local demo — the actual Tidal Brewing site running on the EC2 instance you provisioned with Terraform. Give him the URL and the admin login.</p>
+  <p class="text-text-secondary mb-8">He tests it over a few days between pours. Updating the tap list when they kick a keg, adding next week's trivia night, checking if pickup orders come through. He comes back with notes:</p>
+
+  <Callout variant="client">
+    <p>"Yeah, this is good. I updated the tap list when we swapped out the pale ale for the red IPA and it showed up straight away. Three things though:</p>
+    <ol class="list-decimal list-inside space-y-2 mt-2">
+      <li>When I add a new event, it shows up at the bottom of the list instead of in date order. Wednesday trivia should be before Saturday music.</li>
+      <li>The pickup order form doesn't show which beers are on tap right now — customers are ordering beers we've already kicked. Can the order form only show current tap beers?</li>
+      <li>I want to be able to mark a beer as 'coming soon' so regulars know what's about to go on tap. Right now it's just 'on tap' or 'cellar'.</li>
+    </ol>
+    <p class="mt-2">Otherwise I reckon it's ready."</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Analyse the feedback</h2>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">UAT-1</span>
+        <h3 class="text-base font-semibold">Events should display in date order</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Type:</strong> Bug. The events are stored with dates but the query isn't ordering by <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">event_date</code>. The data is correct — the display order is wrong.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Events page shows events sorted by date, earliest first</li>
+        <li>Past events are not shown (or are shown separately below upcoming events)</li>
+        <li>Admin event list also shows events in date order</li>
+      </ul>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">UAT-2</span>
+        <h3 class="text-base font-semibold">Pickup order form should only show current tap beers</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Type:</strong> Missing business logic. The order form is pulling all beers from the database, not just the ones currently on tap. Customers see beers that are in the cellar or already kicked. The API endpoint backing the order form needs to filter by <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">status = 'on_tap'</code>.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Pickup order form only shows beers with status "on_tap"</li>
+        <li>When Jake removes a beer from tap, it disappears from the order form</li>
+        <li>When Jake adds a beer to tap, it appears in the order form</li>
+        <li>Cellar beers and kicked beers are not orderable</li>
+      </ul>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">UAT-3</span>
+        <h3 class="text-base font-semibold">Add "coming soon" beer status</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Type:</strong> Feature request. Jake wants a third status beyond "on_tap" and "cellar" — a way to preview upcoming beers for regulars. This means adding a new status value to the beer model and showing "coming soon" beers on the public tap list in a separate section (but not in the order form — they're not available yet).</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Beer has a new status option: "coming_soon"</li>
+        <li>Jake can set a beer to "coming soon" from the admin interface</li>
+        <li>Public tap list shows "coming soon" beers in a separate section below the current tap list</li>
+        <li>"Coming soon" beers are NOT available in the pickup order form — they're not on tap yet</li>
+      </ul>
+    </div>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Notice the pattern:</strong> UAT-1 is a sorting bug — the data is correct, the query is wrong. UAT-2 is missing business logic — the form should filter by status. UAT-3 is a feature request from actual use — Jake realised he wants this after using the admin for a few days. This is why UAT exists: you can't anticipate everything from a brief.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Fix and redeploy</h2>
+  <p class="text-text-secondary mb-4">Same loop — direct Claude, fix, verify, merge, redeploy to EC2. The deployment step is now muscle memory: SSH in, pull, rebuild containers, verify.</p>
+
+  <CodeBlock copy>{`Fix the three UAT feedback items:
+
+UAT-1: Events should display in date order. Add ORDER BY event_date ASC to the events query. Filter out past events from the public page.
+UAT-2: Pickup order form should only show beers currently on tap. Filter the beer list by status = 'on_tap' in the API endpoint that backs the order form.
+UAT-3: Add a "coming_soon" status to the beer model. Show these beers in a separate "Coming Soon" section on the public tap list. Do not show them in the pickup order form.`}</CodeBlock>
+
+  <p class="text-text-secondary mt-4 mb-4">After fixing, redeploy the updated containers to EC2. Verify each fix on the live site. Then tell Jake to check again.</p>
+
+  <Callout variant="client">
+    <p>"Perfect. Events are in the right order, the order form only shows what's on tap, and I've already got two beers marked as coming soon for next week. We're good to go."</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">The UAT pattern</h2>
+  <p class="text-text-secondary mb-4">Every project follows the same UAT shape:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Client uses the live system</strong> — not a demo, not a walkthrough. They use it for real tasks over real days.</li>
+    <li><strong class="text-text">Feedback is specific</strong> — "events are in the wrong order" not "it doesn't feel right." If feedback is vague, ask follow-up questions until you can write a ticket.</li>
+    <li><strong class="text-text">Each piece of feedback becomes a ticket</strong> — with type (bug, missing logic, feature request) and acceptance criteria.</li>
+    <li><strong class="text-text">Fix, redeploy, verify</strong> — the same loop, compressed. UAT fixes should be fast because the feature already exists — you're refining, not building from scratch.</li>
+    <li><strong class="text-text">Client signs off</strong> — explicit confirmation that the system meets their needs.</li>
+  </ul>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: monitoring</h2>
+    <p class="text-text-secondary mb-4">Jake signed off. Time to set up monitoring and go live.</p>
+    <a
+      href="/web-dev/projects/6/monitoring"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Monitoring →
+    </a>
+  </div>
+</DocsLayout>

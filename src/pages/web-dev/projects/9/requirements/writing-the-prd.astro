@@ -1,0 +1,113 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Writing the PRD" description="Generate the PRD for FreshBox with capacity planning, growth projections, and stock consistency requirements.">
+  <h1 class="mb-6">Writing the PRD</h1>
+  <p class="text-text-secondary mb-4">Same flow — prompt plus template plus client brief, generate with Claude (the chat interface), review, iterate. You've done this many times. The guidance here is minimal.</p>
+  <p class="text-text-secondary mb-8">The new emphasis: the PRD must include a <strong class="text-text">capacity planning section</strong> with growth projections and a <strong class="text-text">stock consistency section</strong> that explicitly addresses the concurrency problem Emma described.</p>
+
+  <h2 class="mb-4">The prompt</h2>
+  <CodeBlock copy>{`Here is a client brief for an organic produce ordering platform called FreshBox:
+
+[Paste Emma's brief here]
+
+Using the following PRD template, generate a complete Product Requirements Document. Include:
+1. Core features: produce ordering, weekly subscriptions, one-time orders, suburb-based delivery scheduling, real-time stock management, customer accounts with order history
+2. A capacity planning section covering:
+   - Current load (300 orders/week, peak on Sunday evening/Monday morning)
+   - Growth projections (500 orders/week with corporate deal, 2,000+ during media spikes)
+   - Concurrency requirements (100 concurrent users normal, 1,000 peak)
+   - Availability requirements (minimum two instances, no downtime during peak ordering)
+3. A stock consistency section:
+   - Two users ordering the last avocado at the same time — only one should succeed
+   - Stock updates must be atomic — no overselling under concurrent load
+   - Emma updates stock throughout the day as produce arrives and goes out
+4. Non-functional requirements that map to auto-scaling policies
+5. Specific acceptance criteria for every requirement
+6. An anti-scope section
+
+Important: No payment processing, no delivery tracking, no marketplace, no recipe suggestions, no mobile app.
+
+[Paste PRD template here]`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Capacity planning section</h2>
+  <p class="text-text-secondary mb-4">This is the new artifact in the PRD. A section that translates growth projections into infrastructure requirements.</p>
+
+  <div class="overflow-x-auto mb-6">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Scenario</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Orders/week</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Concurrent users</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Infrastructure implication</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Current</td>
+          <td class="px-4 py-3 text-text-secondary">300</td>
+          <td class="px-4 py-3 text-text-secondary">~50</td>
+          <td class="px-4 py-3 text-text-secondary">2x t3.small handles this comfortably</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Corporate deal</td>
+          <td class="px-4 py-3 text-text-secondary">500</td>
+          <td class="px-4 py-3 text-text-secondary">~100</td>
+          <td class="px-4 py-3 text-text-secondary">Same 2 instances, higher baseline CPU</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Marketing push</td>
+          <td class="px-4 py-3 text-text-secondary">1,000</td>
+          <td class="px-4 py-3 text-text-secondary">~500</td>
+          <td class="px-4 py-3 text-text-secondary">ASG scales to 4-5 instances</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Media spike (TV feature)</td>
+          <td class="px-4 py-3 text-text-secondary">2,000+</td>
+          <td class="px-4 py-3 text-text-secondary">~1,000</td>
+          <td class="px-4 py-3 text-text-secondary">ASG scales to 8-10 instances, CloudFront absorbs read traffic</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="text-text-secondary mb-4">These projections directly inform the ASG configuration: minimum 2 instances, desired 2, maximum 10. Scale-out at 70% CPU or 1,000 requests/min. Scale-in at 30% CPU. CloudFront handles the read traffic that doesn't need to hit the backend at all.</p>
+
+  <h2 class="mb-4 mt-10">Stock consistency requirements</h2>
+  <p class="text-text-secondary mb-4">This is the technical heart of the PRD. Emma's avocado problem is a classic race condition. The PRD must state the requirement clearly so the architecture can address it.</p>
+
+  <Callout variant="warning">
+    <p class="text-sm"><strong>The canonical test case:</strong> Two users add the last avocado to their order at the same time. Both users see "1 in stock" when they start. Both click "Add to order." Only one should succeed. The other should see "Out of stock." If both succeed, Emma has oversold — again. This requirement must appear in the PRD with specific acceptance criteria.</p>
+  </Callout>
+
+  <p class="text-text-secondary mb-4">The PRD doesn't specify the implementation (that's the architecture's job), but it does specify the constraint: stock updates must be atomic under concurrent access. No overselling under any load condition tested.</p>
+
+  <h2 class="mb-4 mt-10">Review checks</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Capacity planning:</strong> Does the PRD include growth projections with concrete numbers? Not "the system should scale" — specific scenarios with expected load.</li>
+    <li><strong class="text-text">Stock consistency:</strong> Is the concurrent ordering constraint stated explicitly? Two users, one avocado, only one succeeds?</li>
+    <li><strong class="text-text">Suburb delivery scheduling:</strong> Different suburbs, different days. Is this captured with acceptance criteria?</li>
+    <li><strong class="text-text">Subscription management:</strong> Can customers pause, modify, or cancel subscriptions? Or is that out of scope?</li>
+    <li><strong class="text-text">Admin interface:</strong> Can Emma update stock levels, view orders by suburb and day, manage the corporate account?</li>
+    <li><strong class="text-text">Anti-scope:</strong> No payment processing, no delivery tracking, no marketplace, no recipes, no mobile app</li>
+  </ul>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Save your PRD.</strong> The capacity planning section directly informs the ASG configuration. The stock consistency section directly informs the database locking strategy. When you write the architecture, you'll reference these numbers.</p>
+  </Callout>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: design</h2>
+    <p class="text-text-secondary mb-4">PRD is done. Now design FreshBox's ordering experience.</p>
+    <a
+      href="/web-dev/projects/9/design"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Design →
+    </a>
+  </div>
+</DocsLayout>

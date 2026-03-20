@@ -1,0 +1,101 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import Callout from '../../../../components/Callout.astro';
+---
+
+<DocsLayout title="UAT (User Acceptance Testing)" description="Show Marcus the staging store, collect feedback, and iterate.">
+  <h1 class="mb-6">UAT (User Acceptance Testing)</h1>
+  <p class="text-text-secondary mb-4">Staging is live. You send Marcus the URL. He opens it on his phone at the shop counter, browses some records, adds a few to the cart, and goes through checkout with a test card.</p>
+  <p class="text-text-secondary mb-8">A few hours later, he messages you:</p>
+
+  <Callout variant="client">
+    <p>"The store looks great but when I search for 'miles davis' it only finds exact matches. Can it find 'Miles Davis' even if I type it lowercase?"</p>
+  </Callout>
+
+  <Callout variant="client">
+    <p>"The checkout works but there's no order confirmation page — it just goes back to the store. Can it show a 'thank you, your order is confirmed' page?"</p>
+  </Callout>
+
+  <Callout variant="client">
+    <p>"Can I add new records myself? Right now I'd need to ask you."</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Analyse the feedback</h2>
+  <p class="text-text-secondary mb-4">Three items. Categorise each before acting:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">CF-1</span>
+        <h3 class="text-base font-semibold">Case-insensitive search</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Type:</strong> Bug. Search should be case-insensitive by default.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Searching "miles davis", "Miles Davis", and "MILES DAVIS" all return the same results</li>
+        <li>Case-insensitive search applies to both artist name and genre filters</li>
+      </ul>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">CF-2</span>
+        <h3 class="text-base font-semibold">Order confirmation page</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Type:</strong> Missing UX step. After Stripe payment, there's no dedicated confirmation page — the user just lands back on the store.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>After successful payment, user sees a confirmation page: "Thank you, your order is confirmed"</li>
+        <li>Confirmation page shows the order summary (items, quantities, total)</li>
+        <li>Page includes a link back to the store</li>
+      </ul>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-warning bg-warning-bg px-2 py-1 rounded">CF-3</span>
+        <h3 class="text-base font-semibold">Self-service record management</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Type:</strong> Scope question. An admin panel for managing inventory is not in the PRD.</p>
+      <p class="text-sm text-text-secondary"><strong>Response:</strong> Same answer as Sarah's request in P3. An admin dashboard is a significant feature that's out of scope for v1. Offer a simple workaround: Marcus sends you a CSV of new records, you import them into the database. Flag admin access as a v2 feature.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Fix and redeploy</h2>
+  <p class="text-text-secondary mb-4">CF-1 and CF-2 are implementable now. Bundle them:</p>
+
+  <CodeBlock copy>{`Fix client feedback:
+
+CF-1: Search is case-sensitive — "miles davis" doesn't find "Miles Davis". Make search case-insensitive for both artist name and genre queries.
+
+CF-2: After successful Stripe payment, the user is redirected back to the store with no confirmation. Create an order confirmation page at the Stripe success URL that shows "Thank you, your order is confirmed" with the order summary (items, quantities, total) and a link back to the store.`}</CodeBlock>
+
+  <p class="text-text-secondary mt-4 mb-4">For CF-3, respond to Marcus:</p>
+
+  <Callout variant="client">
+    <p>"For now, send me a spreadsheet of new records and I'll add them to the store within a day. An admin panel where you can manage stock yourself is definitely possible — I'll plan that for v2."</p>
+  </Callout>
+
+  <p class="text-text-secondary mb-4">Verify each fix, merge, redeploy to staging. Send Marcus the updated URL. He confirms search works, loves the confirmation page, and is happy with the CSV workaround for now. Sign-off.</p>
+
+  <h2 class="mb-4 mt-10">The recurring pattern</h2>
+  <p class="text-text-secondary mb-4">This is the second time a client has asked for self-service admin access. Sarah wanted to manage her own class schedule. Marcus wants to manage his own inventory. The answer is the same both times:</p>
+  <ol class="list-decimal list-inside text-text-secondary space-y-2 text-sm mb-4">
+    <li>Flag it — acknowledge the request is valid</li>
+    <li>Offer a simple workaround — manual import via CSV</li>
+    <li>Note it for v2 — admin panel is a real feature, just not this version</li>
+  </ol>
+  <p class="text-text-secondary mb-8">Recognising this pattern saves time. You don't need to debate it each time. Scope boundaries exist for a reason, and the workaround keeps the client moving while you deliver v1.</p>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: go live</h2>
+    <p class="text-text-secondary mb-4">Marcus signed off. Time to go live, monitor, and reflect.</p>
+    <a
+      href="/web-dev/projects/4/monitoring"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Monitoring & Iteration →
+    </a>
+  </div>
+</DocsLayout>

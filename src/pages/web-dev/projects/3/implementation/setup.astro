@@ -1,0 +1,71 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Setup" description="Create the project, initialise git, and hand over the CLAUDE.md and backlog.">
+  <h1 class="mb-6">Setup</h1>
+  <p class="text-text-secondary mb-8">You've done this twice now. The process is the same — create the folder, initialise git, copy in the project files, launch Claude Code.</p>
+
+  <h2 class="mb-3">Step 1: Create the project folder</h2>
+  <CodeBlock terminal copy>{`$ cd ~/dev
+$ mkdir clay-and-co && cd clay-and-co`}</CodeBlock>
+
+  <h2 class="mb-3 mt-8">Step 2: Initialise git</h2>
+  <CodeBlock terminal copy>{`$ git init`}</CodeBlock>
+
+  <h2 class="mb-3 mt-8">Step 3: Copy in the project files</h2>
+  <p class="text-sm text-text-secondary mb-4">Copy the CLAUDE.md you generated in the architecture step into the project root. Copy your BACKLOG.md alongside it. These are the two files Claude Code needs to understand the project.</p>
+
+  <h2 class="mb-3 mt-8">Step 4: Open VS Code and launch Claude</h2>
+  <CodeBlock terminal copy>{`$ code .`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-2">Open the terminal in VS Code (<strong>Ctrl+`</strong>) and launch Claude Code:</p>
+  <CodeBlock terminal copy>{`$ claude`}</CodeBlock>
+
+  <h2 class="mb-3 mt-8">Step 5: Hand over the project</h2>
+  <p class="text-sm text-text-secondary mb-4">Claude Code reads CLAUDE.md automatically. Give it the context it needs to start:</p>
+  <CodeBlock copy>{`Read the CLAUDE.md and BACKLOG.md in the project root. This is a pottery studio class booking system. I've created the PRD, design spec, architecture, and backlog. Start with Ticket 1.`}</CodeBlock>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Have your PRD, design spec, and architecture accessible.</strong> You'll reference them throughout implementation — when verifying acceptance criteria, checking visual output against the design, and confirming that implementation matches the architecture.</p>
+  </Callout>
+
+  <h2 class="mb-3 mt-10">Step 6: Set up ESLint and Prettier</h2>
+  <p class="text-sm text-text-secondary mb-4">Before you start building, add code quality tools. These catch problems before they reach a PR:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">ESLint</strong> catches bugs and code smells — unused variables, missing return statements, inconsistent patterns. It reads your code and flags things that are likely wrong.</li>
+    <li><strong class="text-text">Prettier</strong> enforces formatting — indentation, quotes, semicolons, line length. It rewrites your code so every file looks the same, regardless of who (or what) wrote it.</li>
+  </ul>
+  <p class="text-sm text-text-secondary mb-4">Tell Claude to set them up:</p>
+  <CodeBlock copy>{`Set up ESLint and Prettier for this project. Configure ESLint for React + TypeScript on the frontend and add Prettier for consistent formatting. Also set up Husky and lint-staged so that ESLint and Prettier run automatically on every commit — if there are lint errors or formatting issues, the commit should fail.`}</CodeBlock>
+  <p class="text-sm text-text-secondary mt-4 mb-4">Pre-commit hooks (Husky + lint-staged) mean every commit is automatically checked. You don't have to remember to run the linter — it runs itself. If something fails, the commit is blocked until you fix it. This is the first project where code quality is enforced automatically; from here on, it's standard.</p>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: code quality tools</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">Linters and formatters exist for every language. These are the ones you'll see in professional codebases.</p>
+      <div class="space-y-3">
+        <div><p class="text-sm"><strong class="text-text">ESLint</strong> — <span class="text-text-secondary">The standard JavaScript/TypeScript linter. Catches bugs, enforces patterns, supports custom rules. Used in this project.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Prettier</strong> — <span class="text-text-secondary">Opinionated code formatter. Supports JS, TS, CSS, HTML, JSON, and more. Ends all formatting debates. Used in this project.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Ruff</strong> — <span class="text-text-secondary">Fast Python linter and formatter. Written in Rust, replaces Flake8 + isort + many others. Becoming the default for Python projects.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Black</strong> — <span class="text-text-secondary">The original opinionated Python formatter. "Any colour you like, as long as it's Black." Still widely used, but Ruff is catching up.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">pre-commit</strong> — <span class="text-text-secondary">Python-ecosystem tool that manages git hooks. Runs linters, formatters, and checks before each commit. Language-agnostic despite the name.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">Husky</strong> — <span class="text-text-secondary">Node-based git hooks manager. Commonly paired with lint-staged to run checks only on changed files. Used in this project.</span></p></div>
+        <div><p class="text-sm"><strong class="text-text">lint-staged</strong> — <span class="text-text-secondary">Runs linters only on staged files, not the whole project. Fast feedback loop — you only wait for checks on what you changed.</span></p></div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">From this project onwards, linting and formatting are standard. Every project from here will include them.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: Building</h2>
+    <p class="text-text-secondary mb-4">The project is set up. Time to build from your own backlog.</p>
+    <a
+      href="/web-dev/projects/3/implementation/building"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Building →
+    </a>
+  </div>
+</DocsLayout>

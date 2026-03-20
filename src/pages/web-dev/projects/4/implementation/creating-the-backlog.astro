@@ -1,0 +1,60 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Creating the Backlog" description="Break the Vinyl Vault architecture into ordered tickets with API integration isolated.">
+  <h1 class="mb-6">Creating the Backlog</h1>
+  <p class="text-text-secondary mb-4">Same process as P3 — architecture goes in, ordered tickets come out. Each ticket has clear acceptance criteria.</p>
+
+  <h2 class="mb-4 mt-10">The prompt</h2>
+  <p class="text-text-secondary mb-4">Paste this into Claude along with your architecture document:</p>
+
+  <CodeBlock copy>{`Here is the architecture for an online record store:
+
+[Paste your architecture]
+
+Break this into ordered implementation tickets. Each ticket should have: a clear title, labels, size (S/M/L), dependencies, description, and specific acceptance criteria.
+
+## Ordering
+1. Infrastructure first (repo, Docker, database schema)
+2. Backend — product catalog API, search
+3. Stripe integration (isolated — its own ticket, not bundled with other backend work)
+4. Frontend — product grid, search, cart
+5. Integration — frontend calls backend, checkout flow end-to-end
+6. Google Maps embed (can be independent)
+7. Deploy
+8. Polish and optimization
+
+## Key constraint
+API integration tickets (Stripe, Google Maps) must be SEPARATE from other tickets. "Add Stripe checkout" is its own ticket, not part of "Build the cart." This isolation makes verification easier — when you review a Stripe ticket, you're only looking at Stripe code.
+
+Every API integration ticket must include this acceptance criterion: "All external API calls verified against official documentation."
+
+Create the backlog as BACKLOG.md.`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Review the backlog</h2>
+  <p class="text-text-secondary mb-4">Same checks as P3, plus one new one:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Dependency order</strong> — infrastructure before features, backend before frontend, cart before checkout</li>
+    <li><strong class="text-text">No scope creep</strong> — no tickets for features Marcus didn't request</li>
+    <li><strong class="text-text">Acceptance criteria are verifiable</strong> — not "payment works" but "payment completes with Stripe test card 4242 4242 4242 4242 and order status updates to 'paid'"</li>
+    <li><strong class="text-text">API tickets are isolated</strong> — Stripe integration is its own ticket, Google Maps is its own ticket. Each can be verified independently against official docs.</li>
+  </ul>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Why isolate API tickets?</strong> When a Stripe ticket is bundled with cart logic, review becomes muddled — you're checking business logic and API correctness at the same time. Separate tickets mean separate reviews. When you open a Stripe PR, you focus entirely on verifying API calls against the docs.</p>
+  </Callout>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: setup</h2>
+    <p class="text-text-secondary mb-4">Backlog is ready. Set up the project and your API accounts.</p>
+    <a
+      href="/web-dev/projects/4/implementation/setup"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Setup →
+    </a>
+  </div>
+</DocsLayout>

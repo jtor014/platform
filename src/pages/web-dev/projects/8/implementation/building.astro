@@ -1,0 +1,167 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../../components/Callout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+import Checklist from '../../../../../components/Checklist.astro';
+---
+
+<DocsLayout title="Building" description="The build loop with feature flags, trunk-based development, and observability from the start.">
+  <h1 class="mb-6">Building</h1>
+  <p class="text-text-secondary mb-4">The build loop is routine by now. Direct, verify, review, merge. Same backlog-driven approach. The new dimension: features are built behind flags, deployed to production in the "off" state, and enabled separately. This is trunk-based development — no long-lived feature branches.</p>
+
+  <h2 class="mb-4 mt-10">The feature flag workflow</h2>
+  <p class="text-text-secondary mb-4">For every feature that ships behind a flag, the workflow is:</p>
+  <ol class="list-decimal list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Create the flag in Unleash (or LaunchDarkly) — name it, set it to OFF</li>
+    <li>Implement the feature in code, wrapped in a flag check</li>
+    <li>Deploy to production — the feature is live in the codebase but invisible to users</li>
+    <li>Enable the flag for staff only — Liam's team tests the feature in production</li>
+    <li>If it works, enable for all users. If it breaks, disable the flag — no redeployment.</li>
+  </ol>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Deploy and enable are two separate actions. You can deploy anytime. You enable when ready.</strong> This is the fundamental insight of feature flags. Deployment is a technical event (code goes to production). Enabling is a business event (users see the feature). Decoupling them means you can deploy on a Friday without risk — the feature is off. You enable on Monday morning when the team is watching.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Trunk-based development</h2>
+  <p class="text-text-secondary mb-4">With feature flags, you don't need long-lived feature branches. All work merges to the main branch (trunk) frequently — daily or even multiple times per day. The flag controls whether the feature is visible, not the branch.</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Without flags (previous projects)</h3>
+      <p class="text-sm text-text-secondary">Feature branch lives for days or weeks. Merging is painful. The feature ships when the branch merges. If something is wrong, you revert the merge or hotfix.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">With flags (this project)</h3>
+      <p class="text-sm text-text-secondary">Short-lived branches merge to trunk quickly. The feature is deployed but invisible (flag OFF). You enable it when ready. If something is wrong, disable the flag — instant, no deployment, no revert.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Building with observability</h2>
+  <p class="text-text-secondary mb-4">Every feature endpoint should emit Prometheus metrics from the start. When you build the ticket sales endpoint, it should automatically track:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li><strong class="text-text">Request count:</strong> How many requests hit this endpoint</li>
+    <li><strong class="text-text">Request duration:</strong> How long each request takes (as a histogram for percentile calculation)</li>
+    <li><strong class="text-text">Error count:</strong> How many requests fail</li>
+    <li><strong class="text-text">Business metrics:</strong> Tickets sold, check-ins processed (as counters)</li>
+  </ul>
+  <p class="text-text-secondary mb-4">If you wait to add metrics after building, you'll miss them. If they're part of the infrastructure from the start, every new endpoint automatically gets observed.</p>
+
+  <h2 class="mb-4 mt-10">Verification for flagged features</h2>
+  <p class="text-text-secondary mb-4">Standard ticket verification plus these additional checks for feature-flagged tickets:</p>
+
+  <Checklist items={[
+    "Feature works correctly when the flag is ON",
+    "Feature is completely hidden when the flag is OFF (no partial UI, no API leaks)",
+    "Feature defaults to OFF when the flag service is unreachable (graceful degradation)",
+    "Prometheus metrics are emitted for the flagged feature's endpoints",
+    "Flag state can be changed without redeploying the application",
+  ]} />
+
+  <h2 class="mb-4 mt-10">Common AI mistakes with feature flags</h2>
+  <p class="text-text-secondary mb-4">Watch for these patterns in Claude's code:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Flag check only in the frontend</h3>
+      <p class="text-sm text-text-secondary">Claude might hide a button based on the flag but leave the API endpoint unguarded. A user could still hit the endpoint directly. The flag should be checked on both frontend (UI visibility) and backend (API access).</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">No default value</h3>
+      <p class="text-sm text-text-secondary">If the flag SDK can't reach the flag service, what happens? Claude might not handle this case. The code should specify a default value (typically false/off) so the app degrades gracefully instead of crashing.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6">
+      <h3 class="text-base font-semibold mb-2">Hardcoded flag values</h3>
+      <p class="text-sm text-text-secondary">Claude might use <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">if FEATURE_ENABLED:</code> with a config variable instead of querying the flag service. This defeats the purpose — you'd need to redeploy to change the flag. The flag must be evaluated at runtime from the flag service.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Build order</h2>
+  <p class="text-text-secondary mb-4">The full build sequence, in order. Each step builds on the previous:</p>
+  <ol class="list-decimal list-inside text-text-secondary space-y-2 text-sm mb-8">
+    <li><strong class="text-text">CI/CD pipeline with environment approvals</strong> — GitHub Actions workflow with staging (auto) and production (manual approval) environments</li>
+    <li><strong class="text-text">Feature flags setup</strong> — Unleash server running or LaunchDarkly account configured, SDK integrated into the app</li>
+    <li><strong class="text-text">Application core</strong> — Event listings, ticket sales with Stripe, attendee management</li>
+    <li><strong class="text-text">QR code check-in</strong> — Generate QR on ticket purchase, scan at the gate, validate and record check-in</li>
+    <li><strong class="text-text">Live event-day dashboard</strong> — Real-time tickets sold, check-ins, revenue, weather</li>
+    <li><strong class="text-text">Prometheus instrumentation</strong> — /metrics endpoint, request count, request duration, business metrics</li>
+    <li><strong class="text-text">Grafana dashboards</strong> — Event-day ops dashboard, system health dashboard</li>
+    <li><strong class="text-text">PagerDuty integration</strong> — Alert routing from Grafana to PagerDuty</li>
+    <li><strong class="text-text">k6 load tests</strong> — 500 concurrent user scenarios</li>
+    <li><strong class="text-text">Incident runbooks</strong> — Written procedures for critical failure modes</li>
+  </ol>
+
+  <h2 class="mb-4 mt-10">Feature flags in practice: QR check-in</h2>
+  <p class="text-text-secondary mb-4">Here's the feature flag workflow applied to a real feature. Deploy the QR check-in behind a flag:</p>
+  <ol class="list-decimal list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Create the flag <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">qr-checkin-v2</code> in Unleash, set to OFF</li>
+    <li>Build the QR check-in feature. Wrap the check-in endpoint and UI behind the flag check.</li>
+    <li>Deploy to production. The feature is in the codebase but invisible — users see the existing experience.</li>
+    <li>Enable the flag for your test account. Scan a test QR code. Verify check-in works.</li>
+    <li>Enable for Liam's staff team. They test at a small event.</li>
+    <li>Enable for everyone before the Bells Beach Classic.</li>
+  </ol>
+
+  <h2 class="mb-4 mt-10">Extension scenario: VIP tickets</h2>
+  <Callout variant="client">
+    <p>"The Bells Beach Classic is coming up and sponsors want a VIP tier. Can we sell VIP tickets at a premium with a separate check-in queue? But I don't want to mess up the existing ticket flow — the regular tickets need to keep working perfectly."</p>
+  </Callout>
+  <p class="text-text-secondary mt-4 mb-4">This is exactly what feature flags are for. Deploy VIP ticket support behind a flag:</p>
+  <ol class="list-decimal list-inside text-text-secondary space-y-2 text-sm mb-6">
+    <li>Create the flag <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">vip-tickets</code> in Unleash, set to OFF</li>
+    <li>Add VIP ticket type to the database and purchase flow, wrapped in the flag</li>
+    <li>Deploy to production — regular tickets work exactly as before, VIP is invisible</li>
+    <li>Enable the flag on staging. Test VIP purchase end-to-end.</li>
+    <li>Enable on production for Liam's team. Liam buys a test VIP ticket, verifies the premium pricing and check-in experience.</li>
+    <li>Enable for everyone two weeks before the Bells Beach Classic.</li>
+    <li>If anything goes wrong with VIP tickets during the event, disable the flag instantly — regular tickets continue working.</li>
+  </ol>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>The safety net:</strong> If VIP tickets cause issues during the Bells Beach Classic, Liam flips one switch and VIP is gone. No deployment. No downtime. No risk to the 3,000 regular ticket holders. This is why feature flags exist — they turn "ship and pray" into "ship and control."</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">The rhythm</h2>
+  <ol class="text-sm text-text-secondary list-decimal list-inside space-y-2 mb-8">
+    <li>Direct Claude to implement the ticket</li>
+    <li>Verify against acceptance criteria (functional test)</li>
+    <li>For flagged features: test both flag states (on and off) and graceful degradation</li>
+    <li>Verify Prometheus metrics are emitted</li>
+    <li>Review, merge to trunk, deploy (feature is off in production)</li>
+    <li>Enable flag for staff, verify in production</li>
+    <li>Enable for all users when ready</li>
+  </ol>
+
+  <details class="my-8 border border-border rounded-lg overflow-hidden">
+    <summary class="px-6 py-4 bg-bg-muted cursor-pointer font-semibold text-sm">The landscape: branching strategies</summary>
+    <div class="px-6 py-4">
+      <p class="text-sm text-text-secondary mb-4">We use trunk-based development with feature flags. Here's how it compares to other branching strategies.</p>
+      <div class="space-y-3">
+        <div>
+          <p class="text-sm"><strong class="text-text">Trunk-based development (what we use)</strong> — <span class="text-text-secondary">All work merges to main (trunk) frequently. Short-lived branches (hours to days). Feature flags control visibility. Enables continuous delivery. Requires discipline and good CI.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">GitHub Flow</strong> — <span class="text-text-secondary">Feature branches off main, PR back to main. Simple. No develop branch. What you've been doing in previous projects. Works well for small teams without feature flags.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">GitFlow</strong> — <span class="text-text-secondary">Main, develop, feature, release, and hotfix branches. Complex. Designed for scheduled releases. Popular in enterprise. Overkill for continuous delivery teams. Long-lived branches cause painful merges.</span></p>
+        </div>
+        <div>
+          <p class="text-sm"><strong class="text-text">Ship/show/ask</strong> — <span class="text-text-secondary">A classification system: "ship" (merge directly), "show" (merge then open PR for review), "ask" (open PR, wait for review). Applied on top of trunk-based development.</span></p>
+        </div>
+      </div>
+      <p class="text-sm text-text-secondary mt-4">The progression across these projects: GitHub Flow (P1-P7) to trunk-based with feature flags (P8). Feature flags make trunk-based development safe — incomplete features are deployed but invisible. GitFlow solves the same problem with branches instead of flags, at the cost of merge complexity.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: testing</h2>
+    <p class="text-text-secondary mb-4">Implementation complete. Now load test the system to prove it meets the non-functional requirements.</p>
+    <a
+      href="/web-dev/projects/8/testing"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Testing →
+    </a>
+  </div>
+</DocsLayout>
