@@ -58,6 +58,21 @@ export const manifest: PageEntry[] = [
     contentFile: 'getting-started/web-dev-setup.md',
     layout: 'docs',
     prev: '/web-dev',
+    next: '/web-dev/projects',
+  },
+
+  // === Projects Landing ===
+  {
+    route: '/web-dev/projects',
+    title: 'Projects',
+    description: 'The process every project follows: PRD → Design → Architecture → Backlog → Build → Deploy → Client Feedback → Production.',
+    section: 'web-dev',
+    navLabel: 'Projects',
+    navParent: 'Web Development',
+    order: 19,
+    contentFile: 'projects/project-1/landing.md',
+    layout: 'docs',
+    prev: '/web-dev/getting-started',
     next: '/web-dev/projects/1',
   },
 
@@ -72,20 +87,7 @@ export const manifest: PageEntry[] = [
     order: 20,
     contentFile: 'projects/project-1/landing.md',
     layout: 'docs',
-    prev: '/web-dev/getting-started',
-    next: '/web-dev/projects/1/process',
-  },
-  {
-    route: '/web-dev/projects/1/process',
-    title: 'The process',
-    description: 'How every project flows: PRD → Design → Architecture → Backlog → Build → Deploy → Client Feedback → Production.',
-    section: 'web-dev',
-    navLabel: 'The process',
-    navParent: 'Project 1',
-    order: 20.5,
-    contentFile: 'projects/project-1/landing.md',
-    layout: 'docs',
-    prev: '/web-dev/projects/1',
+    prev: '/web-dev/projects',
     next: '/web-dev/projects/1/prd',
   },
   {
@@ -942,13 +944,12 @@ export function getNavSections(): NavSection[] {
         { label: 'Getting started', href: '/web-dev/getting-started' },
         {
           label: 'Projects',
-          href: '/web-dev/projects/1',
+          href: '/web-dev/projects',
           children: [
             {
               label: 'Project 1',
               href: '/web-dev/projects/1',
               children: [
-                { label: 'The process', href: '/web-dev/projects/1/process' },
                 { label: 'PRD', href: '/web-dev/projects/1/prd' },
                 { label: 'Design spec', href: '/web-dev/projects/1/design' },
                 { label: 'Architecture', href: '/web-dev/projects/1/architecture' },

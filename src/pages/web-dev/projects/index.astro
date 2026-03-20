@@ -1,0 +1,127 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import Card from '../../../components/Card.astro';
+---
+
+<DocsLayout title="Projects" description="The process every project follows: PRD → Design → Architecture → Backlog → Build → Deploy → Client Feedback → Production.">
+  <h1 class="mb-6">Projects</h1>
+  <p class="text-text-secondary mb-4">Every project in this course follows the same sequence. The product gets more complex each time, but the process stays the same. Learn it once, use it forever.</p>
+  <p class="text-text-secondary mb-8">In early projects, most steps have been done for you — so you can focus on learning the tools and the build loop. In later projects, you'll own every step.</p>
+
+  <!-- The Process -->
+  <h2 class="mb-6 mt-10">The Process</h2>
+
+  <div class="space-y-8 mb-12">
+
+    <!-- 1. PRD -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">1</div>
+        <h3 class="text-lg font-semibold">PRD</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-3">The Product Requirements Document defines <em>what</em> you're building. It starts with a client conversation — "I need a website for my business" — and turns that into structured requirements: features, acceptance criteria, user stories, and crucially, what you're <em>not</em> building (anti-scope).</p>
+      <p class="text-sm text-text-secondary">A good PRD is specific enough that someone could verify the finished product against it. Not "the site should look good" but "the hero image is under 200KB and loads in under 3 seconds."</p>
+    </div>
+
+    <!-- Connector -->
+    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
+
+    <!-- 2. Design -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">2</div>
+        <h3 class="text-lg font-semibold">Design</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-3">The design defines how the product <em>looks and behaves</em>. In a professional project, this might be wireframes, a Figma file, or a full design system — covering user flows, page layouts, responsive behaviour, interactions, and visual details like colours, typography, and spacing.</p>
+      <p class="text-sm text-text-secondary">You can use AI to rapidly prototype designs. Paste your PRD into <a href="https://claude.ai">claude.ai</a> and ask for a React artifact mockup — you'll get an interactive preview in seconds. Iterate until it feels right, then lock down the spec with exact values.</p>
+    </div>
+
+    <!-- Connector -->
+    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
+
+    <!-- 3. Architecture -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">3</div>
+        <h3 class="text-lg font-semibold">Architecture</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-3">The architecture document defines <em>how to build it</em> technically — what technologies to use, how to structure the code, how data flows through the system, and how the pieces connect.</p>
+      <p class="text-sm text-text-secondary">The architecture also produces the <strong>CLAUDE.md</strong> — the project memory file that Claude Code reads at the start of every session. It's the architecture distilled into instructions for AI: tech stack, repo structure, anti-scope rules, engineering standards.</p>
+    </div>
+
+    <!-- Connector -->
+    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
+
+    <!-- 4. Backlog -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">4</div>
+        <h3 class="text-lg font-semibold">Backlog</h3>
+      </div>
+      <p class="text-sm text-text-secondary">The backlog breaks the architecture into an ordered list of tickets — small units of work, each with specific acceptance criteria. Tickets are ordered by dependency: you can't build the services section before the page layout exists.</p>
+    </div>
+
+    <!-- Connector -->
+    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
+
+    <!-- 5. Build -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">5</div>
+        <h3 class="text-lg font-semibold">Build</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-3">This is where you direct AI through the tickets, one at a time. Each ticket follows the same loop:</p>
+      <ol class="text-sm text-text-secondary list-decimal list-inside space-y-1">
+        <li>You tell Claude to start the ticket</li>
+        <li>Claude creates a branch, implements, commits, opens a PR</li>
+        <li>Claude and Gemini both review the code</li>
+        <li>You verify against the acceptance criteria — open the product, test it, try to break it</li>
+        <li>You decide: merge it, or direct Claude to fix something</li>
+      </ol>
+    </div>
+
+    <!-- Connector -->
+    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
+
+    <!-- 6. Deploy -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">6</div>
+        <h3 class="text-lg font-semibold">Deploy</h3>
+      </div>
+      <p class="text-sm text-text-secondary">Ship to a staging URL. You verify it works on a real server — not just on your laptop. Test on a real phone. Check that links work, images load, and performance is acceptable.</p>
+    </div>
+
+    <!-- Connector -->
+    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
+
+    <!-- 7. Client Feedback -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">7</div>
+        <h3 class="text-lg font-semibold">Client Feedback</h3>
+      </div>
+      <p class="text-sm text-text-secondary">Show the client the staging URL. They'll have feedback — things you missed, things they changed their mind about, small fixes. This is normal, not failure. You turn their feedback into small tickets, fix them with the same loop, then get sign-off.</p>
+    </div>
+
+    <!-- Connector -->
+    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
+
+    <!-- 8. Production -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">8</div>
+        <h3 class="text-lg font-semibold">Production</h3>
+      </div>
+      <p class="text-sm text-text-secondary">The client has signed off. Go live on their domain. Point DNS, verify everything loads, run a final checklist, then reflect on the full cycle.</p>
+    </div>
+
+  </div>
+
+  <!-- Project cards -->
+  <h2 class="mb-6 mt-10 pt-8 border-t border-border">Choose a project</h2>
+  <div class="grid gap-4 sm:grid-cols-2">
+    <Card title="Project 1: The Static Site" subtitle="GreenScape Landscaping — a business website deployed to a real URL. 8 tickets." href="/web-dev/projects/1" />
+    <Card title="Project 2: The Dynamic App" subtitle="FactFeed — database, API, Docker, CI, and automated testing. 11 tickets." href="/web-dev/projects/2" />
+  </div>
+</DocsLayout>
