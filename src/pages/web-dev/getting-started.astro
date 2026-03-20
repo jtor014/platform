@@ -35,13 +35,14 @@ import StepList from '../../components/StepList.astro';
   <h3 class="mb-4">The Loop</h3>
   <p class="text-text-secondary mb-4">Every project follows the same cycle:</p>
   <StepList steps={[
-    { title: "Plan", content: "Give AI a brief and a template. Review the PRD it produces. Catch scope creep and vague requirements." },
-    { title: "Architect", content: "AI produces the technical design: schema, API contracts, ticket backlog. You review for over-engineering." },
-    { title: "Build (ticket by ticket)", content: "Claude creates a branch, implements, commits, opens a PR. Both AIs review. You verify and decide: merge or fix." },
-    { title: "Deploy", content: "Ship to a staging URL. Verify it works on a real server, not just on your laptop." },
-    { title: "Client Feedback", content: "Show the client. Collect feedback. Create small tickets (CF-1, CF-2…), fix them with the same loop, then get sign-off." },
-    { title: "Production", content: "Point a custom domain. Final verification. The client's site is live." },
-    { title: "Reflect", content: "What went well? What did AI get wrong? What would you do differently? Lessons feed into the next project." },
+    { title: "Requirements", content: "Define the problem, user stories, and acceptance criteria. AI refines ambiguous requirements and spots gaps — you own the scope." },
+    { title: "Design", content: "Define UX intent and user flows. AI generates wireframe concepts and suggests UI patterns — you validate against user needs." },
+    { title: "Architecture", content: "AI proposes system design, data models, and tech stack. You understand enough to challenge its proposals and make the call." },
+    { title: "Implement", content: "Direct AI through tickets one at a time. Claude creates a branch, implements, commits, opens a PR. Both AIs review. You verify and decide: merge or fix." },
+    { title: "Test", content: "AI generates test cases and writes tests. You validate that tests cover the acceptance criteria from step 1." },
+    { title: "Deploy", content: "Ship to a staging URL. AI writes pipeline configs — you set up once, then it's automated." },
+    { title: "UAT", content: "Show the client. Collect feedback. This is humans validating with humans — the client doesn't care how it was built." },
+    { title: "Monitor", content: "Go live. AI interprets logs and suggests fixes. You own the feedback loop and decide what to iterate on." },
   ]} />
 
   <h3 class="mb-4 mt-8">What you actually do</h3>
