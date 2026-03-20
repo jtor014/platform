@@ -1,0 +1,101 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import Callout from '../../../../components/Callout.astro';
+---
+
+<DocsLayout title="UAT (User Acceptance Testing)" description="Show the client the staging site, collect feedback, and iterate.">
+  <h1 class="mb-6">UAT (User Acceptance Testing)</h1>
+  <p class="text-text-secondary mb-4">Staging is live. Now show the client. This is the formal gate — does the product meet the acceptance criteria from step 1?</p>
+  <p class="text-text-secondary mb-8">Humans validating with humans. The client doesn't care how it was built — they care whether it works for them.</p>
+
+  <div class="mt-3 pt-3 border-t border-border grid gap-2 sm:grid-cols-2 mb-8">
+    <div class="text-xs"><span class="font-semibold text-text">You:</span> <span class="text-text-secondary">Show the client, collect feedback, turn it into tickets</span></div>
+    <div class="text-xs"><span class="font-semibold text-text">AI:</span> <span class="text-text-secondary">No change — this is a human step</span></div>
+  </div>
+
+  <h2 class="mb-4">Client review</h2>
+  <p class="text-text-secondary mb-4">You've been checking in with Ken throughout — after the requirements, after the design. Now you show him the live staging URL. He opens it on his phone and his laptop. A few hours later, he sends you a message:</p>
+
+  <Callout variant="info">
+    <p class="text-sm mb-3"><strong>From Ken (client):</strong></p>
+    <p class="text-sm text-text-secondary mb-2">"Looks great overall! Three things:</p>
+    <ol class="text-sm text-text-secondary list-decimal list-inside space-y-2 mb-2">
+      <li>The phone number is hard to tap on my phone — it's small and I keep missing it. Can you make it bigger or more obvious?</li>
+      <li>Can you add our email address too? It's <strong>info@greenscape.example.com</strong>. Some people prefer email.</li>
+      <li>Dave's testimonial has a typo — it says 'profesional' instead of 'professional'.</li>
+    </ol>
+    <p class="text-sm text-text-secondary">Otherwise, looks good to go!"</p>
+  </Callout>
+
+  <h3 class="mb-3 mt-6">Turn feedback into tickets</h3>
+  <p class="text-text-secondary mb-4">Ken's feedback is clear enough to act on. Turn each item into a ticket with acceptance criteria — the same format as your backlog:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">CF-1</span>
+        <h3 class="text-base font-semibold">Make phone number more tappable on mobile</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Why:</strong> Client reports the phone link is hard to tap on mobile.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Phone number link has a minimum tap target of 44x44px</li>
+        <li>Visually distinct — larger text or button-style treatment</li>
+        <li>Still works as a <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">tel:</code> link that opens the dialer</li>
+      </ul>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">CF-2</span>
+        <h3 class="text-base font-semibold">Add email address to contact section</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Why:</strong> Client wants to offer email as an alternative contact method.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Email address <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">info@greenscape.example.com</code> displayed in the contact section</li>
+        <li>Wrapped in a <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">mailto:</code> link</li>
+        <li>Consistent styling with the phone number</li>
+      </ul>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">CF-3</span>
+        <h3 class="text-base font-semibold">Fix typo in Dave's testimonial</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Why:</strong> Client spotted a spelling mistake.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>"profesional" corrected to "professional" in Dave's testimonial</li>
+        <li>No other text changes</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3 class="mb-3 mt-6">Fix them with the same loop</h3>
+  <p class="text-text-secondary mb-4">These are small tickets — the same loop applies. You can bundle them into one PR:</p>
+  <CodeBlock copy>{`Fix all three client feedback items:
+
+CF-1: Make the phone number more tappable on mobile (min 44x44px tap target).
+CF-2: Add email info@greenscape.example.com to the contact section with a mailto: link.
+CF-3: Fix typo in Dave's testimonial — "profesional" → "professional".`}</CodeBlock>
+
+  <p class="text-text-secondary mt-4 mb-4">Verify each fix, merge, and redeploy. Send Ken the link again — phone number is easy to tap, email is there, typo is fixed. Ken signs off. The site is ready to go live.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>The key lesson:</strong> Feedback is not failure — it's a normal, expected part of delivering software. The process handles it: feedback becomes tickets, tickets go through the loop, the client verifies. The difference between amateur and professional delivery is whether you have a process for this.</p>
+  </Callout>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: go live</h2>
+    <p class="text-text-secondary mb-4">Client has signed off. Time to go live, monitor, and reflect.</p>
+    <a
+      href="/web-dev/projects/1/monitoring"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Monitoring & Iteration →
+    </a>
+  </div>
+</DocsLayout>
