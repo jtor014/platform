@@ -1,0 +1,137 @@
+---
+import DocsLayout from '../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../components/CodeBlock.astro';
+import StepList from '../../../components/StepList.astro';
+import Callout from '../../../components/Callout.astro';
+---
+
+<DocsLayout title="CI pipeline setup" description="Creating the GitHub Actions CI pipeline for automated build checks.">
+  <h1 class="mb-6">Guide: Setting Up the CI Pipeline</h1>
+  <p class="text-text-secondary mb-4">This guide walks you through creating a GitHub Actions CI pipeline that runs automatically on every pull request. After this, broken code can't be merged — the tests must pass first.</p>
+  <p class="text-text-secondary mb-8">You'll set this up in Project 2, Ticket 2. This guide gives you the details that Claude will implement.</p>
+
+  <h2 class="mb-4 mt-10">What CI does</h2>
+  <p class="text-text-secondary mb-4">CI stands for Continuous Integration. Every time you (or Claude) open a pull request:</p>
+  <StepList steps={[
+    { title: "GitHub spins up a temporary server" },
+    { title: "It checks out the code from the PR" },
+    { title: "It runs the linter (code quality checks)" },
+    { title: "It runs the tests" },
+    { title: "It reports back: green checkmark (passed) or red X (failed)" },
+  ]} />
+  <p class="text-text-secondary mb-8">If anything fails, the PR can't be merged. That's the safety net.</p>
+
+  <h2 class="mb-4 mt-10">The workflow file</h2>
+  <p class="text-text-secondary mb-4">Claude will create this file at <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.github/workflows/ci.yml</code>. Here's what it looks like:</p>
+
+  <CodeBlock lang="yaml" copy>{`name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: testuser
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: testdb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          pip install -r requirements.txt
+
+      - name: Run linter
+        run: |
+          cd backend
+          ruff check .
+
+      - name: Run tests
+        env:
+          DATABASE_URL: postgresql://testuser:testpass@localhost:5432/testdb
+        run: |
+          cd backend
+          pytest -v`}</CodeBlock>
+
+  <h3 class="mb-3 mt-6">What each section means</h3>
+  <ul class="list-disc list-inside text-sm text-text-secondary space-y-2 mb-8">
+    <li><strong class="text-text"><code class="bg-bg-muted px-1 py-0.5 rounded text-xs font-mono">on: pull_request</code></strong> — triggers when a PR is opened against main</li>
+    <li><strong class="text-text"><code class="bg-bg-muted px-1 py-0.5 rounded text-xs font-mono">services: postgres</code></strong> — spins up a test database (separate from your dev database)</li>
+    <li><strong class="text-text"><code class="bg-bg-muted px-1 py-0.5 rounded text-xs font-mono">steps</code></strong> — the sequence: checkout code, install Python, install dependencies, run linter, run tests</li>
+    <li><strong class="text-text"><code class="bg-bg-muted px-1 py-0.5 rounded text-xs font-mono">env: DATABASE_URL</code></strong> — tells the tests where to find the test database</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Branch protection</h2>
+  <p class="text-text-secondary mb-4">After CI is working, set up branch protection so merging requires CI to pass:</p>
+
+  <StepList steps={[
+    { title: "Go to your GitHub repo → Settings → Branches" },
+    { title: "Under 'Branch protection rules,' click 'Add rule'" },
+    { title: "Branch name pattern: main" },
+    { title: "Check: 'Require status checks to pass before merging'" },
+    { title: "Search for and select: 'test' (the job name from the CI workflow)" },
+    { title: "Check: 'Require branches to be up to date before merging'" },
+    { title: "Save" },
+  ]} />
+
+  <p class="text-text-secondary mb-8">Now no one can push directly to <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">main</code>. Every change must go through a PR, and CI must pass.</p>
+
+  <h2 class="mb-4 mt-10">How to read CI results</h2>
+  <p class="text-text-secondary mb-4">On any PR page in GitHub, scroll to the bottom. You'll see the "Checks" section:</p>
+  <div class="space-y-2 mb-6">
+    <div class="flex gap-3 items-start">
+      <span class="text-success font-bold">✓</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Green checkmark</strong> — all checks passed. Safe to merge.</p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-[#DC2626] font-bold">✗</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Red X</strong> — something failed. Click the X to see which step failed and the error message.</p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-warning font-bold">●</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Yellow circle</strong> — still running. Wait for it to finish.</p>
+    </div>
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>If CI fails:</strong> Click the red X, read the error, tell Claude: "CI failed with this error: [paste]. Fix it." Claude pushes a fix, CI runs again. This is normal — CI catches problems before they reach production. A failing CI is doing its job.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Verify it's working</h2>
+  <p class="text-text-secondary mb-4">After Ticket 2 is merged:</p>
+  <ol class="list-decimal list-inside text-sm text-text-secondary space-y-2 mb-8">
+    <li>Create any small change (Claude can update a comment)</li>
+    <li>Open a PR</li>
+    <li>Go to the PR page on GitHub</li>
+    <li>Within 1–2 minutes, you should see the CI workflow running</li>
+    <li>When it finishes, you should see a green checkmark or red X</li>
+  </ol>
+
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>Troubleshooting: no checks appear on the PR</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">The workflow file might not be in the right location or might have a syntax error. Check that <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.github/workflows/ci.yml</code> exists in the repo and that the YAML is valid.</p>
+    </div>
+  </details>
+</DocsLayout>
