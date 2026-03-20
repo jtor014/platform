@@ -3,7 +3,7 @@ import DocsLayout from '../../../layouts/DocsLayout.astro';
 import Card from '../../../components/Card.astro';
 ---
 
-<DocsLayout title="Projects" description="The process every project follows: Requirements → Design → Architecture → Implement → Test → Deploy → UAT → Monitor.">
+<DocsLayout title="Projects" description="The process every project follows: Requirements → Design → Architecture → Implementation → Testing → Deployment → Monitoring.">
   <h1 class="mb-6">Projects</h1>
   <p class="text-text-secondary mb-4">Every project in this course follows the same sequence — the standard software development lifecycle (SDLC). The product gets more complex each time, but the process stays the same. Learn it once, use it forever.</p>
   <p class="text-text-secondary mb-4">AI changes the <em>how</em>, not the <em>what</em> or the <em>why</em>. You move from maker to director — but you never lose ownership.</p>
@@ -119,26 +119,10 @@ import Card from '../../../components/Card.astro';
     <!-- Connector -->
     <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
 
-    <!-- 7. UAT -->
+    <!-- 7. Monitoring & Iteration -->
     <div class="border border-border rounded-lg p-6">
       <div class="flex items-center gap-3 mb-3">
         <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">7</div>
-        <h3 class="text-lg font-semibold">UAT (User Acceptance Testing)</h3>
-      </div>
-      <p class="text-sm text-text-secondary mb-3">Show the client the staging URL. They'll have feedback — things you missed, things they changed their mind about, small fixes. This is normal, not failure. You turn their feedback into small tickets, fix them with the same loop, then get sign-off.</p>
-      <div class="mt-3 pt-3 border-t border-border grid gap-2 sm:grid-cols-2">
-        <div class="text-xs"><span class="font-semibold text-text">You:</span> <span class="text-text-secondary">Humans validating with humans. The client doesn't care how it was built</span></div>
-        <div class="text-xs"><span class="font-semibold text-text">AI:</span> <span class="text-text-secondary">No change — this is a human step</span></div>
-      </div>
-    </div>
-
-    <!-- Connector -->
-    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
-
-    <!-- 8. Monitoring & Iteration -->
-    <div class="border border-border rounded-lg p-6">
-      <div class="flex items-center gap-3 mb-3">
-        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">8</div>
         <h3 class="text-lg font-semibold">Monitoring & Iteration</h3>
       </div>
       <p class="text-sm text-text-secondary mb-3">The client has signed off. Go live on their domain. Point DNS, verify everything loads, then monitor and iterate. What went well? What did AI get wrong? Lessons feed into the next project.</p>
@@ -148,6 +132,19 @@ import Card from '../../../components/Card.astro';
       </div>
     </div>
 
+  </div>
+
+  <!-- Client feedback thread -->
+  <div class="border-l-4 border-l-primary bg-primary-bg p-6 rounded-r-lg mb-12">
+    <h3 class="text-base font-semibold mb-2">Client feedback is continuous, not a step</h3>
+    <p class="text-sm text-text-secondary mb-3">Good teams don't wait until the end to show the client. Feedback is a thread that runs alongside the loop:</p>
+    <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+      <li><strong class="text-text">After Requirements</strong> — "Have we understood what you need?"</li>
+      <li><strong class="text-text">After Design</strong> — "Is this what you envisioned?" (cheapest place to catch misalignment)</li>
+      <li><strong class="text-text">During Implementation</strong> — demos, sprint reviews, work-in-progress previews</li>
+      <li><strong class="text-text">After Deployment</strong> — formal sign-off against acceptance criteria</li>
+      <li><strong class="text-text">During Monitoring</strong> — ongoing feedback from real usage</li>
+    </ul>
   </div>
 
   <!-- Project cards -->

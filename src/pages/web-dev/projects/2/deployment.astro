@@ -63,14 +63,73 @@ import Callout from '../../../../components/Callout.astro';
     </div>
   </details>
 
+  <h2 class="mb-4 mt-10">Client feedback</h2>
+  <p class="text-text-secondary mb-4">You send the staging URL to your team lead. They open it on their laptop and phone, click around for a few minutes, and come back with notes:</p>
+
+  <Callout variant="info">
+    <p class="text-sm mb-3"><strong>From team lead:</strong></p>
+    <p class="text-sm text-text-secondary mb-2">"Nice work, it's functional. Three things I noticed:</p>
+    <ol class="text-sm text-text-secondary list-decimal list-inside space-y-2 mb-2">
+      <li>The loading spinner is almost invisible on the white card background — I wasn't sure if it was loading or broken.</li>
+      <li>If I click 'Next Fact' really fast, it seems to queue up multiple requests. Can you debounce that or disable the button while loading?</li>
+      <li>It would be nice to see when each fact was fetched — even just a small timestamp or 'fetched 2 hours ago' label.</li>
+    </ol>
+    <p class="text-sm text-text-secondary">Otherwise, ready to go."</p>
+  </Callout>
+
+  <h3 class="mb-3 mt-6">Turn feedback into tickets</h3>
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">CF-1</span>
+        <h3 class="text-base font-semibold">Make loading spinner visible on white background</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Spinner uses the primary blue colour (#2563EB), not a light grey</li>
+        <li>Spinner is at least 24px and clearly visible on white</li>
+      </ul>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">CF-2</span>
+        <h3 class="text-base font-semibold">Prevent rapid-fire requests on "Next Fact"</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>"Next Fact" button is disabled while a request is in flight</li>
+        <li>Button re-enables after the response arrives (success or error)</li>
+      </ul>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">CF-3</span>
+        <h3 class="text-base font-semibold">Show when the fact was fetched</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Display a relative timestamp below the source (e.g. "fetched 2 hours ago")</li>
+        <li>Uses the <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">created_at</code> field from the API response</li>
+      </ul>
+    </div>
+  </div>
+
+  <p class="text-text-secondary mb-4">Same loop — direct Claude, verify, merge, redeploy. Show the reviewer again. They confirm all three are fixed.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Notice the pattern:</strong> feedback on a utility app is different from a business site. It's about interaction quality — loading states, race conditions, data freshness — not copy or layout. The process is the same.</p>
+  </Callout>
+
   <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
-    <h2 class="text-xl font-semibold mb-2">Next: get feedback</h2>
-    <p class="text-text-secondary mb-4">The app is live on a staging URL. Time to show it to someone and collect feedback.</p>
+    <h2 class="text-xl font-semibold mb-2">Next: go live</h2>
+    <p class="text-text-secondary mb-4">Client feedback is resolved. Time to go live, monitor, and reflect.</p>
     <a
-      href="/web-dev/projects/2/uat"
+      href="/web-dev/projects/2/monitoring"
       class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
     >
-      UAT →
+      Monitoring & Iteration →
     </a>
   </div>
 </DocsLayout>

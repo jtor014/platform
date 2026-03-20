@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git clone:*)",
+      "Bash(mv /tmp/platform-clone/.git /home/jtor014/dev/platform/)",
+      "Bash(mv /tmp/platform-clone/* /home/jtor014/dev/platform/)",
+      "Bash(mv /tmp/platform-clone/.* /home/jtor014/dev/platform/)",
+      "Bash(rm -rf /tmp/platform-clone)",
+      "Bash(find /home/jtor014/dev/platform/src/pages -name *.astro -type f)",
+      "Bash(make dev:*)",
+      "Bash(git:*)",
+      "Bash(gh pr:*)",
+      "Bash(find /home/jtor014/dev/platform/src/pages/web-dev/projects/2 -type f -name *.astro)",
+      "Bash(grep:*)",
+      "Bash(make build:*)"
+    ]
+  }
+}
