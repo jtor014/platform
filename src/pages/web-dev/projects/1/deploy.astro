@@ -4,9 +4,9 @@ import CodeBlock from '../../../../components/CodeBlock.astro';
 import Callout from '../../../../components/Callout.astro';
 ---
 
-<DocsLayout title="Deploy" description="Deploy to Netlify, verify the live site, and reflect before moving on.">
+<DocsLayout title="Deploy" description="Deploy to Netlify and verify the live staging site.">
   <h1 class="mb-6">Deploy</h1>
-  <p class="text-text-secondary mb-8">You've built every ticket. Now ship it. You're deploying to Netlify's free tier — it connects to your GitHub repo, builds the site, and gives you a live URL.</p>
+  <p class="text-text-secondary mb-8">You've built every ticket. Now ship it to a staging URL. You're deploying to Netlify's free tier — it connects to your GitHub repo, builds the site, and gives you a live URL. This is your staging environment — the version you show the client before going to production.</p>
 
   <h2 class="mb-4">Start the deploy ticket</h2>
   <p class="text-text-secondary mb-2">The deploy ticket is in the backlog like any other ticket. Tell Claude:</p>
@@ -29,74 +29,18 @@ import Callout from '../../../../components/Callout.astro';
     </div>
   </details>
 
-  <h2 class="mb-4 mt-10">Hosting & Custom Domains</h2>
+  <h2 class="mb-4 mt-10">What just happened</h2>
   <p class="text-text-secondary mb-4">Netlify is a <strong class="text-text">static hosting provider</strong>. It serves pre-built files — no server running your code, no database to maintain. That's why it can offer a free tier: serving static files is cheap. Vercel, Cloudflare Pages, and GitHub Pages work the same way. For a project like this, free hosting is the right choice.</p>
-  <p class="text-text-secondary mb-4">The <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.netlify.app</code> URL works fine for development and learning. But if you were handing this to a real client, you'd want a custom domain.</p>
+  <p class="text-text-secondary mb-8">The <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.netlify.app</code> URL is your staging environment. It's where you verify the site works in the real world — and it's what you show the client next.</p>
 
-  <h3 class="mb-3 mt-6">Optional: buy a custom domain</h3>
-  <p class="text-text-secondary mb-4">This is entirely optional but worth the experience if you want to see the full delivery flow. A domain costs $1–15/year depending on the extension. You can buy one from:</p>
-  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-4">
-    <li><strong class="text-text">Cloudflare</strong> — sells domains at cost (no markup), also offers free DNS and CDN</li>
-    <li><strong class="text-text">Namecheap</strong> — often has cheap first-year deals</li>
-    <li><strong class="text-text">Google Domains</strong> (now Squarespace) — straightforward</li>
-  </ul>
-  <p class="text-text-secondary mb-4">Once you own a domain, you point it at your hosting provider by updating the DNS records. Every provider has a guide for this. The whole process takes about 15 minutes plus up to an hour for DNS to propagate.</p>
-  <p class="text-text-secondary mb-8">Buying a domain, linking it to a site you built, and sending someone the URL — that's a different feeling from a <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.netlify.app</code> subdomain. If you're building a portfolio, it's worth doing once.</p>
-
-  <h2 class="mb-4 mt-10">The Loop</h2>
-  <p class="text-text-secondary mb-6">You've just completed one full cycle of the loop from <a href="/web-dev/getting-started">Getting Started</a>:</p>
-
-  <div class="space-y-4 mb-8">
-    <div class="flex gap-4 items-start opacity-50">
-      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">1</span>
-      <div>
-        <p class="font-semibold text-sm">Plan</p>
-        <p class="text-sm text-text-secondary">You reviewed the PRD and caught what didn't belong.</p>
-      </div>
-    </div>
-    <div class="flex gap-4 items-start opacity-50">
-      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">2</span>
-      <div>
-        <p class="font-semibold text-sm">Architect</p>
-        <p class="text-sm text-text-secondary">You reviewed the design spec, architecture, and backlog.</p>
-      </div>
-    </div>
-    <div class="flex gap-4 items-start opacity-50">
-      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">3</span>
-      <div>
-        <p class="font-semibold text-sm">Build</p>
-        <p class="text-sm text-text-secondary">You directed Claude through every ticket — verify, review, merge.</p>
-      </div>
-    </div>
-    <div class="flex gap-4 items-start opacity-50">
-      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">4</span>
-      <div>
-        <p class="font-semibold text-sm">Deploy</p>
-        <p class="text-sm text-text-secondary">You shipped to a real URL and verified it in production.</p>
-      </div>
-    </div>
-    <div class="flex gap-4 items-start">
-      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">5</span>
-      <div>
-        <p class="font-semibold text-sm">Reflect</p>
-        <p class="text-sm text-text-secondary">What went well? What did AI get wrong? What would you do differently? Lessons feed into the next project.</p>
-      </div>
-    </div>
-  </div>
-
-  <p class="text-text-secondary mb-4">Before moving on, ask yourself:</p>
-  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
-    <li>Did Claude add anything not in the PRD? Did I catch it?</li>
-    <li>Did the design match what I expected? Did I catch any discrepancies?</li>
-    <li>How did the deploy go? Did something go wrong? How did I handle it?</li>
-    <li>What was confusing? What felt natural?</li>
-    <li>Could I do this again without the guide?</li>
-  </ul>
-
-  <div class="border border-border rounded-lg p-6 my-8 bg-bg-subtle text-center">
-    <h3 class="text-lg font-semibold mb-3">Show someone</h3>
-    <p class="text-text-secondary mb-3">Open the live URL on your phone. Show it to a friend, a classmate, or a family member.</p>
-    <p class="text-text-secondary font-medium">"I directed AI to build this."</p>
-    <p class="text-sm text-text-secondary mt-3">That feeling is the point of your first project.</p>
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: show it to your client</h2>
+    <p class="text-text-secondary mb-4">The site is live on a staging URL. Time to get feedback before going to production.</p>
+    <a
+      href="/web-dev/projects/1/client-feedback"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Client Feedback →
+    </a>
   </div>
 </DocsLayout>

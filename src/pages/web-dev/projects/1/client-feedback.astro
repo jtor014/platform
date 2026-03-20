@@ -1,0 +1,106 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+---
+
+<DocsLayout title="Client Feedback" description="Show the client, collect feedback, create tickets, and iterate before going to production.">
+  <h1 class="mb-6">Client Feedback</h1>
+  <p class="text-text-secondary mb-8">The site is live on a staging URL. Before you go to production, you show it to the client. They will have feedback. This is normal — it's not failure, it's part of the process.</p>
+
+  <h2 class="mb-4">Why this step exists</h2>
+  <p class="text-text-secondary mb-4">In real projects, clients always have feedback after seeing the live site. Things look different on a phone than in a mockup. They notice details they didn't think of during planning. Sometimes they change their mind about something. None of this means you did it wrong — it means the client is seeing their product for the first time in the real world.</p>
+  <p class="text-text-secondary mb-8">The skill here is turning vague feedback into specific, actionable tickets — then fixing them with the same loop you already know.</p>
+
+  <h2 class="mb-4 mt-10">Ken reviews the site</h2>
+  <p class="text-text-secondary mb-4">You send Ken the Netlify staging URL. He opens it on his phone and his laptop. A few hours later, he sends you a message:</p>
+
+  <Callout variant="info">
+    <p class="text-sm mb-3"><strong>From Ken (client):</strong></p>
+    <p class="text-sm text-text-secondary mb-2">"Looks great overall! Three things:</p>
+    <ol class="text-sm text-text-secondary list-decimal list-inside space-y-2 mb-2">
+      <li>The phone number is hard to tap on my phone — it's small and I keep missing it. Can you make it bigger or more obvious?</li>
+      <li>Can you add our email address too? It's <strong>info@greenscape.example.com</strong>. Some people prefer email.</li>
+      <li>Dave's testimonial has a typo — it says 'profesional' instead of 'professional'.</li>
+    </ol>
+    <p class="text-sm text-text-secondary">Otherwise, looks good to go!"</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Turn feedback into tickets</h2>
+  <p class="text-text-secondary mb-4">Ken's feedback is clear enough to act on. Turn each item into a ticket with acceptance criteria — the same format as your backlog:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">CF-1</span>
+        <h3 class="text-base font-semibold">Make phone number more tappable on mobile</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Why:</strong> Client reports the phone link is hard to tap on mobile.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Phone number link has a minimum tap target of 44x44px</li>
+        <li>Visually distinct — larger text or button-style treatment</li>
+        <li>Still works as a <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">tel:</code> link that opens the dialer</li>
+      </ul>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">CF-2</span>
+        <h3 class="text-base font-semibold">Add email address to contact section</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Why:</strong> Client wants to offer email as an alternative contact method.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>Email address <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">info@greenscape.example.com</code> displayed in the contact section</li>
+        <li>Wrapped in a <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">mailto:</code> link</li>
+        <li>Consistent styling with the phone number</li>
+      </ul>
+    </div>
+
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="text-xs font-mono font-bold text-primary bg-primary-bg px-2 py-1 rounded">CF-3</span>
+        <h3 class="text-base font-semibold">Fix typo in Dave's testimonial</h3>
+      </div>
+      <p class="text-sm text-text-secondary mb-2"><strong>Why:</strong> Client spotted a spelling mistake.</p>
+      <p class="text-sm text-text-secondary mb-1"><strong>Acceptance criteria:</strong></p>
+      <ul class="text-sm text-text-secondary list-disc list-inside space-y-1">
+        <li>"profesional" corrected to "professional" in Dave's testimonial</li>
+        <li>No other text changes</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Fix them with the same loop</h2>
+  <p class="text-text-secondary mb-4">These are small tickets — the same loop applies. For each one:</p>
+  <ol class="text-sm text-text-secondary list-decimal list-inside space-y-2 mb-4">
+    <li>Tell Claude to work on the ticket (e.g. "Fix CF-1: make the phone number more tappable on mobile")</li>
+    <li>Claude creates a branch, implements, commits, opens a PR</li>
+    <li>You verify against the acceptance criteria</li>
+    <li>Merge it</li>
+  </ol>
+
+  <p class="text-text-secondary mb-4">You can do all three as separate PRs or bundle them into one — your call as Director. For small client feedback tickets, one PR is usually fine:</p>
+  <CodeBlock copy>{`Fix all three client feedback items:
+
+CF-1: Make the phone number more tappable on mobile (min 44x44px tap target).
+CF-2: Add email info@greenscape.example.com to the contact section with a mailto: link.
+CF-3: Fix typo in Dave's testimonial — "profesional" → "professional".`}</CodeBlock>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Real-world note:</strong> Client feedback rounds are usually 1–3 items. If a client comes back with 15 items, that's a sign the PRD or design review wasn't thorough enough. The fix is better planning upfront, not unlimited revision cycles.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Get sign-off</h2>
+  <p class="text-text-secondary mb-4">After the fixes are merged and deployed to the staging URL, send Ken the link again. He checks the three items:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>Phone number is easy to tap? Yes.</li>
+    <li>Email address is there? Yes.</li>
+    <li>Typo is fixed? Yes.</li>
+  </ul>
+  <p class="text-text-secondary mb-8">Ken signs off. The site is ready for production.</p>
+
+  <h2 class="mb-4 mt-10">The key lesson</h2>
+  <p class="text-text-secondary mb-8">Feedback is not failure. It's a normal, expected part of delivering software. The process handles it: feedback becomes tickets, tickets go through the loop, the client verifies, and you move on. The difference between amateur and professional delivery is whether you have a process for this — and now you do.</p>
+</DocsLayout>

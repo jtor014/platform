@@ -2,7 +2,7 @@
 import DocsLayout from '../../../../layouts/DocsLayout.astro';
 ---
 
-<DocsLayout title="The process" description="How every project flows: PRD → Design → Architecture → Backlog → Build → Deploy.">
+<DocsLayout title="The process" description="How every project flows: PRD → Design → Architecture → Backlog → Build → Deploy → Client Feedback → Production.">
   <h1 class="mb-6">The Process</h1>
   <p class="text-text-secondary mb-4">Every project in this course follows the same sequence. The product gets more complex each time, but the process stays the same. Learn it once, use it forever.</p>
   <p class="text-text-secondary mb-8">In Project 1, most of this has been done for you — so you can focus on learning the tools and the build loop. In later projects, you'll own every step.</p>
@@ -97,9 +97,37 @@ import DocsLayout from '../../../../layouts/DocsLayout.astro';
         <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">6</div>
         <h2 class="text-lg font-semibold">Deploy</h2>
       </div>
-      <p class="text-sm text-text-secondary mb-3">Ship to a real URL. You verify it works in production — not just on your laptop. Test on a real phone. Check that links work, images load, and performance is acceptable.</p>
-      <p class="text-sm text-text-secondary"><strong>In this project:</strong> you'll deploy to Netlify (free tier). Push your code, Netlify builds it, and about 60 seconds later you have a live URL. Free. No server to manage. No monthly fees — exactly what Ken asked for.</p>
+      <p class="text-sm text-text-secondary mb-3">Ship to a staging URL. You verify it works on a real server — not just on your laptop. Test on a real phone. Check that links work, images load, and performance is acceptable.</p>
+      <p class="text-sm text-text-secondary"><strong>In this project:</strong> you'll deploy to Netlify (free tier). Push your code, Netlify builds it, and about 60 seconds later you have a live URL.</p>
       <p class="text-sm mt-3"><a href="/web-dev/projects/1/deploy">Read the deploy guide →</a></p>
+    </div>
+
+    <!-- Connector -->
+    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
+
+    <!-- 7. Client Feedback -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">7</div>
+        <h2 class="text-lg font-semibold">Client Feedback</h2>
+      </div>
+      <p class="text-sm text-text-secondary mb-3">Show the client the staging URL. They'll have feedback — things you missed, things they changed their mind about, small fixes. This is normal, not failure. You turn their feedback into small tickets (CF-1, CF-2, CF-3), fix them with the same loop, then get sign-off.</p>
+      <p class="text-sm text-text-secondary"><strong>In this project:</strong> the client feedback has been written for you — Ken reviews the GreenScape site and has three small requests. <strong>In later projects:</strong> you'll gather real feedback from whoever plays the client role.</p>
+      <p class="text-sm mt-3"><a href="/web-dev/projects/1/client-feedback">Read the client feedback guide →</a></p>
+    </div>
+
+    <!-- Connector -->
+    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
+
+    <!-- 8. Production -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">8</div>
+        <h2 class="text-lg font-semibold">Production</h2>
+      </div>
+      <p class="text-sm text-text-secondary mb-3">The client has signed off. Now you go live on their domain. Point DNS, verify everything loads, run a final checklist, then reflect on the full cycle.</p>
+      <p class="text-sm text-text-secondary"><strong>In this project:</strong> custom domains are optional but encouraged. The reflection and "show someone" moment happen here.</p>
+      <p class="text-sm mt-3"><a href="/web-dev/projects/1/production">Read the production guide →</a></p>
     </div>
 
   </div>
