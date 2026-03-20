@@ -1,24 +1,23 @@
 ---
 import DocsLayout from '../../../../../layouts/DocsLayout.astro';
 import CodeBlock from '../../../../../components/CodeBlock.astro';
-import StepList from '../../../../../components/StepList.astro';
 import Callout from '../../../../../components/Callout.astro';
 ---
 
-<DocsLayout title="Setup" description="Open VS Code, launch Claude, create the project repo.">
+<DocsLayout title="Setup" description="Create the project folder, open VS Code, launch Claude, and hand over the project files.">
   <h1 class="mb-6">Setup</h1>
-  <p class="text-text-secondary mb-8">Create the project folder, open VS Code, launch Claude, and set up the repo. About 10 minutes.</p>
+  <p class="text-text-secondary mb-8">Before you can direct Claude through tickets, you need to set up the workspace. This is the same process for every project in the course. About 10 minutes.</p>
 
   <h2 class="mb-3">Step 1: Create your project folder</h2>
-  <p class="text-sm text-text-secondary mb-2">Open any terminal. First, create a folder to keep all your projects in one place (you'll use this for every project in the course), then create the GreenScape folder inside it:</p>
+  <p class="text-sm text-text-secondary mb-2">Open any terminal. Create a folder for this project inside <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">~/dev</code> (you'll use this parent folder for every project in the course):</p>
   <CodeBlock terminal copy>{`$ mkdir -p ~/dev && cd ~/dev
-$ mkdir greenscape && cd greenscape`}</CodeBlock>
-  <p class="text-sm text-text-secondary mb-2">All your course projects will live inside <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">~/dev</code>. By the end of the course, it'll contain 6 project folders.</p>
+$ mkdir your-project-name && cd your-project-name`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-2">Replace <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">your-project-name</code> with whatever the project is called — check the landing page for the name. By the end of the course, <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">~/dev</code> will contain 6 project folders.</p>
 
   <h2 class="mb-3 mt-8">Step 2: Open VS Code</h2>
   <p class="text-sm text-text-secondary mb-2">Open the folder in VS Code — this is where you'll do all your work:</p>
   <CodeBlock terminal copy>{`$ code .`}</CodeBlock>
-  <p class="text-sm text-text-secondary mb-4">VS Code opens with the <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">greenscape</code> folder in the sidebar. You'll see files appear here in real time as Claude creates them.</p>
+  <p class="text-sm text-text-secondary mb-4">VS Code opens with the project folder in the sidebar. You'll see files appear here in real time as Claude creates them.</p>
 
   <details class="mb-6 border border-border rounded-lg overflow-hidden">
     <summary>New to VS Code?</summary>
@@ -33,10 +32,10 @@ $ mkdir greenscape && cd greenscape`}</CodeBlock>
   <h2 class="mb-3 mt-8">Step 3: Open the terminal in VS Code</h2>
   <p class="text-sm text-text-secondary mb-2">Press <strong>Ctrl+`</strong> (backtick — the key above Tab) to open the built-in terminal. This terminal runs inside VS Code, so you can see files and the terminal at the same time.</p>
 
-  <p class="text-sm text-text-secondary mb-2"><strong>Important:</strong> Make sure the terminal is in the right folder. Check with:</p>
+  <p class="text-sm text-text-secondary mb-2"><strong>Important:</strong> Make sure the terminal is in the right folder:</p>
   <CodeBlock terminal copy>{`$ pwd`}</CodeBlock>
-  <p class="text-sm text-text-secondary mb-2">It should show a path ending in <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/dev/greenscape</code>. If it doesn't:</p>
-  <CodeBlock terminal copy>{`$ cd ~/dev/greenscape`}</CodeBlock>
+  <p class="text-sm text-text-secondary mb-2">It should show a path ending in your project folder name. If it doesn't:</p>
+  <CodeBlock terminal copy>{`$ cd ~/dev/your-project-name`}</CodeBlock>
 
   <details class="mb-6 mt-4 border border-border rounded-lg overflow-hidden">
     <summary>Can't find the backtick key?</summary>
@@ -60,7 +59,7 @@ $ mkdir greenscape && cd greenscape`}</CodeBlock>
   </Callout>
 
   <h2 class="mb-3 mt-8">Step 5: Give Claude the project files</h2>
-  <p class="text-text-secondary mb-2">Claude needs two things to get started: the CLAUDE.md (project memory) and the BACKLOG.md (tickets). Copy each one using the copy buttons on the <a href="/web-dev/projects/1/architecture">architecture</a> and <a href="/web-dev/projects/1/backlog">backlog</a> pages, and paste them to Claude:</p>
+  <p class="text-text-secondary mb-2">Claude needs two things to get started: the CLAUDE.md (project memory) and the BACKLOG.md (tickets). Go to the project's architecture page and backlog page, copy each using the copy buttons, and paste them to Claude:</p>
   <CodeBlock copy>{`Here's the CLAUDE.md for the project:
 
 [Paste CLAUDE.md here]
@@ -68,22 +67,24 @@ $ mkdir greenscape && cd greenscape`}</CodeBlock>
 And here's the BACKLOG.md:
 
 [Paste BACKLOG.md here]`}</CodeBlock>
+  <p class="text-sm text-text-secondary mt-4 mb-2">Claude reads both files and now understands the full project — what to build, how to build it, and what the acceptance criteria are for every ticket.</p>
 
   <h2 class="mb-3 mt-8">Step 6: Start Ticket 1</h2>
-  <p class="text-text-secondary mb-2">Once Claude has the files, just say:</p>
+  <p class="text-text-secondary mb-2">Every project's first ticket is setup — creating the repo, installing dependencies, verifying the dev server starts. Tell Claude:</p>
   <CodeBlock copy>{`Start Ticket 1.`}</CodeBlock>
   <p class="text-sm text-text-secondary mb-4">That's it. Claude reads the CLAUDE.md and BACKLOG.md, sees what Ticket 1 requires, and does it. Watch the sidebar — files will start appearing.</p>
 
   <h2 class="mb-3 mt-8">Step 7: Verify</h2>
-  <p class="text-sm text-text-secondary mb-4">While Claude works, watch the VS Code sidebar — you'll see CLAUDE.md and BACKLOG.md appear. Then check GitHub:</p>
-  <StepList steps={[
-    { title: "Open GitHub in your browser", content: "Navigate to your new greenscape repository." },
-    { title: "Check the Issues tab", content: "You should see 8 Issues (one per ticket)." },
-    { title: "Check the Projects tab", content: "You should see a board with all Issues in 'To Do'." },
-  ]} />
+  <p class="text-sm text-text-secondary mb-4">Once Claude finishes Ticket 1, check the result against the acceptance criteria in the backlog. For a setup ticket, this usually means:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-4">
+    <li>Does the dev server start? (Run the dev command from the Makefile)</li>
+    <li>Does the page load in the browser?</li>
+    <li>Are the expected files present in the sidebar?</li>
+    <li>Is the GitHub repo created with Issues and a project board?</li>
+  </ul>
 
   <Callout variant="info">
-    <p class="text-sm"><strong>Ticket 1 complete.</strong> You directed Claude to set up project infrastructure and verified the result. The skill here was communication: clear instructions and verification against specific expectations.</p>
+    <p class="text-sm"><strong>Ticket 1 complete.</strong> You directed Claude to set up project infrastructure and verified the result. The skill here was communication: clear instructions and verification against specific expectations. Now move on to your first real build ticket.</p>
   </Callout>
 
   <!-- VS Code Tips -->
@@ -112,9 +113,9 @@ And here's the BACKLOG.md:
   <details class="mb-8 border border-border rounded-lg overflow-hidden">
     <summary>Ask Claude to set up useful extensions</summary>
     <div class="p-4">
-      <p class="text-sm text-text-secondary mb-2">After Ticket 1, you can ask Claude:</p>
-      <CodeBlock copy>{`What VS Code extensions would be useful for this project? Install the ones that help with React, Tailwind CSS, and ESLint.`}</CodeBlock>
-      <p class="text-sm text-text-secondary mt-2">Claude will suggest and install extensions like Tailwind CSS IntelliSense, ESLint, and Prettier. These give you autocomplete and error highlighting — helpful for reading Claude's code.</p>
+      <p class="text-sm text-text-secondary mb-2">After setup, you can ask Claude:</p>
+      <CodeBlock copy>{`What VS Code extensions would be useful for this project? Install the ones that help with development.`}</CodeBlock>
+      <p class="text-sm text-text-secondary mt-2">Claude will suggest and install extensions relevant to your tech stack. These give you autocomplete and error highlighting — helpful for reading Claude's code.</p>
     </div>
   </details>
 </DocsLayout>
