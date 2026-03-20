@@ -1,0 +1,76 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import Callout from '../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Deploy" description="Deploy FactFeed's full stack to a staging environment.">
+  <h1 class="mb-6">Deploy</h1>
+  <p class="text-text-secondary mb-8">Project 1 deployed a static site — one click, done. FactFeed has a backend, a database, and a worker. Deployment is more complex, but the process is the same: direct Claude, verify the result.</p>
+
+  <h2 class="mb-4">Why deployment is harder now</h2>
+  <p class="text-text-secondary mb-4">A static site is just files. A full-stack app needs:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-8">
+    <li>A server that runs Docker (or a platform that handles containers)</li>
+    <li>A PostgreSQL database accessible from the backend</li>
+    <li>Environment variables for database credentials, API keys, and service URLs</li>
+    <li>The frontend served and connected to the backend API</li>
+    <li>The worker running and able to reach the external facts API</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Direct the deploy</h2>
+  <p class="text-text-secondary mb-2">This is a ticket like any other. Tell Claude:</p>
+  <CodeBlock copy>{`Deploy FactFeed to a staging environment. The frontend, backend, database, and worker all need to be running and connected.`}</CodeBlock>
+  <p class="text-sm text-text-secondary mt-2 mb-4">Claude will handle the specifics — Docker in production, environment variable setup, and deployment configuration. Your job is verifying it works.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Deployment errors are more likely here</strong> than in Project 1. That's expected. The fix is the same: read the error, paste it to Claude, direct the fix. You don't need to understand every line of the error — you need to communicate it clearly.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Environment variables</h2>
+  <p class="text-text-secondary mb-4">Full-stack apps use environment variables for configuration that changes between environments. You'll need to set:</p>
+  <div class="overflow-x-auto mb-8">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Variable</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border"><td class="px-4 py-3 font-mono text-sm">DATABASE_URL</td><td class="px-4 py-3 text-text-secondary">PostgreSQL connection string</td></tr>
+        <tr class="border-b border-border bg-bg-subtle"><td class="px-4 py-3 font-mono text-sm">FACTS_API_URL</td><td class="px-4 py-3 text-text-secondary">External facts API endpoint</td></tr>
+        <tr class="border-b border-border"><td class="px-4 py-3 font-mono text-sm">CORS_ORIGINS</td><td class="px-4 py-3 text-text-secondary">Allowed frontend origins</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="mb-4 mt-10">Verification checklist</h2>
+  <p class="text-text-secondary mb-4">Once deployed, verify everything works on the live staging URL:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-4">
+    <li>Frontend loads at the staging URL</li>
+    <li>Click "Next Fact" — does a real fact appear?</li>
+    <li>Open DevTools → Network tab — does the request go to the live API (not localhost)?</li>
+    <li>Check <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/api/health</code> on the live backend — does it return <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">{'{"status": "ok"}'}</code>?</li>
+    <li>Wait 15 minutes, then check — is the fact count increasing? (worker is running)</li>
+    <li>Test on your phone — does the card display correctly?</li>
+  </ul>
+
+  <details class="mb-8 border border-border rounded-lg overflow-hidden">
+    <summary>Troubleshooting: "The deploy failed"</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Read the error message. Copy it. Paste to Claude: "The deploy failed with this error: [paste]. Fix it." Full-stack deploy errors are often about environment variables, port conflicts, or database connection issues. Claude has seen them all.</p>
+    </div>
+  </details>
+
+  <div class="mt-8 p-6 bg-primary-bg rounded-lg border border-primary/20 text-center">
+    <h2 class="text-xl font-semibold mb-2">Next: get feedback</h2>
+    <p class="text-text-secondary mb-4">The app is live on a staging URL. Time to show it to someone and collect feedback.</p>
+    <a
+      href="/web-dev/projects/2/client-feedback"
+      class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
+    >
+      Client Feedback →
+    </a>
+  </div>
+</DocsLayout>
