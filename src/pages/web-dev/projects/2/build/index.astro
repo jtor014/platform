@@ -1,0 +1,43 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Card from '../../../../../components/Card.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Build" description="Direct Claude through 11 tickets in two phases to build FactFeed.">
+  <h1 class="mb-6">Build</h1>
+  <p class="text-text-secondary mb-4">You know the loop: direct, verify, review, merge. This guide doesn't repeat that. Instead, it highlights what's new and what to verify at each stage.</p>
+  <p class="text-text-secondary mb-8">The build is split into two phases with a pause point between them.</p>
+
+  <h2 class="mb-4 mt-10">What's new</h2>
+  <div class="overflow-x-auto mb-8">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Concept</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">What It Is</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">When</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border"><td class="px-4 py-3 font-medium">Docker</td><td class="px-4 py-3 text-text-secondary">Runs the whole app in containers</td><td class="px-4 py-3 text-text-secondary">Ticket 1</td></tr>
+        <tr class="border-b border-border bg-bg-subtle"><td class="px-4 py-3 font-medium">PostgreSQL</td><td class="px-4 py-3 text-text-secondary">A real database</td><td class="px-4 py-3 text-text-secondary">Ticket 1</td></tr>
+        <tr class="border-b border-border"><td class="px-4 py-3 font-medium">FastAPI</td><td class="px-4 py-3 text-text-secondary">Python backend</td><td class="px-4 py-3 text-text-secondary">Ticket 1</td></tr>
+        <tr class="border-b border-border bg-bg-subtle"><td class="px-4 py-3 font-medium">CI Pipeline</td><td class="px-4 py-3 text-text-secondary">Automated testing on PRs</td><td class="px-4 py-3 text-text-secondary">Ticket 2</td></tr>
+        <tr class="border-b border-border"><td class="px-4 py-3 font-medium">Gemini Review</td><td class="px-4 py-3 text-text-secondary">Second AI reviews Claude's code</td><td class="px-4 py-3 text-text-secondary">Ticket 3</td></tr>
+        <tr class="border-b border-border bg-bg-subtle"><td class="px-4 py-3 font-medium">Background Worker</td><td class="px-4 py-3 text-text-secondary">System does work on its own</td><td class="px-4 py-3 text-text-secondary">Ticket 6</td></tr>
+        <tr class="border-b border-border"><td class="px-4 py-3 font-medium">Frontend ↔ API</td><td class="px-4 py-3 text-text-secondary">Frontend calls backend for data</td><td class="px-4 py-3 text-text-secondary">Ticket 9</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="mb-4 mt-10">Two phases</h2>
+  <div class="grid gap-4 sm:grid-cols-2 mb-8">
+    <Card title="Phase A — &quot;The Stack Appears&quot;" subtitle="Docker, containers, CI, Gemini, database. Tickets 1–5." href="/web-dev/projects/2/build/phase-a" />
+    <Card title="Phase B — &quot;The System Proves Itself&quot;" subtitle="Worker, API, frontend, full request flow. Tickets 6–11." href="/web-dev/projects/2/build/phase-b" />
+  </div>
+
+  <Callout variant="info">
+    <p class="text-sm">There's a pause point between phases. The stack is running. Take a breath. Phase B brings it to life.</p>
+  </Callout>
+</DocsLayout>
