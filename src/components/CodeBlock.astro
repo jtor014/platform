@@ -3,9 +3,10 @@ interface Props {
   lang?: string;
   terminal?: boolean;
   copy?: boolean;
+  code?: string;
 }
 
-const { lang, terminal = false, copy = false } = Astro.props;
+const { lang, terminal = false, copy = false, code } = Astro.props;
 const id = `code-${Math.random().toString(36).slice(2, 9)}`;
 ---
 
@@ -13,7 +14,7 @@ const id = `code-${Math.random().toString(36).slice(2, 9)}`;
   {lang && !terminal && (
     <div class="px-4 pt-3 text-xs text-text-muted font-mono">{lang}</div>
   )}
-  <pre id={id} class="p-4 overflow-x-auto text-sm leading-relaxed font-mono text-code-text"><slot /></pre>
+  <pre id={id} class="p-4 overflow-x-auto text-sm leading-relaxed font-mono text-code-text">{code ? code : <slot />}</pre>
   {copy && (
     <button
       data-copy-target={id}

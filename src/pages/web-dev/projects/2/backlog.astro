@@ -1,0 +1,249 @@
+---
+import fs from 'node:fs';
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import Callout from '../../../../components/Callout.astro';
+import Checklist from '../../../../components/Checklist.astro';
+
+const backlogRaw = fs.readFileSync('content/projects/project-2/backlog-factfeed.md', 'utf-8')
+  .replace(/^---[\s\S]*?---\n/, '');
+---
+
+<DocsLayout title="BACKLOG: FactFeed" description="11 tickets split into Phase A and Phase B.">
+  <h1 class="mb-4">Backlog: FactFeed</h1>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Two phases.</strong> Phase A gets the stack running. Phase B proves it works. There's a pause point between them — use it.</p>
+  </Callout>
+
+  <details class="my-6 border border-border rounded-lg overflow-hidden">
+    <summary>Copy full backlog as markdown</summary>
+    <div class="p-4">
+      <CodeBlock copy code={backlogRaw} />
+    </div>
+  </details>
+
+  <!-- Phase A header -->
+  <div class="bg-primary-bg border border-primary/20 rounded-lg p-4 mb-6 mt-8">
+    <h2 class="text-lg font-semibold text-primary mb-1">Phase A — "The Stack Appears"</h2>
+    <p class="text-sm text-text-secondary">Docker, containers, the API, the database, CI, Gemini review. Tickets 1–5.</p>
+  </div>
+
+  <!-- Ticket 1 -->
+  <div class="border border-border rounded-lg p-6 mb-6">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">setup</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">Size: M</span>
+    </div>
+    <h3 class="text-lg font-semibold mb-2">Ticket 1: Project Setup & Docker Compose</h3>
+    <p class="text-sm text-text-secondary mb-4">Create repo, Docker Compose with backend/frontend/postgres, Makefile, database init, GitHub board.</p>
+    <Checklist items={[
+      "make up starts all three containers",
+      "make status shows all containers running and healthy",
+      "make down stops all services",
+      "make clean removes containers and volumes",
+      "make db opens a psql shell",
+      "facts table exists in the database",
+      ".env.example committed; .env in .gitignore",
+      "FastAPI responds at localhost:8000/docs",
+      "GitHub Issues and Project board set up",
+    ]} />
+  </div>
+
+  <!-- Ticket 2 -->
+  <div class="border border-border rounded-lg p-6 mb-6">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">setup</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">Size: S</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-bg text-primary">Deps: T1</span>
+    </div>
+    <h3 class="text-lg font-semibold mb-2">Ticket 2: CI Pipeline</h3>
+    <p class="text-sm text-text-secondary mb-4">GitHub Actions: lint, test, build check on every PR. See the <a href="/web-dev/guides/ci-setup">CI Setup Guide</a>.</p>
+    <Checklist items={[
+      "PR triggers CI workflow",
+      "CI runs Ruff linting",
+      "CI runs pytest",
+      "Health endpoint test: GET /api/health → 200",
+      "CI results visible on PR (green/red)",
+      "Branch protection: CI must pass to merge",
+    ]} />
+  </div>
+
+  <!-- Ticket 3 -->
+  <div class="border border-border rounded-lg p-6 mb-6">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">setup</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">Size: S</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-bg text-primary">Deps: T2</span>
+    </div>
+    <h3 class="text-lg font-semibold mb-2">Ticket 3: Gemini AI Reviewer</h3>
+    <p class="text-sm text-text-secondary mb-4">Automated code review on every PR. See the <a href="/web-dev/guides/gemini-setup">Gemini Setup Guide</a>.</p>
+    <Checklist items={[
+      "Every PR gets a Gemini review comment within 2 minutes",
+      "Review is substantive (mentions specific code)",
+      "API key stored as GitHub Secret",
+      "Branch protection requires CI + review",
+    ]} />
+  </div>
+
+  <!-- Ticket 4 -->
+  <div class="border border-border rounded-lg p-6 mb-6">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">backend</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">Size: S</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-bg text-primary">Deps: T1</span>
+    </div>
+    <h3 class="text-lg font-semibold mb-2">Ticket 4: Database Connection & Models</h3>
+    <p class="text-sm text-text-secondary mb-4">asyncpg connection pool, Pydantic models, verify connection.</p>
+    <Checklist items={[
+      "Backend connects to PostgreSQL on startup (visible in make logs)",
+      "Connection pool opens on startup, closes on shutdown",
+      "Pydantic FactResponse model: id, text, source, fetched_at",
+      "SELECT * FROM facts returns empty table (not an error)",
+      "All Python functions have type hints",
+    ]} />
+  </div>
+
+  <!-- Ticket 5 -->
+  <div class="border border-border rounded-lg p-6 mb-6">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">backend</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">Size: S</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-bg text-primary">Deps: T4</span>
+    </div>
+    <h3 class="text-lg font-semibold mb-2">Ticket 5: Fact Fetcher Module</h3>
+    <p class="text-sm text-text-secondary mb-4">Fetch from external API, parse JSON, handle errors. Not scheduled yet — that's Ticket 6.</p>
+    <Checklist items={[
+      "Fetcher retrieves a fact from the external API",
+      "Response parsed into typed model (text and source)",
+      "5-second timeout produces logged warning, not crash",
+      "Invalid JSON produces logged warning, not crash",
+      "Fetcher function has a test that mocks the external API",
+    ]} />
+  </div>
+
+  <!-- Pause Point -->
+  <div class="border-2 border-dashed border-primary/30 rounded-lg p-8 my-10 text-center bg-primary-bg/50">
+    <h2 class="text-xl font-semibold mb-3">Pause Point</h2>
+    <p class="text-text-secondary mb-3">The stack is running. You have: Docker containers, a database with a schema, a FastAPI backend with auto-docs, CI that runs on every PR, and an AI code reviewer.</p>
+    <p class="text-text-secondary">Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">make status</code>. See three green containers. Open <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">localhost:8000/docs</code>. Take a breath.</p>
+  </div>
+
+  <!-- Phase B header -->
+  <div class="bg-primary-bg border border-primary/20 rounded-lg p-4 mb-6">
+    <h2 class="text-lg font-semibold text-primary mb-1">Phase B — "The System Proves Itself"</h2>
+    <p class="text-sm text-text-secondary">Background worker, API endpoint, frontend, connection, deploy. Tickets 6–11.</p>
+  </div>
+
+  <!-- Ticket 6 -->
+  <div class="border border-border rounded-lg p-6 mb-6">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">backend</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">Size: M</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-bg text-primary">Deps: T5</span>
+    </div>
+    <h3 class="text-lg font-semibold mb-2">Ticket 6: Background Worker</h3>
+    <p class="text-sm text-text-secondary mb-4">Scheduled fetcher every 5 minutes. Deduplicates, logs, handles errors.</p>
+    <Checklist items={[
+      "Worker starts automatically with backend container",
+      "Facts appear in database without frontend interaction",
+      "Duplicate facts silently skipped",
+      "Each fetch logged: new fact, duplicate, or error",
+      "External API down → log error, retry next cycle, no crash",
+    ]} />
+  </div>
+
+  <!-- Ticket 7 -->
+  <div class="border border-border rounded-lg p-6 mb-6">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">backend</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">Size: S</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-bg text-primary">Deps: T6</span>
+    </div>
+    <h3 class="text-lg font-semibold mb-2">Ticket 7: Random Fact API Endpoint</h3>
+    <p class="text-sm text-text-secondary mb-4">GET /api/facts/random — random fact from database, 404 if empty.</p>
+    <Checklist items={[
+      "GET /api/facts/random returns 200 with fact object",
+      "Refreshing returns different facts (random selection)",
+      "Empty database returns 404 with error message",
+      "Tests for both 200 and 404 cases",
+      "Endpoint visible in auto-docs at /docs",
+    ]} />
+  </div>
+
+  <!-- Ticket 8 -->
+  <div class="border border-border rounded-lg p-6 mb-6">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">frontend</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">Size: M</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-bg text-primary">Deps: T1</span>
+    </div>
+    <h3 class="text-lg font-semibold mb-2">Ticket 8: React Frontend Shell</h3>
+    <p class="text-sm text-text-secondary mb-4">React + Vite + Tailwind. FactCard component, "Next Fact" button. Hardcoded fact for now.</p>
+    <Checklist items={[
+      "Frontend loads at localhost:5173",
+      "Fact card visible with text and source",
+      "\"Next Fact\" button visible and styled",
+      "Page title is \"FactFeed\"",
+      "Centred layout, readable on mobile and desktop",
+      "Tailwind CSS working",
+    ]} />
+  </div>
+
+  <!-- Ticket 9 -->
+  <div class="border border-border rounded-lg p-6 mb-6">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">frontend</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">backend</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">Size: M</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-bg text-primary">Deps: T7, T8</span>
+    </div>
+    <h3 class="text-lg font-semibold mb-2">Ticket 9: Connect Frontend to Backend</h3>
+    <p class="text-sm text-text-secondary mb-4">Vite proxy, real API calls, loading/error/empty states.</p>
+    <Checklist items={[
+      "Page load fetches and displays a real fact from the database",
+      "\"Next Fact\" fetches a different fact",
+      "Loading indicator while fetching",
+      "Error message if API unreachable",
+      "Empty state if no facts exist",
+      "Network tab shows API requests with 200 status",
+    ]} />
+  </div>
+
+  <!-- Ticket 10 -->
+  <div class="border border-border rounded-lg p-6 mb-6">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">deploy</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">Size: M</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-bg text-primary">Deps: T9</span>
+    </div>
+    <h3 class="text-lg font-semibold mb-2">Ticket 10: Deploy</h3>
+    <p class="text-sm text-text-secondary mb-4">Full stack to a live server. All services running in production.</p>
+    <Checklist items={[
+      "App accessible at a public URL",
+      "Fact loads on the production site",
+      "\"Next Fact\" works in production",
+      "Worker fetching facts in production (check count after 15 min)",
+      "Health endpoint returns 200 on production URL",
+      "Environment variables set in production (not hardcoded)",
+    ]} />
+  </div>
+
+  <!-- Ticket 11 -->
+  <div class="border border-border rounded-lg p-6 mb-6">
+    <div class="flex flex-wrap gap-2 mb-3">
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">deploy</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-bg-muted text-text-secondary">Size: S</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-primary-bg text-primary">Deps: T10</span>
+      <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-warning-bg text-warning">Optional</span>
+    </div>
+    <h3 class="text-lg font-semibold mb-2">Ticket 11: Deploy-on-Merge</h3>
+    <p class="text-sm text-text-secondary mb-4">GitHub Actions deployment workflow. Merge to main → production updates automatically.</p>
+    <Checklist items={[
+      "Merging a PR to main triggers deploy workflow",
+      "Deploy completes successfully",
+      "Visible change appears on production within 5 minutes",
+      "Failed deploys don't take down existing site",
+    ]} />
+  </div>
+</DocsLayout>
