@@ -1,13 +1,12 @@
 ---
 import DocsLayout from '../../../layouts/DocsLayout.astro';
 import Card from '../../../components/Card.astro';
-import StepList from '../../../components/StepList.astro';
 ---
 
 <DocsLayout title="Projects" description="Six projects that build toward agency-level work. The product gets harder, the process stays the same.">
   <h1 class="mb-4">Projects</h1>
-  <p class="text-text-secondary mb-4">Every project repeats the same 8-step loop. The product gets harder, but the process stays the same.</p>
-  <p class="text-text-secondary mb-8">What changes is <em>your role</em>. Early on, the planning is done for you. By the end, you own every step — like running a small agency.</p>
+  <p class="text-text-secondary mb-4">Six projects from a static website to a production system. Each follows the same <a href="/web-dev" class="text-primary hover:underline">8-step development process</a> — what changes is your role.</p>
+  <p class="text-text-secondary mb-8">Early on, the planning is done for you. By the end, you own every step.</p>
 
   <!-- How your role evolves -->
   <h2 class="mb-6 mt-10">How your role evolves</h2>
@@ -35,21 +34,6 @@ import StepList from '../../../components/StepList.astro';
       <p class="text-sm text-text-secondary">You own every step. Security, multi-user systems, production ops. Like running a small agency: the client gives you a problem, you deliver a production system.</p>
     </div>
   </div>
-
-  <!-- The 8-step loop -->
-  <h2 class="mb-4 mt-10">The 8-step loop</h2>
-  <p class="text-text-secondary mb-4">Every project follows this sequence. See the <a href="/web-dev" class="text-primary hover:underline">Web Development overview</a> for how AI changes each step.</p>
-
-  <StepList steps={[
-    { title: "Requirements", content: "Define what you're building — features, acceptance criteria, anti-scope." },
-    { title: "Design", content: "Define how it looks and behaves — layouts, user flows, visual details." },
-    { title: "Architecture", content: "Define how to build it — tech stack, data models, system structure." },
-    { title: "Implementation", content: "Direct AI through tickets. Branch, implement, review, merge." },
-    { title: "Testing", content: "Verify against acceptance criteria — automated tests, manual checks." },
-    { title: "Deployment", content: "Ship to a staging URL. Verify on a real server and real devices." },
-    { title: "UAT", content: "Show the client. Collect feedback, iterate, get formal sign-off." },
-    { title: "Monitoring", content: "Go live. Monitor, iterate, and carry lessons into the next project." },
-  ]} />
 
   <!-- Project cards -->
   <h2 class="mb-6 mt-10 pt-8 border-t border-border">Choose a project</h2>

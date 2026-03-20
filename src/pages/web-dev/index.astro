@@ -1,11 +1,11 @@
 ---
 import DocsLayout from '../../layouts/DocsLayout.astro';
-import Card from '../../components/Card.astro';
 ---
 
 <DocsLayout title="Web Development" description="Direct AI to build real web software. Six projects from static site to production system.">
   <h1 class="mb-4">AI-First Web Development</h1>
   <p class="text-text-secondary mb-4">You direct AI to build real software. Not tutorials, not exercises — deployed products. You define the problem, plan the solution, direct the implementation, review every change, and ship to a live URL.</p>
+  <p class="text-text-secondary mb-4">No coding experience required. You need a computer, basic comfort with files and folders, and the willingness to learn a terminal. Everything else you pick up as you go.</p>
   <p class="text-text-secondary mb-8">The output isn't "I understand React." It's "I shipped six deployed products and I can explain every decision I made."</p>
 
   <!-- How this compares -->
@@ -26,6 +26,48 @@ import Card from '../../components/Card.astro';
     <div class="border-2 border-primary rounded-lg p-5 bg-primary-bg">
       <p class="font-semibold text-sm mb-1">This</p>
       <p class="text-sm text-text-secondary">You direct AI to write it. You learn to plan, review, verify, and deploy. The output is shipped products + the judgment to direct any tech project.</p>
+    </div>
+  </div>
+
+  <!-- The Roles -->
+  <h2 class="mb-4 mt-10">The roles</h2>
+  <p class="text-text-secondary mb-4">Three actors work on every project:</p>
+  <div class="grid gap-4 sm:grid-cols-3 mb-8">
+    <div class="border border-border rounded-lg p-6 text-center">
+      <div class="w-14 h-14 rounded-full bg-primary-bg text-primary font-bold text-2xl flex items-center justify-center mx-auto mb-3">D</div>
+      <h3 class="text-base font-semibold mb-2">You — the Director</h3>
+      <p class="text-sm text-text-secondary">Decide what gets built, review the work, verify it's correct, sign off on every change.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6 text-center">
+      <div class="w-14 h-14 rounded-full bg-primary-bg text-primary font-bold text-2xl flex items-center justify-center mx-auto mb-3">C</div>
+      <h3 class="text-base font-semibold mb-2">Claude Code — AI Developer</h3>
+      <p class="text-sm text-text-secondary">Writes code, creates files, runs tests, opens pull requests. Fast and capable, but makes mistakes.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6 text-center">
+      <div class="w-14 h-14 rounded-full bg-primary-bg text-primary font-bold text-2xl flex items-center justify-center mx-auto mb-3">G</div>
+      <h3 class="text-base font-semibold mb-2">Gemini — AI Reviewer</h3>
+      <p class="text-sm text-text-secondary">Independently reviews every pull request for security issues and best practices.</p>
+    </div>
+  </div>
+
+  <!-- What you actually do -->
+  <h3 class="mb-4">What you actually do</h3>
+  <div class="space-y-4 mb-8">
+    <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
+      <p class="font-semibold text-sm mb-1">Planning</p>
+      <p class="text-sm text-text-secondary">Catch what AI added that wasn't asked for, what it described vaguely, and what it missed entirely.</p>
+    </div>
+    <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
+      <p class="font-semibold text-sm mb-1">Reviewing</p>
+      <p class="text-sm text-text-secondary">Read both AI reviews. Develop judgment about real issues vs false positives.</p>
+    </div>
+    <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
+      <p class="font-semibold text-sm mb-1">Verifying</p>
+      <p class="text-sm text-text-secondary">Open the product and test it like a real user. Try to break it.</p>
+    </div>
+    <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
+      <p class="font-semibold text-sm mb-1">Communicating</p>
+      <p class="text-sm text-text-secondary">Explain technical decisions clearly. You directed the work — you understand what was built.</p>
     </div>
   </div>
 
@@ -101,7 +143,7 @@ import Card from '../../components/Card.astro';
         <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">6</div>
         <h3 class="text-lg font-semibold">Deployment</h3>
       </div>
-      <p class="text-sm text-text-secondary">Largely the same. AI writes pipeline configs, Dockerfiles, and infrastructure-as-code. Once set up, it's automated.</p>
+      <p class="text-sm text-text-secondary">AI writes pipeline configs, Dockerfiles, and infrastructure-as-code. You verify the staging site works on real devices — not just your laptop.</p>
     </div>
 
     <!-- Connector -->
@@ -113,7 +155,7 @@ import Card from '../../components/Card.astro';
         <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">7</div>
         <h3 class="text-lg font-semibold">UAT</h3>
       </div>
-      <p class="text-sm text-text-secondary">No change. Show the client the staging site. Collect feedback, turn it into tickets, iterate. Humans validating with humans.</p>
+      <p class="text-sm text-text-secondary">Show the client the staging site. Collect feedback, turn it into tickets, iterate. The formal acceptance gate — this step is purely human.</p>
     </div>
 
     <!-- Connector -->
@@ -132,56 +174,20 @@ import Card from '../../components/Card.astro';
 
   <p class="text-text-secondary mb-8"><strong class="text-text">You move from maker to director, but you never lose ownership.</strong> Every step still requires your judgment — AI changes the tools, not the responsibility.</p>
 
-  <!-- The Roles -->
-  <h2 class="mb-4 mt-10">The roles</h2>
-  <div class="grid gap-4 sm:grid-cols-3 mb-8">
-    <div class="border border-border rounded-lg p-6 text-center">
-      <div class="w-14 h-14 rounded-full bg-primary-bg text-primary font-bold text-2xl flex items-center justify-center mx-auto mb-3">D</div>
-      <h3 class="text-base font-semibold mb-2">You — the Director</h3>
-      <p class="text-sm text-text-secondary">Decide what gets built, review the work, verify it's correct, sign off on every change.</p>
-    </div>
-    <div class="border border-border rounded-lg p-6 text-center">
-      <div class="w-14 h-14 rounded-full bg-primary-bg text-primary font-bold text-2xl flex items-center justify-center mx-auto mb-3">C</div>
-      <h3 class="text-base font-semibold mb-2">Claude Code — AI Developer</h3>
-      <p class="text-sm text-text-secondary">Writes code, creates files, runs tests, opens pull requests. Fast and capable, but makes mistakes.</p>
-    </div>
-    <div class="border border-border rounded-lg p-6 text-center">
-      <div class="w-14 h-14 rounded-full bg-primary-bg text-primary font-bold text-2xl flex items-center justify-center mx-auto mb-3">G</div>
-      <h3 class="text-base font-semibold mb-2">Gemini — AI Reviewer</h3>
-      <p class="text-sm text-text-secondary">Independently reviews every pull request for security issues and best practices.</p>
-    </div>
-  </div>
+  <!-- Six projects -->
+  <h2 class="mb-4 mt-10">Six projects</h2>
+  <p class="text-text-secondary mb-4">You start by deploying a static business website — learning the branch-direct-verify-merge loop. By the end, you're delivering a production system with auth, monitoring, and handover documentation.</p>
 
-  <!-- The Progression -->
-  <h2 class="mb-4 mt-10">The progression</h2>
-  <p class="text-text-secondary mb-6">Six projects. Each repeats the same loop with one new capability — and one shift in what's expected of you as a Director.</p>
+  <ol class="list-decimal list-inside space-y-2 mb-6 text-sm">
+    <li><strong class="text-text">The Static Site</strong> <span class="text-text-secondary">— deploy a business website, learn the loop</span></li>
+    <li><strong class="text-text">The Dynamic App</strong> <span class="text-text-secondary">— database, API, Docker, CI</span></li>
+    <li><strong class="text-text">The Interactive App</strong> <span class="text-text-secondary">— forms and validation, you write the PRD</span></li>
+    <li><strong class="text-text">The Integrated App</strong> <span class="text-text-secondary">— third-party APIs, hallucination detection</span></li>
+    <li><strong class="text-text">The Multi-User App</strong> <span class="text-text-secondary">— auth and roles, adversarial testing</span></li>
+    <li><strong class="text-text">The Live System</strong> <span class="text-text-secondary">— monitoring, backups, production ops</span></li>
+  </ol>
 
-  <div class="grid gap-4 sm:grid-cols-2">
-    <Card title="Project 1: The Static Site" metadata="Foundation" href="/web-dev/projects/1">
-      <p class="text-sm text-text-secondary mt-2">A professional business website for a landscaping company. Deployed to a live URL.</p>
-      <p class="text-xs text-text-muted mt-2">+1: You learn the loop — branch, direct, verify, merge</p>
-    </Card>
-    <Card title="Project 2: The Dynamic App" metadata="Foundation" href="/web-dev/projects/2">
-      <p class="text-sm text-text-secondary mt-2">A full-stack facts app. React, FastAPI, PostgreSQL, Docker, CI, Gemini reviewer.</p>
-      <p class="text-xs text-text-muted mt-2">+1: You learn to verify systems — databases, APIs, containers</p>
-    </Card>
-    <Card title="Project 3: The Interactive App" metadata="Coming soon">
-      <p class="text-sm text-text-secondary mt-2">Forms, validation, email. You plan it yourself from a client brief.</p>
-      <p class="text-xs text-text-muted mt-2">+1: You write the PRD — planning judgment becomes the new skill</p>
-    </Card>
-    <Card title="Project 4: The Integrated App" metadata="Coming soon">
-      <p class="text-sm text-text-secondary mt-2">Third-party API integration (Stripe, Google Maps, or similar).</p>
-      <p class="text-xs text-text-muted mt-2">+1: You verify against external documentation — hallucination detection</p>
-    </Card>
-    <Card title="Project 5: The Multi-User App" metadata="Coming soon">
-      <p class="text-sm text-text-secondary mt-2">Auth, roles, permissions. Different users see different things.</p>
-      <p class="text-xs text-text-muted mt-2">+1: You think adversarially — can you break your own access controls?</p>
-    </Card>
-    <Card title="Project 6: The Live System" metadata="Capstone" href="/web-dev/projects/6">
-      <p class="text-sm text-text-secondary mt-2">Monitoring, backups, security, handover documentation.</p>
-      <p class="text-xs text-text-muted mt-2">+1: You make it production-grade — could someone else keep this running?</p>
-    </Card>
-  </div>
+  <p class="text-sm mb-8"><a href="/web-dev/projects" class="text-primary hover:underline">See all six projects →</a></p>
 
   <!-- CTA -->
   <div class="mt-10">
