@@ -1,0 +1,247 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import Callout from '../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Architecture: FactFeed" description="Technical architecture for FactFeed: Docker, services, data flow, and key decisions.">
+  <h1 class="mb-6">Architecture: FactFeed</h1>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Compare this to Project 1's architecture.</strong> GreenScape had no backend, no database, no containers. FactFeed has all three — plus a background worker and CI pipeline. The architecture document gets more important as systems get more complex. In later projects, you'll direct AI to generate the architecture, and your job will be reviewing it for over-engineering and missing dependencies.</p>
+  </Callout>
+
+  <details class="my-6 border border-border rounded-lg overflow-hidden">
+    <summary>Copy full architecture as markdown</summary>
+    <div class="p-4">
+      <CodeBlock copy>{`# Architecture: FactFeed
+
+## Tech Stack
+
+| Technology | Purpose |
+|---|---|
+| React 18 | Frontend UI |
+| FastAPI | Backend API (Python) |
+| PostgreSQL 16 | Data storage |
+| Docker Compose | Container orchestration |
+| GitHub Actions | CI — lint + test + build on PRs |
+| Gemini | Automated PR review via GitHub Actions |
+
+## Service Architecture
+
+\`\`\`
+External Facts API
+       ↓
+   [Worker]  ← Background process, fetches facts on a schedule
+       ↓
+  [PostgreSQL]  ← Stores facts with source and timestamp
+       ↓
+   [FastAPI]  ← Serves random facts via REST API
+       ↓
+    [React]  ← Displays one fact at a time, "Next Fact" button
+\`\`\`
+
+## Docker Compose Services
+
+Three containers orchestrated by Docker Compose:
+
+| Service | Image | Port | Purpose |
+|---|---|---|---|
+| backend | Python 3.12 + FastAPI | 8000 | REST API + background worker |
+| frontend | Node 20 + React | 3000 | Development server |
+| db | postgres:16 | 5432 | Data storage |
+
+## Repository Structure
+
+\`\`\`
+factfeed/
+├── backend/
+│   ├── app/
+│   │   ├── main.py          ← FastAPI entry point
+│   │   ├── models.py        ← SQLAlchemy models
+│   │   ├── database.py      ← DB connection
+│   │   ├── routes/
+│   │   │   └── facts.py     ← /api/facts/* endpoints
+│   │   └── worker/
+│   │       └── fetcher.py   ← Background fact fetcher
+│   ├── tests/
+│   │   └── test_facts.py
+│   ├── requirements.txt
+│   └── Dockerfile
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   └── FactCard.jsx
+│   │   ├── App.jsx
+│   │   ├── index.css
+│   │   └── main.jsx
+│   ├── package.json
+│   └── Dockerfile
+├── docker-compose.yml
+├── .github/
+│   └── workflows/
+│       ├── ci.yml
+│       └── gemini-review.yml
+├── Makefile
+├── CLAUDE.md
+├── BACKLOG.md
+└── .gitignore
+\`\`\`
+
+## Data Flow
+
+1. **Worker** runs on a schedule (every 30 minutes)
+2. Worker calls an external facts API, parses response
+3. Worker inserts new facts into PostgreSQL (deduplicates by text hash)
+4. **FastAPI** exposes \`GET /api/facts/random\` — picks a random row from the facts table
+5. **React frontend** calls the API on load and on "Next Fact" click
+6. Frontend displays fact text + source in a centred card
+
+## Key Decisions
+
+**Docker Compose for everything.** One command (\`make up\`) starts the entire stack. No "install PostgreSQL locally" — the database runs in a container. This is how real teams work.
+
+**Separate worker process.** The fact fetcher runs inside the backend container as a background task. It could be a separate container, but for this project combining them keeps the Docker Compose file simpler.
+
+**No caching layer.** The database is small and reads are fast. Adding Redis would be over-engineering for this use case. If the facts table had millions of rows, we'd reconsider.
+
+**PostgreSQL, not SQLite.** SQLite would work for this project, but PostgreSQL teaches you skills that transfer to real production systems. You'll use psql, write SQL queries, and understand connection strings.
+
+## What This Architecture Doesn't Need
+
+Because the PRD anti-scope is clear:
+- No authentication or user accounts
+- No fact submission or user-generated content
+- No categories or search
+- No WebSocket real-time updates
+- No caching layer (Redis)
+- No CDN or static asset optimisation`}</CodeBlock>
+    </div>
+  </details>
+
+  <h2 class="mb-4 mt-10">Tech Stack</h2>
+  <div class="overflow-x-auto mb-8">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Technology</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-medium">React 18</td>
+          <td class="px-4 py-3 text-text-secondary">Frontend UI</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-medium">FastAPI</td>
+          <td class="px-4 py-3 text-text-secondary">Backend API (Python)</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-medium">PostgreSQL 16</td>
+          <td class="px-4 py-3 text-text-secondary">Data storage</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-medium">Docker Compose</td>
+          <td class="px-4 py-3 text-text-secondary">Container orchestration</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-medium">GitHub Actions</td>
+          <td class="px-4 py-3 text-text-secondary">CI — lint + test + build on PRs</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-medium">Gemini</td>
+          <td class="px-4 py-3 text-text-secondary">Automated PR review</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="mb-4 mt-10">Service Diagram</h2>
+  <p class="text-text-secondary mb-4">Data flows in one direction — from the external API to your user's browser:</p>
+  <CodeBlock lang="text">{`External Facts API
+       ↓
+   [Worker]  ← Background process, fetches on schedule
+       ↓
+  [PostgreSQL]  ← Stores facts with source + timestamp
+       ↓
+   [FastAPI]  ← GET /api/facts/random
+       ↓
+    [React]  ← Displays one fact, "Next Fact" button`}</CodeBlock>
+
+  <h2 class="mb-4 mt-10">Docker Compose Services</h2>
+  <p class="text-text-secondary mb-4">Three containers, one command:</p>
+  <div class="overflow-x-auto mb-8">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Service</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Image</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Port</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Purpose</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-medium">backend</td>
+          <td class="px-4 py-3 text-text-secondary">Python 3.12 + FastAPI</td>
+          <td class="px-4 py-3 font-mono text-text-secondary">8000</td>
+          <td class="px-4 py-3 text-text-secondary">REST API + worker</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-medium">frontend</td>
+          <td class="px-4 py-3 text-text-secondary">Node 20 + React</td>
+          <td class="px-4 py-3 font-mono text-text-secondary">3000</td>
+          <td class="px-4 py-3 text-text-secondary">Dev server</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-medium">db</td>
+          <td class="px-4 py-3 text-text-secondary">postgres:16</td>
+          <td class="px-4 py-3 font-mono text-text-secondary">5432</td>
+          <td class="px-4 py-3 text-text-secondary">Data storage</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="mb-4 mt-10">Data Flow</h2>
+  <ol class="text-sm text-text-secondary list-decimal list-inside space-y-2 mb-8">
+    <li><strong class="text-text">Worker</strong> runs on a schedule (every 30 minutes)</li>
+    <li>Worker calls an external facts API, parses the response</li>
+    <li>Worker inserts new facts into PostgreSQL (deduplicates by text hash)</li>
+    <li><strong class="text-text">FastAPI</strong> exposes <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">GET /api/facts/random</code> — picks a random row</li>
+    <li><strong class="text-text">React frontend</strong> calls the API on load and on "Next Fact" click</li>
+    <li>Frontend displays fact text + source in a centred card</li>
+  </ol>
+
+  <h2 class="mb-4 mt-10">Key Decisions</h2>
+  <div class="space-y-3 mb-8">
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">&rarr;</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Docker Compose for everything.</strong> One command (<code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">make up</code>) starts the entire stack. No "install PostgreSQL locally" — the database runs in a container.</p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">&rarr;</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Separate worker process.</strong> The fact fetcher runs inside the backend container as a background task. Keeps Docker Compose simple while teaching the concept.</p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">&rarr;</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">No caching layer.</strong> The database is small and reads are fast. Adding Redis would be over-engineering for this use case.</p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">&rarr;</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">PostgreSQL, not SQLite.</strong> PostgreSQL teaches skills that transfer to real production systems — connection strings, psql, proper SQL.</p>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">What This Architecture Doesn't Need</h2>
+  <p class="text-text-secondary mb-4">Because the PRD anti-scope is clear:</p>
+  <ul class="list-disc list-inside text-sm text-text-secondary space-y-1 mb-8">
+    <li>No authentication or user accounts</li>
+    <li>No fact submission or user-generated content</li>
+    <li>No categories or search</li>
+    <li>No WebSocket real-time updates</li>
+    <li>No caching layer (Redis)</li>
+    <li>No CDN or static asset optimisation</li>
+  </ul>
+</DocsLayout>
