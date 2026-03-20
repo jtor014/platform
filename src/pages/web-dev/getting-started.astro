@@ -5,70 +5,8 @@ import Callout from '../../components/Callout.astro';
 import StepList from '../../components/StepList.astro';
 ---
 
-<DocsLayout title="Web dev setup" description="How the methodology works and everything you need to install for Web Development.">
-  <h1 class="mb-6">Getting Started with Web Dev</h1>
-  <p class="text-text-secondary mb-8">How the methodology works, then every tool you need — installed and verified.</p>
-
-  <!-- How This Works -->
-  <h2 class="mb-6 mt-12">How this works</h2>
-  <p class="text-text-secondary mb-8">You direct AI to build real software. You'll learn to read, inspect, and challenge the code AI produces, without writing it yourself.</p>
-
-  <h3 class="mb-4">The Roles</h3>
-  <div class="grid gap-4 sm:grid-cols-3 mb-8">
-    <div class="border border-border rounded-lg p-6 text-center">
-      <div class="w-14 h-14 rounded-full bg-primary-bg text-primary font-bold text-2xl flex items-center justify-center mx-auto mb-3">D</div>
-      <h4 class="text-base font-semibold mb-2">You — the Director</h4>
-      <p class="text-sm text-text-secondary">Decide what gets built, review the work, verify it's correct, sign off on every change.</p>
-    </div>
-    <div class="border border-border rounded-lg p-6 text-center">
-      <div class="w-14 h-14 rounded-full bg-primary-bg text-primary font-bold text-2xl flex items-center justify-center mx-auto mb-3">C</div>
-      <h4 class="text-base font-semibold mb-2">Claude Code — AI Developer</h4>
-      <p class="text-sm text-text-secondary">Writes code, creates files, runs tests, opens pull requests. Fast and capable, but makes mistakes.</p>
-    </div>
-    <div class="border border-border rounded-lg p-6 text-center">
-      <div class="w-14 h-14 rounded-full bg-primary-bg text-primary font-bold text-2xl flex items-center justify-center mx-auto mb-3">G</div>
-      <h4 class="text-base font-semibold mb-2">Gemini — AI Reviewer</h4>
-      <p class="text-sm text-text-secondary">Independently reviews every pull request for security issues and best practices.</p>
-    </div>
-  </div>
-
-  <h3 class="mb-4">The Loop</h3>
-  <p class="text-text-secondary mb-4">Every project follows the same cycle:</p>
-  <StepList steps={[
-    { title: "Requirements", content: "Define the problem, user stories, and acceptance criteria. AI refines ambiguous requirements and spots gaps — you own the scope." },
-    { title: "Design", content: "Define UX intent and user flows. AI generates wireframe concepts and suggests UI patterns — you validate against user needs." },
-    { title: "Architecture", content: "AI proposes system design, data models, and tech stack. You understand enough to challenge its proposals and make the call." },
-    { title: "Implement", content: "Direct AI through tickets one at a time. Claude creates a branch, implements, commits, opens a PR. Both AIs review. You verify and decide: merge or fix." },
-    { title: "Test", content: "AI generates test cases and writes tests. You validate that tests cover the acceptance criteria from step 1." },
-    { title: "Deploy", content: "Ship to a staging URL. AI writes pipeline configs — you set up once, then it's automated." },
-    { title: "UAT", content: "Show the client the staging site. Collect feedback, turn it into tickets, iterate. This is the formal acceptance gate — humans validating with humans." },
-    { title: "Monitor", content: "Go live. AI interprets logs and suggests fixes. You own the feedback loop and decide what to iterate on." },
-  ]} />
-
-  <p class="text-text-secondary mt-4 mb-8"><strong class="text-text">UAT formalises client acceptance, but feedback is a thread throughout.</strong> You check in with the client after requirements ("Have we understood what you need?"), after design ("Is this what you envisioned?"), and during implementation (demos and previews). UAT is the formal gate — but good teams keep clients close at every step.</p>
-
-  <h3 class="mb-4 mt-8">What you actually do</h3>
-  <div class="space-y-4 mb-8">
-    <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
-      <p class="font-semibold text-sm mb-1">Planning</p>
-      <p class="text-sm text-text-secondary">Catch what AI added that wasn't asked for, what it described vaguely, and what it missed entirely.</p>
-    </div>
-    <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
-      <p class="font-semibold text-sm mb-1">Reviewing</p>
-      <p class="text-sm text-text-secondary">Read both AI reviews. Develop judgment about real issues vs false positives.</p>
-    </div>
-    <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
-      <p class="font-semibold text-sm mb-1">Verifying</p>
-      <p class="text-sm text-text-secondary">Open the product and test it like a real user. Try to break it.</p>
-    </div>
-    <div class="border-l-4 border-l-primary bg-primary-bg p-4 rounded-r-lg">
-      <p class="font-semibold text-sm mb-1">Communicating</p>
-      <p class="text-sm text-text-secondary">Explain technical decisions clearly. You directed the work — you understand what was built.</p>
-    </div>
-  </div>
-
-  <!-- Setup -->
-  <h2 class="mb-6 mt-16 pt-8 border-t border-border">Setup</h2>
+<DocsLayout title="Setup" description="Install the tools you need for Web Development.">
+  <h1 class="mb-4">Setup</h1>
   <p class="text-text-secondary mb-8">Your operating system, the terminal, six tools, and two accounts. About 30–60 minutes.</p>
 
   <!-- The Terminal -->

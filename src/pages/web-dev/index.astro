@@ -3,15 +3,154 @@ import DocsLayout from '../../layouts/DocsLayout.astro';
 import Card from '../../components/Card.astro';
 ---
 
-<DocsLayout title="Web Development" description="Build full-stack web applications, APIs, and deployed systems by directing AI agents.">
-  <h1 class="mb-4">Web Development</h1>
-  <p class="text-text-secondary mb-4">Build full-stack web applications by directing AI agents. Start with a static website, end with a production-grade multi-user system with monitoring, backups, and handover documentation. Every project ships to a real URL.</p>
-  <p class="text-text-secondary mb-8">Web Development is the first category because it produces the most tangible results the fastest — you can show someone a working website after your first project. The skills you learn here (planning, directing, verifying, deploying) transfer directly to every other category.</p>
-
-  <!-- How this is different -->
-  <h2 class="mb-4 mt-10">How this is different from coding tutorials</h2>
-  <p class="text-text-secondary mb-4">Coding tutorials teach you to write code. This teaches you to direct AI to write it — and to catch when AI gets it wrong. You won't learn JavaScript syntax. You will learn to read a pull request, spot scope creep in an AI-generated PRD, verify a payment integration against real Stripe documentation, and break your own access controls before a user does.</p>
+<DocsLayout title="Web Development" description="Direct AI to build real web software. Six projects from static site to production system.">
+  <h1 class="mb-4">AI-First Web Development</h1>
+  <p class="text-text-secondary mb-4">You direct AI to build real software. Not tutorials, not exercises — deployed products. You define the problem, plan the solution, direct the implementation, review every change, and ship to a live URL.</p>
   <p class="text-text-secondary mb-8">The output isn't "I understand React." It's "I shipped six deployed products and I can explain every decision I made."</p>
+
+  <!-- How this compares -->
+  <h2 class="mb-4 mt-10">How this compares</h2>
+  <div class="space-y-4 mb-8">
+    <div class="border border-border rounded-lg p-5">
+      <p class="font-semibold text-sm mb-1">Classic CS degree</p>
+      <p class="text-sm text-text-secondary">Learn to code first, build later. Deep theory, slow path to shipping.</p>
+    </div>
+    <div class="border border-border rounded-lg p-5">
+      <p class="font-semibold text-sm mb-1">Bootcamps</p>
+      <p class="text-sm text-text-secondary">Guided projects, you write every line. Fast path, but the skill is writing code.</p>
+    </div>
+    <div class="border border-border rounded-lg p-5">
+      <p class="font-semibold text-sm mb-1">AI-assisted tutorials</p>
+      <p class="text-sm text-text-secondary">AI helps you write code. You're still the maker — AI is the assistant.</p>
+    </div>
+    <div class="border-2 border-primary rounded-lg p-5 bg-primary-bg">
+      <p class="font-semibold text-sm mb-1">This</p>
+      <p class="text-sm text-text-secondary">You direct AI to write it. You learn to plan, review, verify, and deploy. The output is shipped products + the judgment to direct any tech project.</p>
+    </div>
+  </div>
+
+  <!-- The development process -->
+  <h2 class="mb-4 mt-10">The development process — and what changes</h2>
+  <p class="text-text-secondary mb-6">Every project follows the same 8-step software development lifecycle. AI changes <em>how</em> you do each step, not <em>whether</em> you do it.</p>
+
+  <div class="space-y-8 mb-6">
+
+    <!-- 1. Requirements -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">1</div>
+        <h3 class="text-lg font-semibold">Requirements</h3>
+      </div>
+      <p class="text-sm text-text-secondary">You define the problem. AI refines ambiguous requirements, spots gaps, and generates user stories from a brief — but you own the scope.</p>
+    </div>
+
+    <!-- Connector -->
+    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
+
+    <!-- 2. Design -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">2</div>
+        <h3 class="text-lg font-semibold">Design</h3>
+      </div>
+      <p class="text-sm text-text-secondary">You define UX intent. AI generates wireframe concepts, suggests patterns, and prototypes layouts — but you validate against user needs.</p>
+    </div>
+
+    <!-- Connector -->
+    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
+
+    <!-- 3. Architecture -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">3</div>
+        <h3 class="text-lg font-semibold">Architecture</h3>
+      </div>
+      <p class="text-sm text-text-secondary">AI proposes system design, data models, and tech stack. You need to understand enough to challenge it — and you make the final call.</p>
+    </div>
+
+    <!-- Connector -->
+    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
+
+    <!-- 4. Implementation -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">4</div>
+        <h3 class="text-lg font-semibold">Implementation</h3>
+      </div>
+      <p class="text-sm text-text-secondary">The biggest shift. AI writes the code. You direct, review, and iterate. Your work is in prompts, specs, and code review — not syntax.</p>
+    </div>
+
+    <!-- Connector -->
+    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
+
+    <!-- 5. Testing -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">5</div>
+        <h3 class="text-lg font-semibold">Testing</h3>
+      </div>
+      <p class="text-sm text-text-secondary">AI generates tests and identifies edge cases. You validate they cover the acceptance criteria from step 1.</p>
+    </div>
+
+    <!-- Connector -->
+    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
+
+    <!-- 6. Deployment -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">6</div>
+        <h3 class="text-lg font-semibold">Deployment</h3>
+      </div>
+      <p class="text-sm text-text-secondary">Largely the same. AI writes pipeline configs, Dockerfiles, and infrastructure-as-code. Once set up, it's automated.</p>
+    </div>
+
+    <!-- Connector -->
+    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
+
+    <!-- 7. UAT -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">7</div>
+        <h3 class="text-lg font-semibold">UAT</h3>
+      </div>
+      <p class="text-sm text-text-secondary">No change. Show the client the staging site. Collect feedback, turn it into tickets, iterate. Humans validating with humans.</p>
+    </div>
+
+    <!-- Connector -->
+    <div class="flex justify-center"><div class="w-[1.5px] h-6 bg-border"></div></div>
+
+    <!-- 8. Monitoring -->
+    <div class="border border-border rounded-lg p-6">
+      <div class="flex items-center gap-3 mb-3">
+        <div class="w-8 h-8 rounded-full bg-primary-bg text-primary font-bold text-sm flex items-center justify-center flex-shrink-0">8</div>
+        <h3 class="text-lg font-semibold">Monitoring</h3>
+      </div>
+      <p class="text-sm text-text-secondary">AI helps interpret logs, analyse usage patterns, and suggest fixes. You own the feedback loop and decide what to iterate on.</p>
+    </div>
+
+  </div>
+
+  <p class="text-text-secondary mb-8"><strong class="text-text">You move from maker to director, but you never lose ownership.</strong> Every step still requires your judgment — AI changes the tools, not the responsibility.</p>
+
+  <!-- The Roles -->
+  <h2 class="mb-4 mt-10">The roles</h2>
+  <div class="grid gap-4 sm:grid-cols-3 mb-8">
+    <div class="border border-border rounded-lg p-6 text-center">
+      <div class="w-14 h-14 rounded-full bg-primary-bg text-primary font-bold text-2xl flex items-center justify-center mx-auto mb-3">D</div>
+      <h3 class="text-base font-semibold mb-2">You — the Director</h3>
+      <p class="text-sm text-text-secondary">Decide what gets built, review the work, verify it's correct, sign off on every change.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6 text-center">
+      <div class="w-14 h-14 rounded-full bg-primary-bg text-primary font-bold text-2xl flex items-center justify-center mx-auto mb-3">C</div>
+      <h3 class="text-base font-semibold mb-2">Claude Code — AI Developer</h3>
+      <p class="text-sm text-text-secondary">Writes code, creates files, runs tests, opens pull requests. Fast and capable, but makes mistakes.</p>
+    </div>
+    <div class="border border-border rounded-lg p-6 text-center">
+      <div class="w-14 h-14 rounded-full bg-primary-bg text-primary font-bold text-2xl flex items-center justify-center mx-auto mb-3">G</div>
+      <h3 class="text-base font-semibold mb-2">Gemini — AI Reviewer</h3>
+      <p class="text-sm text-text-secondary">Independently reviews every pull request for security issues and best practices.</p>
+    </div>
+  </div>
 
   <!-- The Progression -->
   <h2 class="mb-4 mt-10">The progression</h2>
@@ -44,14 +183,13 @@ import Card from '../../components/Card.astro';
     </Card>
   </div>
 
-  <!-- Start Here -->
-  <h2 class="mb-4 mt-10">Start here</h2>
-  <div class="mt-4">
+  <!-- CTA -->
+  <div class="mt-10">
     <a
-      href="/web-dev/projects/1"
+      href="/web-dev/getting-started"
       class="inline-block bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-6 rounded-md transition-colors min-h-[44px]"
     >
-      Start Project 1: The Static Site
+      Get set up
     </a>
   </div>
 </DocsLayout>

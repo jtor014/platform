@@ -39,7 +39,7 @@ export const manifest: PageEntry[] = [
   {
     route: '/web-dev',
     title: 'Web Development',
-    description: 'Six projects from static site to live system. Build real web software with AI.',
+    description: 'Direct AI to build real web software. Six projects from static site to production system.',
     section: 'web-dev',
     navLabel: 'Web Development',
     navParent: 'Web Development',
@@ -49,8 +49,8 @@ export const manifest: PageEntry[] = [
   },
   {
     route: '/web-dev/getting-started',
-    title: 'Getting started',
-    description: 'How the methodology works and everything you need to install for Web Development.',
+    title: 'Setup',
+    description: 'Install the tools you need for Web Development.',
     section: 'web-dev',
     navLabel: 'Getting started',
     navParent: 'Web Development',
@@ -65,7 +65,7 @@ export const manifest: PageEntry[] = [
   {
     route: '/web-dev/projects',
     title: 'Projects',
-    description: 'The process every project follows: Requirements → Design → Architecture → Implementation → Testing → Deployment → UAT → Monitoring.',
+    description: 'Six projects that build toward agency-level work. The product gets harder, the process stays the same.',
     section: 'web-dev',
     navLabel: 'Projects',
     navParent: 'Web Development',
