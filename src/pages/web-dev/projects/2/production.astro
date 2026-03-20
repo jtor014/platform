@@ -1,0 +1,96 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Production" description="Final verification, The Loop reflection, and bridge to what's next.">
+  <h1 class="mb-6">Production</h1>
+  <p class="text-text-secondary mb-8">The reviewer signed off. Client feedback items are fixed and deployed. FactFeed is ready for production.</p>
+
+  <h2 class="mb-4">Production verification</h2>
+  <p class="text-text-secondary mb-4">Run through this checklist on the production URL:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-8">
+    <li>Frontend loads — fact card displays correctly</li>
+    <li>"Next Fact" shows a new fact each time</li>
+    <li>Button is disabled while loading (CF-2 fix)</li>
+    <li>Loading spinner is visible (CF-1 fix)</li>
+    <li>Timestamp appears below the source (CF-3 fix)</li>
+    <li><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">/api/health</code> returns <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">{'{"status": "ok"}'}</code></li>
+    <li>Fact count is increasing over time (worker is running)</li>
+    <li>Error state works: what happens if the API is unreachable?</li>
+    <li>Mobile: card displays correctly on a real phone</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">The Loop</h2>
+  <p class="text-text-secondary mb-6">You've completed the full cycle again — with a more complex system:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">1</span>
+      <div>
+        <p class="font-semibold text-sm">Plan</p>
+        <p class="text-sm text-text-secondary">You reviewed the PRD — API endpoints, database schema, background worker scope.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">2</span>
+      <div>
+        <p class="font-semibold text-sm">Architect</p>
+        <p class="text-sm text-text-secondary">You reviewed the design spec, architecture, and Docker Compose setup.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">3</span>
+      <div>
+        <p class="font-semibold text-sm">Build</p>
+        <p class="text-sm text-text-secondary">You directed Claude through 11 tickets across two phases.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">4</span>
+      <div>
+        <p class="font-semibold text-sm">Deploy</p>
+        <p class="text-sm text-text-secondary">You deployed a full-stack app — backend, database, worker, frontend.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">5</span>
+      <div>
+        <p class="font-semibold text-sm">Client Feedback</p>
+        <p class="text-sm text-text-secondary">You collected feedback, turned it into tickets, and iterated.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">6</span>
+      <div>
+        <p class="font-semibold text-sm">Production</p>
+        <p class="text-sm text-text-secondary">You verified the live system — API, worker, frontend, error states.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">7</span>
+      <div>
+        <p class="font-semibold text-sm">Reflect</p>
+        <p class="text-sm text-text-secondary">What went well? What did AI get wrong? What would you do differently?</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Reflect</h2>
+  <p class="text-text-secondary mb-4">Before moving on, ask yourself:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>How did Docker change the way you work compared to Project 1?</li>
+    <li>When something broke, how did you debug it? (Logs? Database queries? Network tab?)</li>
+    <li>Did the CI pipeline catch anything you would have missed?</li>
+    <li>How useful was Gemini's review? Did it find real issues or mostly noise?</li>
+    <li>How did client feedback feel this time? Was the feedback more technical?</li>
+    <li>Could you explain to someone what each container does and how they connect?</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">What's next</h2>
+  <p class="text-text-secondary mb-4">Complete the <a href="/web-dev/checkpoints/after-project-2">Checkpoint: After Project 2</a>. Then: the <a href="/web-dev/bridge">Bridge to Project 3</a>. You'll choose your arc, repair a flawed PRD, and start planning your own project.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>What you've learned:</strong> Docker, databases, APIs, CI, dual AI review, background workers, the full request flow, full-stack deployment, and client feedback on a technical product. The loop is the same — but now you can inspect systems, not just pages. <strong>Next: you plan it yourself.</strong></p>
+  </Callout>
+</DocsLayout>
