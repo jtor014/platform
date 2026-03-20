@@ -1,0 +1,92 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import Callout from '../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Step-by-step guide" description="Project 2 walkthrough focusing on new concepts.">
+  <h1 class="mb-6">Project 2: Step-by-Step Guide</h1>
+  <p class="text-text-secondary mb-4">You know the loop: direct → verify → review → merge. This guide doesn't repeat that. Instead, it highlights what's new and what to verify at each stage.</p>
+
+  <h2 class="mb-4 mt-10">What's new</h2>
+  <div class="overflow-x-auto mb-8">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Concept</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">What It Is</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">When</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border"><td class="px-4 py-3 font-medium">Docker</td><td class="px-4 py-3 text-text-secondary">Runs the whole app in containers</td><td class="px-4 py-3 text-text-secondary">Ticket 1</td></tr>
+        <tr class="border-b border-border bg-bg-subtle"><td class="px-4 py-3 font-medium">PostgreSQL</td><td class="px-4 py-3 text-text-secondary">A real database</td><td class="px-4 py-3 text-text-secondary">Ticket 1</td></tr>
+        <tr class="border-b border-border"><td class="px-4 py-3 font-medium">FastAPI</td><td class="px-4 py-3 text-text-secondary">Python backend</td><td class="px-4 py-3 text-text-secondary">Ticket 1</td></tr>
+        <tr class="border-b border-border bg-bg-subtle"><td class="px-4 py-3 font-medium">CI Pipeline</td><td class="px-4 py-3 text-text-secondary">Automated testing on PRs</td><td class="px-4 py-3 text-text-secondary">Ticket 2</td></tr>
+        <tr class="border-b border-border"><td class="px-4 py-3 font-medium">Gemini Review</td><td class="px-4 py-3 text-text-secondary">Second AI reviews Claude's code</td><td class="px-4 py-3 text-text-secondary">Ticket 3</td></tr>
+        <tr class="border-b border-border bg-bg-subtle"><td class="px-4 py-3 font-medium">Background Worker</td><td class="px-4 py-3 text-text-secondary">System does work on its own</td><td class="px-4 py-3 text-text-secondary">Ticket 6</td></tr>
+        <tr class="border-b border-border"><td class="px-4 py-3 font-medium">Frontend ↔ API</td><td class="px-4 py-3 text-text-secondary">Frontend calls backend for data</td><td class="px-4 py-3 text-text-secondary">Ticket 9</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="mb-4 mt-10">Phase A — "The Stack Appears"</h2>
+
+  <h3 class="mb-3 mt-6">Ticket 1: The Docker Moment</h3>
+  <p class="text-text-secondary mb-2">Same setup process as Project 1 — paste CLAUDE.md and BACKLOG.md, then "Start Ticket 1." After Claude finishes:</p>
+  <CodeBlock terminal copy>{`$ make up`}</CodeBlock>
+  <p class="text-text-secondary mb-2">Watch Docker pull images, build containers, start services. Then:</p>
+  <CodeBlock terminal copy>{`$ make status`}</CodeBlock>
+  <p class="text-text-secondary mb-2">Three containers running. Open <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">localhost:8000/docs</code> — FastAPI's auto-generated API docs. Check the database:</p>
+  <CodeBlock terminal copy>{`$ make db`}</CodeBlock>
+  <CodeBlock lang="sql">{`\\dt`}</CodeBlock>
+  <p class="text-text-secondary mb-4">You should see the <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">facts</code> table. Type <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">\\q</code> to exit.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>What just happened:</strong> You typed one command and a backend API, a database, and a frontend server all appeared. They're running in isolated containers. This is Docker.</p>
+  </Callout>
+
+  <h3 class="mb-3 mt-8">Tickets 2–3: CI & Gemini</h3>
+  <p class="text-text-secondary mb-4">Standard ticket cycles. After T2, check GitHub Actions tab. After T3, every PR gets a Gemini review comment. See the <a href="/web-dev/guides/ci-setup">CI guide</a> and <a href="/web-dev/guides/gemini-setup">Gemini guide</a> for details.</p>
+
+  <h3 class="mb-3 mt-8">Tickets 4–5: Database & Fetcher</h3>
+  <p class="text-text-secondary mb-4">After T4, check the logs for a database connection message:</p>
+  <CodeBlock terminal copy>{`$ make logs`}</CodeBlock>
+  <p class="text-text-secondary mb-4">After T5, the fetcher module exists but isn't scheduled yet — that's Phase B.</p>
+
+  <!-- Pause -->
+  <div class="border-2 border-dashed border-primary/30 rounded-lg p-6 my-10 text-center bg-primary-bg/50">
+    <p class="text-text-secondary mb-2">Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">make status</code>. Three green containers. Open <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">localhost:8000/docs</code>. Take a breath.</p>
+    <p class="font-semibold">Phase A complete.</p>
+  </div>
+
+  <h2 class="mb-4 mt-10">Phase B — "The System Proves Itself"</h2>
+
+  <h3 class="mb-3 mt-6">Ticket 6: The Worker</h3>
+  <p class="text-text-secondary mb-2">After merging, wait 5–10 minutes. Then:</p>
+  <CodeBlock terminal copy>{`$ make db`}</CodeBlock>
+  <CodeBlock lang="sql">{`SELECT COUNT(*) FROM facts;`}</CodeBlock>
+  <p class="text-text-secondary mb-4">If the count is greater than 0, the worker is fetching facts automatically. Nobody clicked anything.</p>
+
+  <h3 class="mb-3 mt-8">Ticket 7: The API</h3>
+  <p class="text-text-secondary mb-2">Open your browser:</p>
+  <p class="text-text-secondary mb-4"><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">localhost:8000/api/facts/random</code> — you should see JSON. Refresh for a different fact.</p>
+
+  <h3 class="mb-3 mt-8">Tickets 8–9: Frontend & Connection</h3>
+  <p class="text-text-secondary mb-4">After T8: hardcoded fact visible. After T9: real facts from the database. <strong>The moment:</strong> click "Next Fact", open DevTools → Network tab, watch the request fly from frontend to API to database and back.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Test the error states.</strong> Stop the backend: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">docker compose stop backend</code>. Refresh the frontend — do you see the error message? Start it again: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">docker compose start backend</code>. Does it recover?</p>
+  </Callout>
+
+  <h3 class="mb-3 mt-8">Ticket 10: Deploy</h3>
+  <p class="text-text-secondary mb-4">Full stack to a live server. More complex than Project 1 — deployment errors are more likely. Handle them the same way: read the error, paste to Claude, direct the fix. Verify: live URL works, "Next Fact" works, fact count increases over 15 minutes.</p>
+
+  <h2 class="mb-4 mt-12">After All Tickets</h2>
+  <p class="text-text-secondary mb-4">You've built a full-stack application. Before moving on, complete the <a href="/web-dev/checkpoints/after-project-2">Checkpoint: After Project 2</a>.</p>
+  <p class="text-text-secondary mb-4">Then: the <a href="/web-dev/bridge">Bridge to Project 3</a>. You'll choose your arc, repair a flawed PRD, and start planning your own project.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>What you've learned:</strong> Docker, databases, APIs, CI, dual AI review, background workers, the full request flow, and full-stack deployment. The loop is the same — but now you can inspect systems, not just pages. <strong>Next: you plan it yourself.</strong></p>
+  </Callout>
+</DocsLayout>

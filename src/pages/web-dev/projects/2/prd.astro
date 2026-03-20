@@ -1,0 +1,104 @@
+---
+import fs from 'node:fs';
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import Callout from '../../../../components/Callout.astro';
+
+const prdRaw = fs.readFileSync('content/projects/project-2/prd-factfeed.md', 'utf-8')
+  .replace(/^---[\s\S]*?---\n/, '');
+---
+
+<DocsLayout title="PRD: FactFeed" description="Product requirements for the random facts application.">
+  <h1 class="mb-6">PRD: FactFeed — Random Facts App</h1>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Compare this PRD to Project 1's.</strong> Notice how the scope section now includes API endpoints with specific response formats, a database schema, and a background process. The anti-scope is longer too — more things to explicitly not build. As projects get more complex, the PRD gets more detailed. This one has been written for you. In Project 3, you'll write your own.</p>
+  </Callout>
+
+  <details class="my-6 border border-border rounded-lg overflow-hidden">
+    <summary>Copy full PRD as markdown</summary>
+    <div class="p-4">
+      <CodeBlock copy code={prdRaw} />
+    </div>
+  </details>
+
+  <h2 class="mb-4 mt-10">Executive Summary</h2>
+  <p class="text-text-secondary mb-8">Build a web application that displays random interesting facts. Facts are fetched from an external API, stored in a local database, and served through a backend API to a React frontend. The app shows one fact at a time with a "Next Fact" button. The system fetches new facts automatically in the background.</p>
+
+  <h2 class="mb-4 mt-10">Why this domain?</h2>
+  <p class="text-text-secondary mb-8">This is a learning project — the "problem" is building something simple enough that you can focus on the technical stack (Docker, API, database, CI, automated review) rather than complex business logic. The domain is deliberately boring. The tools are the exciting part.</p>
+
+  <h2 class="mb-4 mt-10">Scope — What we're building</h2>
+
+  <h3 class="mb-3 mt-6">1. Backend API (FastAPI)</h3>
+  <div class="overflow-x-auto mb-4">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Endpoint</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Returns</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3 font-mono text-sm">GET /api/health</td>
+          <td class="px-4 py-3 text-text-secondary"><code class="text-xs font-mono">{'{"status": "ok"}'}</code></td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3 font-mono text-sm">GET /api/facts/random</td>
+          <td class="px-4 py-3 text-text-secondary"><code class="text-xs font-mono">{'{"id": int, "text": string, "source": string, "created_at": string}'}</code></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="text-sm text-text-muted mb-6">Returns 404 with <code class="bg-bg-muted px-1 py-0.5 rounded text-xs font-mono">{'{"detail": "No facts available"}'}</code> when database is empty. Auto-docs at /docs.</p>
+
+  <h3 class="mb-3 mt-6">2. Database (PostgreSQL)</h3>
+  <p class="text-text-secondary mb-2">Facts table: id (serial), text (varchar, unique), source (varchar), fetched_at (timestamp UTC).</p>
+  <p class="text-sm text-text-muted mb-6">Facts persist after container restart. No duplicates (unique constraint on text).</p>
+
+  <h3 class="mb-3 mt-6">3. Background Worker</h3>
+  <p class="text-text-secondary mb-2">Fetches facts from an external API every 5 minutes. Handles duplicates (skip), network errors (log and retry), API downtime (serve existing facts).</p>
+
+  <h3 class="mb-3 mt-6">4. Frontend (React)</h3>
+  <p class="text-text-secondary mb-2">Shows one random fact with source. "Next Fact" button. Loading, error, and empty states.</p>
+
+  <h3 class="mb-3 mt-6">5. Docker Compose</h3>
+  <p class="text-text-secondary mb-2">All services in containers. <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">make up</code> starts everything, <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">make down</code> stops.</p>
+
+  <h3 class="mb-3 mt-6">6. CI + Gemini Review</h3>
+  <p class="text-text-secondary mb-6">Automated linting, testing, and AI code review on every PR.</p>
+
+  <h2 class="mb-4 mt-10">Anti-Scope</h2>
+  <Callout variant="warning">
+    <ul class="text-sm space-y-1">
+      <li><strong>No user accounts or login</strong></li>
+      <li><strong>No submitting, liking, or favouriting facts</strong></li>
+      <li><strong>No categories, tags, or filtering</strong></li>
+      <li><strong>No comments or social features</strong></li>
+      <li><strong>No admin panel</strong></li>
+      <li><strong>No complex state management</strong> (no Redux, Zustand)</li>
+      <li><strong>No caching layer</strong> (no Redis)</li>
+      <li><strong>No load balancer or auto-scaling</strong></li>
+      <li><strong>No custom domain</strong></li>
+    </ul>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Success Metrics</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-8">
+    <li>All services start with <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">make up</code> and healthy within 30 seconds</li>
+    <li>API responds in under 200ms</li>
+    <li>Frontend loads in under 3 seconds</li>
+    <li>CI pipeline passes on all merged PRs</li>
+    <li>At least 10 facts accumulated within 1 hour</li>
+    <li>App works after full restart (<code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">make clean && make up</code>)</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">Technical Constraints</h2>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm">
+    <li>Static site constraints no longer apply — this is a full-stack application</li>
+    <li>All services run in Docker containers</li>
+    <li>Must work after a full clean restart</li>
+    <li>Environment variables for all configuration (never hardcoded)</li>
+  </ul>
+</DocsLayout>

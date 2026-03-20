@@ -1,0 +1,20 @@
+---
+import fs from 'node:fs';
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../components/CodeBlock.astro';
+import Callout from '../../../../components/Callout.astro';
+
+const claudeMdRaw = fs.readFileSync('content/projects/project-2/claude-md-factfeed.md', 'utf-8')
+  .replace(/^---[\s\S]*?---\n/, '')
+  .replace(/^# CLAUDE\.md\n*/, '');
+---
+
+<DocsLayout title="CLAUDE.md" description="Project memory file for FactFeed.">
+  <h1 class="mb-4">CLAUDE.md</h1>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Compare to Project 1's CLAUDE.md.</strong> This one is significantly more detailed — it includes Docker Compose configuration, database schema, environment variables, and testing standards. As projects get more complex, the CLAUDE.md grows to match. Copy this into your project root before starting Ticket 1.</p>
+  </Callout>
+
+  <CodeBlock copy code={claudeMdRaw} />
+</DocsLayout>
