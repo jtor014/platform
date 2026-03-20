@@ -1,0 +1,34 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Phase B: The System Proves Itself" description="Tickets 6–11: worker, API, frontend, full request flow, and deployment.">
+  <h1 class="mb-6">Phase B — "The System Proves Itself"</h1>
+  <p class="text-text-secondary mb-8">The stack is running. Now bring it to life — the worker fetches facts, the API serves them, and the frontend displays them.</p>
+
+  <h2 class="mb-4">Ticket 6: The Worker</h2>
+  <p class="text-text-secondary mb-2">After merging, wait 5–10 minutes. Then:</p>
+  <CodeBlock terminal copy>{`$ make db`}</CodeBlock>
+  <CodeBlock lang="sql">{`SELECT COUNT(*) FROM facts;`}</CodeBlock>
+  <p class="text-text-secondary mb-4">If the count is greater than 0, the worker is fetching facts automatically. Nobody clicked anything.</p>
+
+  <h2 class="mb-4 mt-10">Ticket 7: The API</h2>
+  <p class="text-text-secondary mb-2">Open your browser:</p>
+  <p class="text-text-secondary mb-4"><code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">localhost:8000/api/facts/random</code> — you should see JSON. Refresh for a different fact.</p>
+
+  <h2 class="mb-4 mt-10">Tickets 8–9: Frontend & Connection</h2>
+  <p class="text-text-secondary mb-4">After T8: hardcoded fact visible. After T9: real facts from the database. <strong>The moment:</strong> click "Next Fact", open DevTools → Network tab, watch the request fly from frontend to API to database and back.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>Test the error states.</strong> Stop the backend: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">docker compose stop backend</code>. Refresh the frontend — do you see the error message? Start it again: <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">docker compose start backend</code>. Does it recover?</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Tickets 10–11: Tests & Polish</h2>
+  <p class="text-text-secondary mb-4">Standard ticket cycles. After T10, run the test suite and verify CI passes. After T11, all edge cases are handled and the app is ready for deployment.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>What you've learned:</strong> Docker, databases, APIs, CI, dual AI review, background workers, and the full request flow. The loop is the same — but now you can inspect systems, not just pages.</p>
+  </Callout>
+</DocsLayout>

@@ -1,0 +1,38 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
+import Callout from '../../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Phase A: The Stack Appears" description="Tickets 1–5: Docker, containers, CI, Gemini, and the database.">
+  <h1 class="mb-6">Phase A — "The Stack Appears"</h1>
+  <p class="text-text-secondary mb-8">Five tickets. By the end, you have three containers running, a CI pipeline, and Gemini reviewing every PR.</p>
+
+  <h2 class="mb-4">Ticket 1: The Docker Moment</h2>
+  <p class="text-text-secondary mb-2">Same setup process as Project 1 — paste CLAUDE.md and BACKLOG.md, then "Start Ticket 1." After Claude finishes:</p>
+  <CodeBlock terminal copy>{`$ make up`}</CodeBlock>
+  <p class="text-text-secondary mb-2">Watch Docker pull images, build containers, start services. Then:</p>
+  <CodeBlock terminal copy>{`$ make status`}</CodeBlock>
+  <p class="text-text-secondary mb-2">Three containers running. Open <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">localhost:8000/docs</code> — FastAPI's auto-generated API docs. Check the database:</p>
+  <CodeBlock terminal copy>{`$ make db`}</CodeBlock>
+  <CodeBlock lang="sql">{`\\dt`}</CodeBlock>
+  <p class="text-text-secondary mb-4">You should see the <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">facts</code> table. Type <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">\q</code> to exit.</p>
+
+  <Callout variant="info">
+    <p class="text-sm"><strong>What just happened:</strong> You typed one command and a backend API, a database, and a frontend server all appeared. They're running in isolated containers. This is Docker.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Tickets 2–3: CI & Gemini</h2>
+  <p class="text-text-secondary mb-4">Standard ticket cycles. After T2, check GitHub Actions tab. After T3, every PR gets a Gemini review comment. See the <a href="/web-dev/guides/ci-setup">CI guide</a> and <a href="/web-dev/guides/gemini-setup">Gemini guide</a> for details.</p>
+
+  <h2 class="mb-4 mt-10">Tickets 4–5: Database & Fetcher</h2>
+  <p class="text-text-secondary mb-4">After T4, check the logs for a database connection message:</p>
+  <CodeBlock terminal copy>{`$ make logs`}</CodeBlock>
+  <p class="text-text-secondary mb-4">After T5, the fetcher module exists but isn't scheduled yet — that's Phase B.</p>
+
+  <!-- Pause -->
+  <div class="border-2 border-dashed border-primary/30 rounded-lg p-6 my-10 text-center bg-primary-bg/50">
+    <p class="text-text-secondary mb-2">Run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">make status</code>. Three green containers. Open <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">localhost:8000/docs</code>. Take a breath.</p>
+    <p class="font-semibold">Phase A complete.</p>
+  </div>
+</DocsLayout>
