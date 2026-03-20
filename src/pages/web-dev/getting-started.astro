@@ -38,7 +38,9 @@ import StepList from '../../components/StepList.astro';
     { title: "Plan", content: "Give AI a brief and a template. Review the PRD it produces. Catch scope creep and vague requirements." },
     { title: "Architect", content: "AI produces the technical design: schema, API contracts, ticket backlog. You review for over-engineering." },
     { title: "Build (ticket by ticket)", content: "Claude creates a branch, implements, commits, opens a PR. Both AIs review. You verify and decide: merge or fix." },
-    { title: "Deploy", content: "Ship to a real URL. Verify it works in production, not just on your laptop." },
+    { title: "Deploy", content: "Ship to a staging URL. Verify it works on a real server, not just on your laptop." },
+    { title: "Client Feedback", content: "Show the client. Collect feedback. Create small tickets (CF-1, CF-2…), fix them with the same loop, then get sign-off." },
+    { title: "Production", content: "Point a custom domain. Final verification. The client's site is live." },
     { title: "Reflect", content: "What went well? What did AI get wrong? What would you do differently? Lessons feed into the next project." },
   ]} />
 

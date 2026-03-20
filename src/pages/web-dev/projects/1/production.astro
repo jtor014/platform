@@ -1,0 +1,111 @@
+---
+import DocsLayout from '../../../../layouts/DocsLayout.astro';
+import Callout from '../../../../components/Callout.astro';
+---
+
+<DocsLayout title="Production" description="Go live on a custom domain, verify everything, and reflect on the full cycle.">
+  <h1 class="mb-6">Production</h1>
+  <p class="text-text-secondary mb-8">The client signed off. The staging site is verified. Now you go live — optionally on a custom domain, or the Netlify URL becomes the production URL. Then reflect on the full cycle.</p>
+
+  <h2 class="mb-4">Custom domain (optional)</h2>
+  <p class="text-text-secondary mb-4">The <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.netlify.app</code> URL works fine. But if you were handing this to a real client, you'd want a custom domain.</p>
+
+  <h3 class="mb-3 mt-6">Buy a domain</h3>
+  <p class="text-text-secondary mb-4">This is entirely optional but worth the experience if you want to see the full delivery flow. A domain costs $1-15/year depending on the extension. You can buy one from:</p>
+  <ul class="list-disc list-inside text-text-secondary space-y-2 text-sm mb-4">
+    <li><strong class="text-text">Cloudflare</strong> — sells domains at cost (no markup), also offers free DNS and CDN</li>
+    <li><strong class="text-text">Namecheap</strong> — often has cheap first-year deals</li>
+    <li><strong class="text-text">Google Domains</strong> (now Squarespace) — straightforward</li>
+  </ul>
+
+  <h3 class="mb-3 mt-6">Point DNS</h3>
+  <p class="text-text-secondary mb-4">Once you own a domain, you point it at your hosting provider by updating the DNS records. Every provider has a guide for this. The whole process takes about 15 minutes plus up to an hour for DNS to propagate.</p>
+
+  <Callout variant="info">
+    <p class="text-sm">Buying a domain, linking it to a site you built, and sending someone the URL — that's a different feeling from a <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">.netlify.app</code> subdomain. If you're building a portfolio, it's worth doing once.</p>
+  </Callout>
+
+  <h2 class="mb-4 mt-10">Final verification</h2>
+  <p class="text-text-secondary mb-4">Whether you're using a custom domain or the Netlify URL, run through this checklist one last time:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-8">
+    <li>All sections load on desktop and mobile</li>
+    <li>Phone number opens the dialer (tap it on your actual phone)</li>
+    <li>Email link opens a mail client</li>
+    <li>All images load, no broken links</li>
+    <li>Lighthouse: performance, accessibility, SEO all green</li>
+    <li>Client feedback items are all resolved</li>
+  </ul>
+
+  <h2 class="mb-4 mt-10">The Loop</h2>
+  <p class="text-text-secondary mb-6">You've just completed one full cycle of the loop from <a href="/web-dev/getting-started">Getting Started</a>:</p>
+
+  <div class="space-y-4 mb-8">
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">1</span>
+      <div>
+        <p class="font-semibold text-sm">Plan</p>
+        <p class="text-sm text-text-secondary">You reviewed the PRD and caught what didn't belong.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">2</span>
+      <div>
+        <p class="font-semibold text-sm">Architect</p>
+        <p class="text-sm text-text-secondary">You reviewed the design spec, architecture, and backlog.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">3</span>
+      <div>
+        <p class="font-semibold text-sm">Build</p>
+        <p class="text-sm text-text-secondary">You directed Claude through every ticket — verify, review, merge.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">4</span>
+      <div>
+        <p class="font-semibold text-sm">Deploy</p>
+        <p class="text-sm text-text-secondary">You shipped to a staging URL and verified it on a real server.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">5</span>
+      <div>
+        <p class="font-semibold text-sm">Client Feedback</p>
+        <p class="text-sm text-text-secondary">You showed the client, turned feedback into tickets, and iterated.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start opacity-50">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-sm">6</span>
+      <div>
+        <p class="font-semibold text-sm">Production</p>
+        <p class="text-sm text-text-secondary">You went live on a real domain and ran a final checklist.</p>
+      </div>
+    </div>
+    <div class="flex gap-4 items-start">
+      <span class="flex-shrink-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">7</span>
+      <div>
+        <p class="font-semibold text-sm">Reflect</p>
+        <p class="text-sm text-text-secondary">What went well? What did AI get wrong? What would you do differently?</p>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="mb-4 mt-10">Reflect</h2>
+  <p class="text-text-secondary mb-4">Before moving on, ask yourself:</p>
+  <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-6">
+    <li>Did Claude add anything not in the PRD? Did I catch it?</li>
+    <li>Did the design match what I expected? Did I catch any discrepancies?</li>
+    <li>How did the deploy go? Did something go wrong? How did I handle it?</li>
+    <li>How did client feedback feel? Was turning feedback into tickets natural?</li>
+    <li>What was confusing? What felt natural?</li>
+    <li>Could I do this again without the guide?</li>
+  </ul>
+
+  <div class="border border-border rounded-lg p-6 my-8 bg-bg-subtle text-center">
+    <h3 class="text-lg font-semibold mb-3">Show someone</h3>
+    <p class="text-text-secondary mb-3">Open the live URL on your phone. Show it to a friend, a classmate, or a family member.</p>
+    <p class="text-text-secondary font-medium">"I directed AI to build this."</p>
+    <p class="text-sm text-text-secondary mt-3">That feeling is the point of your first project.</p>
+  </div>
+</DocsLayout>
