@@ -1,0 +1,18 @@
+---
+import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import Card from '../../../../../components/Card.astro';
+---
+
+<DocsLayout title="Implementation" description="How the implementation phase works: direct Claude through tickets, verify each one, and ship.">
+  <h1 class="mb-6">Implementation</h1>
+  <p class="text-text-secondary mb-4">You've read the requirements, design spec, and architecture. Now you implement. This phase is where you direct Claude Code through every ticket in the backlog, one at a time, until the project is done.</p>
+  <p class="text-text-secondary mb-4">Every ticket follows the same loop: <strong class="text-text">direct → verify → review → merge</strong>. You tell Claude to start a ticket. Claude implements it, commits, and opens a PR. You verify the result against the acceptance criteria. You read the reviews. You merge or ask for fixes. Then you move to the next ticket.</p>
+  <p class="text-text-secondary mb-8">Work through these sections in order:</p>
+
+  <div class="grid gap-4">
+    <Card title="1. Backlog" subtitle="The ordered list of tickets — what you'll implement" href="/web-dev/projects/1/implementation/backlog" />
+    <Card title="2. Setup" subtitle="Create the project folder, open VS Code, launch Claude, and hand over the project files" href="/web-dev/projects/1/implementation/setup" />
+    <Card title="3. Your first ticket" subtitle="A deep dive on the full ticket cycle: direct, verify, review, merge" href="/web-dev/projects/1/implementation/first-ticket" />
+    <Card title="4. Remaining tickets" subtitle="Work through the rest of the backlog independently" href="/web-dev/projects/1/implementation/remaining-tickets" />
+  </div>
+</DocsLayout>
