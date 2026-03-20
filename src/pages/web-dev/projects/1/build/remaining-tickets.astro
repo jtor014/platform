@@ -1,86 +1,106 @@
 ---
 import DocsLayout from '../../../../../layouts/DocsLayout.astro';
+import CodeBlock from '../../../../../components/CodeBlock.astro';
 import Callout from '../../../../../components/Callout.astro';
 ---
 
-<DocsLayout title="Remaining tickets" description="Work through Tickets 3–7 with verification guidance per ticket.">
+<DocsLayout title="Remaining tickets" description="Work through the rest of the backlog independently.">
   <h1 class="mb-6">Remaining Tickets</h1>
-  <p class="text-text-secondary mb-4">You know the loop now: direct → verify → review → merge. Work through Tickets 3–7 using the same cycle. For each ticket, tell Claude to start it, then focus your verification on the areas below.</p>
-  <p class="text-text-secondary mb-8">The key difference from Ticket 2: you're now verifying <em>visual</em> output against the design spec, not just checking that commands run.</p>
+  <p class="text-text-secondary mb-4">You know the loop now: direct → verify → review → merge. Work through the remaining tickets in the backlog using the same cycle for each one.</p>
+  <p class="text-text-secondary mb-8">The key shift from here: you're working independently. You have the backlog with acceptance criteria for every ticket. You have the design spec to check against. You have the loop. Use them.</p>
 
-  <!-- Ticket 3 -->
-  <div class="border border-border rounded-lg p-6 mb-6">
-    <h2 class="text-lg font-semibold mb-1">Ticket 3: Site Layout & Navigation</h2>
-    <p class="text-xs text-text-muted mb-4">frontend · Size M · Depends on T2</p>
-    <p class="text-sm text-text-secondary mb-3"><strong>Your verification focus:</strong></p>
-    <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-3">
-      <li><strong class="text-text">Header:</strong> Does it look right? Open DevTools (F12) → check font-family is Inter, font-size matches the design spec, colours match the hex values</li>
-      <li><strong class="text-text">Sticky:</strong> Scroll down — does the header stay at the top?</li>
-      <li><strong class="text-text">Mobile:</strong> DevTools → toggle device toolbar (Ctrl+Shift+M) → select iPhone SE. Does the nav become a hamburger? Does it open and close?</li>
-      <li><strong class="text-text">Navigation:</strong> Click each nav link — does it smooth-scroll to the right section?</li>
-      <li><strong class="text-text">Footer:</strong> Scroll to bottom — copyright year and contact info present?</li>
-    </ul>
-    <Callout variant="info">
-      <p class="text-sm"><strong>DevTools tip:</strong> Right-click any element → Inspect. The Styles panel shows CSS properties. The Computed panel shows final calculated values (useful when Tailwind classes are confusing). The box model diagram shows margin and padding.</p>
-    </Callout>
+  <h2 class="mb-4">The rhythm</h2>
+  <p class="text-text-secondary mb-2">For each ticket:</p>
+  <div class="space-y-3 mb-8">
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">1</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Direct:</strong> Tell Claude <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">Start Ticket N.</code></p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">2</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Verify:</strong> Check every acceptance criterion. Open the browser. Use DevTools. Compare to the design spec.</p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">3</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Review:</strong> Read Claude's self-review and Gemini's review on the PR.</p>
+    </div>
+    <div class="flex gap-3 items-start">
+      <span class="text-primary font-bold mt-0.5">4</span>
+      <p class="text-sm text-text-secondary"><strong class="text-text">Decide:</strong> Merge it or tell Claude exactly what to fix.</p>
+    </div>
   </div>
 
-  <!-- Ticket 4 -->
-  <div class="border border-border rounded-lg p-6 mb-6">
-    <h2 class="text-lg font-semibold mb-1">Ticket 4: Hero & Services</h2>
-    <p class="text-xs text-text-muted mb-4">frontend · Size M · Depends on T3</p>
-    <p class="text-sm text-text-secondary mb-3"><strong>Your verification focus:</strong></p>
-    <ul class="text-sm text-text-secondary list-disc list-inside space-y-2">
-      <li><strong class="text-text">Hero:</strong> Is the background colour/gradient correct per the design spec? Is the CTA button visible and clickable?</li>
-      <li><strong class="text-text">CTA:</strong> Click "Get in Touch" — does it scroll to the Contact section?</li>
-      <li><strong class="text-text">Service cards:</strong> Count them. Exactly 6? Each with an icon area, name, and description?</li>
-      <li><strong class="text-text">Responsive grid:</strong> Resize the viewport — 1 column on mobile, 2 on tablet, 3 on desktop?</li>
-      <li><strong class="text-text">Content source:</strong> Open <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">src/data/content.js</code> — is all text coming from there, not hardcoded in components?</li>
-    </ul>
+  <h2 class="mb-4">What to watch for</h2>
+  <p class="text-text-secondary mb-4">As you move through tickets, different types of work require different verification approaches:</p>
+
+  <div class="overflow-x-auto mb-8">
+    <table class="w-full text-sm border-collapse">
+      <thead>
+        <tr class="bg-bg-muted">
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">Ticket type</th>
+          <th class="text-left px-4 py-3 font-semibold border-b border-border">How to verify</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Layout & navigation</td>
+          <td class="px-4 py-3 text-text-secondary">Resize the browser. Test mobile. Click every link. Check sticky elements by scrolling.</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">Visual sections</td>
+          <td class="px-4 py-3 text-text-secondary">Compare to the design spec. Use DevTools to check fonts, colours, spacing. Don't eyeball — measure.</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Content sections</td>
+          <td class="px-4 py-3 text-text-secondary">Count items — does the number match the PRD? Check that content comes from the data source, not hardcoded in components.</td>
+        </tr>
+        <tr class="border-b border-border bg-bg-subtle">
+          <td class="px-4 py-3">SEO & meta</td>
+          <td class="px-4 py-3 text-text-secondary">View Page Source. Search for meta tags. Run Lighthouse. These are invisible — you can't check by looking at the page.</td>
+        </tr>
+        <tr class="border-b border-border">
+          <td class="px-4 py-3">Deploy</td>
+          <td class="px-4 py-3 text-text-secondary">Check the live URL. Test on your actual phone. Run Lighthouse on the production URL, not localhost.</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
-  <!-- Ticket 5 -->
-  <div class="border border-border rounded-lg p-6 mb-6">
-    <h2 class="text-lg font-semibold mb-1">Ticket 5: Testimonials & About</h2>
-    <p class="text-xs text-text-muted mb-4">frontend · Size M · Depends on T4</p>
-    <p class="text-sm text-text-secondary mb-3"><strong>Your verification focus:</strong></p>
-    <ul class="text-sm text-text-secondary list-disc list-inside space-y-2">
-      <li><strong class="text-text">Testimonials:</strong> Exactly 4? Each with quote in quotation marks, name, suburb, and star rating?</li>
-      <li><strong class="text-text">Star ratings:</strong> Are they visual (stars/icons), not text like "5/5"? Check the colour matches the design spec gold (#8B6914)</li>
-      <li><strong class="text-text">Visual distinction:</strong> Do testimonials look different from other sections? (Different background, card style, or left border)</li>
-      <li><strong class="text-text">About text:</strong> Is it readable? Check max-width in DevTools — should be around 600–700px, not stretching full width on desktop</li>
-    </ul>
-  </div>
+  <Callout variant="warning">
+    <p class="text-sm"><strong>Anti-scope check:</strong> After every ticket, ask yourself: "Did Claude add anything that isn't in the backlog or PRD?" AI tends to add features, polish, and "improvements" that were never asked for. Catching this is one of the most important directing skills. If you find something that wasn't specified, tell Claude to remove it.</p>
+  </Callout>
 
-  <!-- Ticket 6 -->
-  <div class="border border-border rounded-lg p-6 mb-6">
-    <h2 class="text-lg font-semibold mb-1">Ticket 6: Service Area & Contact</h2>
-    <p class="text-xs text-text-muted mb-4">frontend · Size M · Depends on T5</p>
-    <p class="text-sm text-text-secondary mb-3"><strong>Your verification focus:</strong></p>
-    <ul class="text-sm text-text-secondary list-disc list-inside space-y-2 mb-4">
-      <li><strong class="text-text">Suburbs:</strong> Count them — all 10 from the PRD?</li>
-      <li><strong class="text-text">Phone link:</strong> Inspect the phone number — is it an <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">&lt;a href="tel:..."&gt;</code>? Test on your actual phone if possible</li>
-      <li><strong class="text-text">Email link:</strong> Is it a <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">mailto:</code> link?</li>
-      <li><strong class="text-text">Business hours:</strong> Clearly formatted?</li>
-    </ul>
-    <Callout variant="warning">
-      <p class="text-sm"><strong>Critical anti-scope check:</strong> Did Claude add a contact form? The PRD anti-scope explicitly says no forms — only phone and email links. If there's a form, direct Claude: "The PRD anti-scope says no contact form. Remove it and keep only the tel: and mailto: links." This is the most important catch in this project.</p>
-    </Callout>
-  </div>
+  <h2 class="mb-4 mt-10">When something goes wrong</h2>
+  <p class="text-text-secondary mb-4">It will. That's part of the process. Here's how to handle common situations:</p>
 
-  <!-- Ticket 7 -->
-  <div class="border border-border rounded-lg p-6 mb-6">
-    <h2 class="text-lg font-semibold mb-1">Ticket 7: SEO & Meta Tags</h2>
-    <p class="text-xs text-text-muted mb-4">frontend · Size S · Depends on T6</p>
-    <p class="text-sm text-text-secondary mb-3"><strong>Your verification focus:</strong> This ticket's output is invisible — you can't see it by looking at the page. You need to check the source:</p>
-    <ul class="text-sm text-text-secondary list-disc list-inside space-y-2">
-      <li><strong class="text-text">Page title:</strong> Check the browser tab — contains "GreenScape Landscaping" and "Melbourne"?</li>
-      <li><strong class="text-text">Meta description:</strong> Right-click → View Page Source → Ctrl+F for <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">&lt;meta name="description"</code></li>
-      <li><strong class="text-text">Open Graph:</strong> Search page source for <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">og:title</code> — should find og:title, og:description, og:image, og:url</li>
-      <li><strong class="text-text">Single H1:</strong> In DevTools Console, run <code class="bg-bg-muted px-1.5 py-0.5 rounded text-xs font-mono">document.querySelectorAll('h1').length</code> — should return 1</li>
-      <li><strong class="text-text">Lighthouse:</strong> DevTools → Lighthouse tab → run audit. SEO score should be 90+</li>
-    </ul>
-  </div>
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>A criterion fails</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Be specific: "The criterion says [exact criterion]. What I see is [exact observation]. Fix this." Don't say "it's broken" — describe the gap between expectation and reality.</p>
+    </div>
+  </details>
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>Claude broke something that worked before</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Tell Claude: "After merging this ticket, [describe what broke]. This was working before. Fix the regression without changing the new work." Regressions happen — catching them is the Director's job.</p>
+    </div>
+  </details>
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>The review flagged something you don't understand</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Ask Claude: "Gemini said [paste comment]. Explain what this means and whether it matters for this project." Not every review comment is actionable — developing judgment about which ones matter is part of the learning.</p>
+    </div>
+  </details>
+  <details class="mb-3 border border-border rounded-lg overflow-hidden">
+    <summary>You're stuck and don't know what to check</summary>
+    <div class="p-4">
+      <p class="text-sm text-text-secondary">Go back to the backlog. Read the acceptance criteria line by line. For each one, write down pass or fail. If you can't check a criterion, ask Claude how to verify it.</p>
+    </div>
+  </details>
 
-  <p class="text-text-secondary">All frontend tickets done. Next: <a href="/web-dev/projects/1/build/finishing">deploy and finish the project</a>.</p>
+  <Callout variant="info">
+    <p class="text-sm"><strong>DevTools tip:</strong> Right-click any element → Inspect. The Styles panel shows CSS properties. The Computed panel shows final calculated values. The box model diagram shows margin and padding. You'll use this constantly for visual verification.</p>
+  </Callout>
+
+  <p class="text-text-secondary mt-8">Once all frontend tickets are done, move on to <a href="/web-dev/projects/1/deploy">deploy</a>.</p>
 </DocsLayout>
